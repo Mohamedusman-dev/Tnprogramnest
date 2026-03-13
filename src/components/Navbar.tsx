@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSiteData } from "@/context/SiteDataContext";
 
-const navItems = ["Home", "About", "Services", "Training Programs", "Technology", "Contact Us"];
+const navItems = ["Home", "About", "Services", "Training Programs", "Technology", "Contact"];
 
 const Navbar = () => {
   const { siteData } = useSiteData();
@@ -52,7 +52,12 @@ const Navbar = () => {
       return;
     }
 
-    const id = item.toLowerCase().replace(/\s+/g, "-");
+    let id = item.toLowerCase().replace(/\s+/g, "-");
+    
+    // Map "contact" back to the "contact-us" section ID
+    if (id === "contact") {
+      id = "contact-us";
+    }
     
     if (location.pathname !== "/") {
       navigate(`/#${id}`);
