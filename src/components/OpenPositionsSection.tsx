@@ -17,12 +17,10 @@ const OpenPositionsSection = () => {
   const [selectedType, setSelectedType] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
 
-  // Extract unique options for dropdowns safely and sort them alphabetically
-  const categories = useMemo(() => {
-    const cats = jobs.map(j => j.category).filter(c => typeof c === 'string' && c.trim() !== "");
-    return Array.from(new Set(cats)).sort();
-  }, [jobs]);
+  // Hardcoded categories as requested
+  const categories = ["Internship", "Development", "Other"];
 
+  // Extract unique options for dropdowns safely and sort them alphabetically
   const types = useMemo(() => {
     const ts = jobs.map(j => j.type).filter(t => typeof t === 'string' && t.trim() !== "");
     return Array.from(new Set(ts)).sort();
