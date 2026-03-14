@@ -1,5 +1,6 @@
 import { useEffect, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
+import * as Icons from "lucide-react";
 import { 
   GraduationCap, Users, Building2, Target, Code, MonitorPlay, 
   Briefcase, ShieldAlert, FileText, Megaphone, CheckCircle2, 
@@ -10,61 +11,11 @@ import Footer from "@/components/Footer";
 import ContactSection from "@/components/ContactSection";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { useScrollReveal } from "@/components/useScrollReveal";
+import { useSiteData } from "@/context/SiteDataContext";
 
 const ScrollToTop = lazy(() => import("@/components/ScrollToTop"));
 
 // --- Data Models ---
-const programs = [
-  {
-    title: "Web Development Workshop",
-    duration: "2 Days",
-    audience: "Schools / Colleges",
-    mode: "Hybrid",
-    icon: Code,
-    desc: "Hands-on session covering HTML, CSS, JavaScript basics and a real project demo for students."
-  },
-  {
-    title: "AI Tools Awareness Session",
-    duration: "1 Day",
-    audience: "All Students",
-    mode: "Online / Offline",
-    icon: MonitorPlay,
-    desc: "Introduction to ChatGPT, Midjourney, and other AI tools to boost productivity and learning."
-  },
-  {
-    title: "Digital Marketing Basics",
-    duration: "3 Days",
-    audience: "Colleges",
-    mode: "Hybrid",
-    icon: Megaphone,
-    desc: "Learn the fundamentals of SEO, Social Media Marketing, and creating online campaigns."
-  },
-  {
-    title: "Career Guidance Seminar",
-    duration: "Half Day",
-    audience: "Final Year Students",
-    mode: "Offline",
-    icon: Target,
-    desc: "Expert advice on choosing the right IT career path, industry trends, and job opportunities."
-  },
-  {
-    title: "Cyber Security Awareness",
-    duration: "1 Day",
-    audience: "Schools / Colleges",
-    mode: "Online / Offline",
-    icon: ShieldAlert,
-    desc: "Essential training on internet safety, data privacy, and ethical hacking basics."
-  },
-  {
-    title: "Resume & LinkedIn Building",
-    duration: "1 Day",
-    audience: "Colleges",
-    mode: "Hybrid",
-    icon: FileText,
-    desc: "Practical workshop on crafting ATS-friendly resumes and professional LinkedIn profiles."
-  }
-];
-
 const topics = [
   "Web Development", "App Development", "Full Stack Basics", 
   "AI Tools for Students", "Career Guidance", "Resume Building", 
@@ -129,6 +80,9 @@ const SectionHeader = ({ title, subtitle, dark = false }: { title: string, subti
 
 // --- Main Page Component ---
 const Training = () => {
+  const { siteData } = useSiteData();
+  const programs = siteData.trainingPrograms || [];
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -212,17 +166,20 @@ const Training = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {programs.map((prog, i) => {
               const { ref, isVisible } = useScrollReveal(0.1);
+              // Fallback to Code icon if the specified icon is not found
+              const IconComponent = (Icons as any)[prog.iconName] || Icons.Code;
+
               return (
                 <motion.div
                   ref={ref}
-                  key={i}
+                  key={prog.id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
                 >
                   <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                    <prog.icon size={24} />
+                    <IconComponent size={24} />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-3">{prog.title}</h3>
                   <p className="text-slate-600 text-sm mb-5 leading-relaxed min-h-[60px]">

@@ -80,6 +80,16 @@ export type IndustryItem = {
   };
 };
 
+export type TrainingProgram = {
+  id: string;
+  title: string;
+  duration: string;
+  audience: string;
+  mode: string;
+  iconName: string;
+  desc: string;
+};
+
 export type SiteData = {
   general: {
     logoUrl: string;
@@ -109,6 +119,7 @@ export type SiteData = {
   products: ProductItem[];
   jobs: JobItem[];
   industries: IndustryItem[];
+  trainingPrograms: TrainingProgram[];
   testimonials: Testimonial[];
   teamTestimonials: TeamTestimonial[];
   chatbot: ChatbotQA[];
@@ -265,6 +276,14 @@ const defaultData: SiteData = {
       testimonial: { quote: "They turned our idea into a production-ready SaaS product in record time.", author: "Alex Rivera", role: "CEO, LaunchPad.io" }
     }
   ],
+  trainingPrograms: [
+    { id: crypto.randomUUID(), title: "Web Development Workshop", duration: "2 Days", audience: "Schools / Colleges", mode: "Hybrid", iconName: "Code", desc: "Hands-on session covering HTML, CSS, JavaScript basics and a real project demo for students." },
+    { id: crypto.randomUUID(), title: "AI Tools Awareness Session", duration: "1 Day", audience: "All Students", mode: "Online / Offline", iconName: "MonitorPlay", desc: "Introduction to ChatGPT, Midjourney, and other AI tools to boost productivity and learning." },
+    { id: crypto.randomUUID(), title: "Digital Marketing Basics", duration: "3 Days", audience: "Colleges", mode: "Hybrid", iconName: "Megaphone", desc: "Learn the fundamentals of SEO, Social Media Marketing, and creating online campaigns." },
+    { id: crypto.randomUUID(), title: "Career Guidance Seminar", duration: "Half Day", audience: "Final Year Students", mode: "Offline", iconName: "Target", desc: "Expert advice on choosing the right IT career path, industry trends, and job opportunities." },
+    { id: crypto.randomUUID(), title: "Cyber Security Awareness", duration: "1 Day", audience: "Schools / Colleges", mode: "Online / Offline", iconName: "ShieldAlert", desc: "Essential training on internet safety, data privacy, and ethical hacking basics." },
+    { id: crypto.randomUUID(), title: "Resume & LinkedIn Building", duration: "1 Day", audience: "Colleges", mode: "Hybrid", iconName: "FileText", desc: "Practical workshop on crafting ATS-friendly resumes and professional LinkedIn profiles." }
+  ],
   testimonials: [
     { id: crypto.randomUUID(), name: "Sarah Mitchell", company: "NovaTech Inc.", text: "TechNest transformed our outdated platform into a sleek, high-performing web app. Their team's expertise and professionalism exceeded our expectations.", rating: 5 },
     { id: crypto.randomUUID(), name: "James Rodriguez", company: "GreenLeaf Health", text: "Working with TechNest was a game-changer. They delivered our healthcare app on time, within budget, and with exceptional quality.", rating: 5 },
@@ -344,6 +363,7 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         products: getSetting('products', defaultData.products),
         jobs: getSetting('jobs', defaultData.jobs),
         industries: getSetting('industries', defaultData.industries),
+        trainingPrograms: getSetting('trainingPrograms', defaultData.trainingPrograms),
         footer: getSetting('footer', defaultData.footer),
         teamTestimonials: getSetting('teamTestimonials', defaultData.teamTestimonials),
         testimonials: testimonialsRes.data?.length ? testimonialsRes.data : defaultData.testimonials,

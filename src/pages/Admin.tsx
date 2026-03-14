@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { 
   LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
-  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart
+  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap
 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -94,6 +94,7 @@ const Admin = () => {
   const [productsForm, setProductsForm] = useState(siteData.products);
   const [jobsForm, setJobsForm] = useState(siteData.jobs || []);
   const [industriesForm, setIndustriesForm] = useState(siteData.industries || []);
+  const [trainingForm, setTrainingForm] = useState(siteData.trainingPrograms || []);
   const [testimonialsForm, setTestimonialsForm] = useState(siteData.testimonials);
   const [teamTestimonialsForm, setTeamTestimonialsForm] = useState(siteData.teamTestimonials || []);
   const [chatbotForm, setChatbotForm] = useState(siteData.chatbot);
@@ -122,6 +123,7 @@ const Admin = () => {
     setProductsForm(siteData.products || []);
     setJobsForm(siteData.jobs || []);
     setIndustriesForm(siteData.industries || []);
+    setTrainingForm(siteData.trainingPrograms || []);
     setTestimonialsForm(siteData.testimonials || []);
     setTeamTestimonialsForm(siteData.teamTestimonials || []);
     setChatbotForm(siteData.chatbot || []);
@@ -147,7 +149,7 @@ const Admin = () => {
     toast.success("Logged out");
   };
 
-  const handleSaveSection = async (key: 'general' | 'hero' | 'about' | 'services' | 'products' | 'jobs' | 'industries' | 'teamTestimonials' | 'footer', formState: any) => {
+  const handleSaveSection = async (key: 'general' | 'hero' | 'about' | 'services' | 'products' | 'jobs' | 'industries' | 'trainingPrograms' | 'teamTestimonials' | 'footer', formState: any) => {
     setIsSaving(true);
     try {
       await updateSection(key, formState);
@@ -204,6 +206,9 @@ const Admin = () => {
   }]);
   const removeIndustry = (id: string) => setIndustriesForm(industriesForm.filter(i => i.id !== id));
 
+  const addTrainingProgram = () => setTrainingForm([...trainingForm, { id: crypto.randomUUID(), title: "", duration: "", audience: "", mode: "", iconName: "Code", desc: "" }]);
+  const removeTrainingProgram = (id: string) => setTrainingForm(trainingForm.filter(p => p.id !== id));
+
   const addTestimonial = () => setTestimonialsForm([...testimonialsForm, { id: crypto.randomUUID(), name: "", company: "", text: "", rating: 5 }]);
   const removeTestimonial = (id: string) => setTestimonialsForm(testimonialsForm.filter(t => t.id !== id));
 
@@ -220,6 +225,7 @@ const Admin = () => {
     { id: "services", label: "What We Offer", icon: Briefcase },
     { id: "products", label: "Our Products", icon: Package },
     { id: "industries", label: "Focus Industries", icon: Factory },
+    { id: "training", label: "Training Programs", icon: GraduationCap },
     { id: "jobs", label: "Open Positions", icon: FileText },
     { id: "team_testimonials", label: "Team Testimonials", icon: Heart },
     { id: "testimonials", label: "Client Testimonials", icon: Users },
@@ -980,6 +986,129 @@ const Admin = () => {
                         </div>
                       </div>
 
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Training Programs Tab */}
+          {activeTab === "training" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Training Programs</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage the training programs and workshops offered.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <button onClick={addTrainingProgram} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <Plus size={18} /> Add Program
+                  </button>
+                  <button disabled={isSaving} onClick={() => handleSaveSection('trainingPrograms', trainingForm)} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                {trainingForm.map((p, index) => (
+                  <div key={p.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative">
+                    <button 
+                      onClick={() => removeTrainingProgram(p.id)}
+                      className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    <div className="space-y-4 pr-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Program Title</label>
+                          <input 
+                            type="text" 
+                            value={p.title || ""}
+                            onChange={(e) => {
+                              const newForm = [...trainingForm];
+                              newForm[index].title = e.target.value;
+                              setTrainingForm(newForm);
+                            }}
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Icon Name (Lucide)</label>
+                          <input 
+                            type="text" 
+                            value={p.iconName || ""}
+                            onChange={(e) => {
+                              const newForm = [...trainingForm];
+                              newForm[index].iconName = e.target.value;
+                              setTrainingForm(newForm);
+                            }}
+                            placeholder="e.g. Code, MonitorPlay"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Duration</label>
+                          <input 
+                            type="text" 
+                            value={p.duration || ""}
+                            onChange={(e) => {
+                              const newForm = [...trainingForm];
+                              newForm[index].duration = e.target.value;
+                              setTrainingForm(newForm);
+                            }}
+                            placeholder="e.g. 2 Days"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Audience</label>
+                          <input 
+                            type="text" 
+                            value={p.audience || ""}
+                            onChange={(e) => {
+                              const newForm = [...trainingForm];
+                              newForm[index].audience = e.target.value;
+                              setTrainingForm(newForm);
+                            }}
+                            placeholder="e.g. Schools / Colleges"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Mode</label>
+                          <input 
+                            type="text" 
+                            value={p.mode || ""}
+                            onChange={(e) => {
+                              const newForm = [...trainingForm];
+                              newForm[index].mode = e.target.value;
+                              setTrainingForm(newForm);
+                            }}
+                            placeholder="e.g. Hybrid"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
+                        <textarea 
+                          rows={2}
+                          value={p.desc || ""}
+                          onChange={(e) => {
+                            const newForm = [...trainingForm];
+                            newForm[index].desc = e.target.value;
+                            setTrainingForm(newForm);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
