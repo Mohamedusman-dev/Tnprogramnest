@@ -1,14 +1,15 @@
-User-agent: Googlebot
-Allow: /
+# Production robots.txt
 
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
+# Rules for all search engines and AI crawlers (Googlebot, Bingbot, GPTBot, etc.)
 User-agent: *
+
+# Allow indexing of main website content (service pages, landing pages, etc.)
 Allow: /
+
+# Block access to sensitive folders and application routes
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://tn-technest-w738-dualite.netlify.app/sitemap.xml
