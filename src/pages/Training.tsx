@@ -15,47 +15,6 @@ import { useSiteData } from "@/context/SiteDataContext";
 
 const ScrollToTop = lazy(() => import("@/components/ScrollToTop"));
 
-// --- Data Models ---
-const topics = [
-  "Web Development", "App Development", "Full Stack Basics", 
-  "AI Tools for Students", "Career Guidance", "Resume Building", 
-  "Interview Preparation", "Digital Marketing Fundamentals", 
-  "Freelancing Basics", "Cyber Safety Awareness"
-];
-
-const audiences = [
-  "Schools", "Colleges", "Polytechnic Institutes", 
-  "Engineering Students", "Final Year Students", "Beginners in Tech"
-];
-
-const formats = [
-  { title: "One-day Workshop", icon: CalendarDays },
-  { title: "3-Day Bootcamp", icon: Target },
-  { title: "Weekly Training Series", icon: Clock },
-  { title: "Seminar Session", icon: Users },
-  { title: "Hands-on Lab Session", icon: Laptop },
-];
-
-const testimonials = [
-  {
-    quote: "The session was highly engaging and useful for our students. They got to see how real-world coding works.",
-    author: "Dr. Ramesh Kumar",
-    role: "HOD Computer Science, XYZ Engineering College"
-  },
-  {
-    quote: "A practical workshop that gave our students real exposure to current AI technologies. Highly recommended!",
-    author: "Priya Sharma",
-    role: "Principal, ABC Public School"
-  }
-];
-
-const gallery = [
-  "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
-  "https://images.unsplash.com/photo-1544531586-fde5298cdd40?w=800&q=80",
-  "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80",
-  "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80"
-];
-
 // --- Subcomponents ---
 const SectionHeader = ({ title, subtitle, dark = false }: { title: string, subtitle: string, dark?: boolean }) => {
   const { ref, isVisible } = useScrollReveal();
@@ -81,7 +40,13 @@ const SectionHeader = ({ title, subtitle, dark = false }: { title: string, subti
 // --- Main Page Component ---
 const Training = () => {
   const { siteData } = useSiteData();
+  
   const programs = siteData.trainingPrograms || [];
+  const topics = siteData.trainingTopics || [];
+  const audiences = siteData.trainingAudiences || [];
+  const formats = siteData.trainingFormats || [];
+  const gallery = siteData.trainingGallery || [];
+  const testimonials = siteData.trainingTestimonials || [];
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -258,12 +223,15 @@ const Training = () => {
                 <CalendarDays className="text-primary" /> Program Formats
               </h3>
               <ul className="space-y-4">
-                {formats.map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 text-slate-700">
-                    <f.icon size={16} className="text-slate-400" />
-                    <span className="text-sm font-medium">{f.title}</span>
-                  </li>
-                ))}
+                {formats.map((f, i) => {
+                  const FormatIcon = (Icons as any)[f.iconName] || Icons.CheckCircle2;
+                  return (
+                    <li key={i} className="flex items-center gap-3 text-slate-700">
+                      <FormatIcon size={16} className="text-slate-400" />
+                      <span className="text-sm font-medium">{f.title}</span>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
@@ -329,65 +297,69 @@ const Training = () => {
       </section>
 
       {/* 6. Event Highlights / Gallery */}
-      <section className="py-20 px-4 md:px-8 bg-slate-100">
-        <div className="container mx-auto max-w-6xl">
-          <SectionHeader 
-            title="Event Highlights" 
-            subtitle="Glimpses from our recent workshops, seminars, and interactive student sessions." 
-          />
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {gallery.map((img, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`rounded-2xl overflow-hidden shadow-md group ${i === 0 || i === 3 ? 'md:col-span-2 md:row-span-2' : ''}`}
-              >
-                <img 
-                  src={img} 
-                  alt="Training Session" 
-                  className="w-full h-full object-cover aspect-video md:aspect-auto min-h-[200px] transition-transform duration-700 group-hover:scale-105"
-                />
-              </motion.div>
-            ))}
+      {gallery.length > 0 && (
+        <section className="py-20 px-4 md:px-8 bg-slate-100">
+          <div className="container mx-auto max-w-6xl">
+            <SectionHeader 
+              title="Event Highlights" 
+              subtitle="Glimpses from our recent workshops, seminars, and interactive student sessions." 
+            />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {gallery.map((img, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className={`rounded-2xl overflow-hidden shadow-md group ${i === 0 || i === 3 ? 'md:col-span-2 md:row-span-2' : ''}`}
+                >
+                  <img 
+                    src={img} 
+                    alt="Training Session" 
+                    className="w-full h-full object-cover aspect-video md:aspect-auto min-h-[200px] transition-transform duration-700 group-hover:scale-105"
+                  />
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 7. Testimonials */}
-      <section className="py-20 px-4 md:px-8 bg-white">
-        <div className="container mx-auto max-w-5xl">
-          <SectionHeader 
-            title="What Institutions Say" 
-            subtitle="Feedback from colleges and schools that have partnered with us." 
-          />
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {testimonials.map((t, i) => (
-              <div key={i} className="bg-slate-50 p-8 rounded-2xl border border-slate-100 relative">
-                <div className="text-primary/20 absolute top-6 right-6">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.017 21L16.417 14.5C16.417 14.5 16.517 14.5 16.617 14.5C18.617 14.5 20.217 12.9 20.217 10.9C20.217 8.9 18.617 7.3 16.617 7.3C14.617 7.3 13.017 8.9 13.017 10.9C13.017 12.6 14.017 14.1 15.517 14.8L13.117 21H14.017ZM5.01697 21L7.41697 14.5C7.41697 14.5 7.51697 14.5 7.61697 14.5C9.61697 14.5 11.217 12.9 11.217 10.9C11.217 8.9 9.61697 7.3 7.61697 7.3C5.61697 7.3 4.01697 8.9 4.01697 10.9C4.01697 12.6 5.01697 14.1 6.51697 14.8L4.11697 21H5.01697Z" />
-                  </svg>
-                </div>
-                <p className="text-slate-700 text-lg italic mb-6 relative z-10 leading-relaxed">"{t.quote}"</p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                    {t.author.charAt(0)}
+      {testimonials.length > 0 && (
+        <section className="py-20 px-4 md:px-8 bg-white">
+          <div className="container mx-auto max-w-5xl">
+            <SectionHeader 
+              title="What Institutions Say" 
+              subtitle="Feedback from colleges and schools that have partnered with us." 
+            />
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              {testimonials.map((t, i) => (
+                <div key={t.id} className="bg-slate-50 p-8 rounded-2xl border border-slate-100 relative">
+                  <div className="text-primary/20 absolute top-6 right-6">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M14.017 21L16.417 14.5C16.417 14.5 16.517 14.5 16.617 14.5C18.617 14.5 20.217 12.9 20.217 10.9C20.217 8.9 18.617 7.3 16.617 7.3C14.617 7.3 13.017 8.9 13.017 10.9C13.017 12.6 14.017 14.1 15.517 14.8L13.117 21H14.017ZM5.01697 21L7.41697 14.5C7.41697 14.5 7.51697 14.5 7.61697 14.5C9.61697 14.5 11.217 12.9 11.217 10.9C11.217 8.9 9.61697 7.3 7.61697 7.3C5.61697 7.3 4.01697 8.9 4.01697 10.9C4.01697 12.6 5.01697 14.1 6.51697 14.8L4.11697 21H5.01697Z" />
+                    </svg>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-slate-900">{t.author}</h4>
-                    <p className="text-sm text-slate-500">{t.role}</p>
+                  <p className="text-slate-700 text-lg italic mb-6 relative z-10 leading-relaxed">"{t.quote}"</p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
+                      {t.author.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900">{t.author}</h4>
+                      <p className="text-sm text-slate-500">{t.role}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 8. Contact Section */}
       <ContactSection />

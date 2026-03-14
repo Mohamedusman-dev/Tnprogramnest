@@ -94,7 +94,15 @@ const Admin = () => {
   const [productsForm, setProductsForm] = useState(siteData.products);
   const [jobsForm, setJobsForm] = useState(siteData.jobs || []);
   const [industriesForm, setIndustriesForm] = useState(siteData.industries || []);
+  
+  // Training Page Forms
   const [trainingForm, setTrainingForm] = useState(siteData.trainingPrograms || []);
+  const [trainingTopicsForm, setTrainingTopicsForm] = useState(siteData.trainingTopics || []);
+  const [trainingAudiencesForm, setTrainingAudiencesForm] = useState(siteData.trainingAudiences || []);
+  const [trainingFormatsForm, setTrainingFormatsForm] = useState(siteData.trainingFormats || []);
+  const [trainingGalleryForm, setTrainingGalleryForm] = useState(siteData.trainingGallery || []);
+  const [trainingTestimonialsForm, setTrainingTestimonialsForm] = useState(siteData.trainingTestimonials || []);
+
   const [testimonialsForm, setTestimonialsForm] = useState(siteData.testimonials);
   const [teamTestimonialsForm, setTeamTestimonialsForm] = useState(siteData.teamTestimonials || []);
   const [chatbotForm, setChatbotForm] = useState(siteData.chatbot);
@@ -123,7 +131,14 @@ const Admin = () => {
     setProductsForm(siteData.products || []);
     setJobsForm(siteData.jobs || []);
     setIndustriesForm(siteData.industries || []);
+    
     setTrainingForm(siteData.trainingPrograms || []);
+    setTrainingTopicsForm(siteData.trainingTopics || []);
+    setTrainingAudiencesForm(siteData.trainingAudiences || []);
+    setTrainingFormatsForm(siteData.trainingFormats || []);
+    setTrainingGalleryForm(siteData.trainingGallery || []);
+    setTrainingTestimonialsForm(siteData.trainingTestimonials || []);
+
     setTestimonialsForm(siteData.testimonials || []);
     setTeamTestimonialsForm(siteData.teamTestimonials || []);
     setChatbotForm(siteData.chatbot || []);
@@ -149,13 +164,32 @@ const Admin = () => {
     toast.success("Logged out");
   };
 
-  const handleSaveSection = async (key: 'general' | 'hero' | 'about' | 'services' | 'products' | 'jobs' | 'industries' | 'trainingPrograms' | 'teamTestimonials' | 'footer', formState: any) => {
+  const handleSaveSection = async (key: keyof Omit<typeof siteData, 'testimonials' | 'chatbot'>, formState: any) => {
     setIsSaving(true);
     try {
       await updateSection(key, formState);
-      toast.success(`${key.charAt(0).toUpperCase() + key.slice(1)} saved to database!`);
+      toast.success(`Section saved to database!`);
     } catch (error) {
       toast.error("Failed to save changes.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveTrainingPage = async () => {
+    setIsSaving(true);
+    try {
+      await Promise.all([
+        updateSection('trainingPrograms', trainingForm),
+        updateSection('trainingTopics', trainingTopicsForm),
+        updateSection('trainingAudiences', trainingAudiencesForm),
+        updateSection('trainingFormats', trainingFormatsForm),
+        updateSection('trainingGallery', trainingGalleryForm),
+        updateSection('trainingTestimonials', trainingTestimonialsForm),
+      ]);
+      toast.success("All Training Page data saved!");
+    } catch (error) {
+      toast.error("Failed to save training page data.");
     } finally {
       setIsSaving(false);
     }
@@ -206,9 +240,20 @@ const Admin = () => {
   }]);
   const removeIndustry = (id: string) => setIndustriesForm(industriesForm.filter(i => i.id !== id));
 
+  // Training Page Handlers
   const addTrainingProgram = () => setTrainingForm([...trainingForm, { id: crypto.randomUUID(), title: "", duration: "", audience: "", mode: "", iconName: "Code", desc: "" }]);
   const removeTrainingProgram = (id: string) => setTrainingForm(trainingForm.filter(p => p.id !== id));
 
+  const addTrainingFormat = () => setTrainingFormatsForm([...trainingFormatsForm, { id: crypto.randomUUID(), title: "", iconName: "CheckCircle2" }]);
+  const removeTrainingFormat = (id: string) => setTrainingFormatsForm(trainingFormatsForm.filter(f => f.id !== id));
+
+  const addGalleryImage = () => setTrainingGalleryForm([...trainingGalleryForm, ""]);
+  const removeGalleryImage = (index: number) => setTrainingGalleryForm(trainingGalleryForm.filter((_, i) => i !== index));
+
+  const addTrainingTestimonial = () => setTrainingTestimonialsForm([...trainingTestimonialsForm, { id: crypto.randomUUID(), quote: "", author: "", role: "" }]);
+  const removeTrainingTestimonial = (id: string) => setTrainingTestimonialsForm(trainingTestimonialsForm.filter(t => t.id !== id));
+
+  // Other Handlers
   const addTestimonial = () => setTestimonialsForm([...testimonialsForm, { id: crypto.randomUUID(), name: "", company: "", text: "", rating: 5 }]);
   const removeTestimonial = (id: string) => setTestimonialsForm(testimonialsForm.filter(t => t.id !== id));
 
@@ -998,121 +1043,178 @@ const Admin = () => {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
                 <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Training Programs</h2>
-                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage the training programs and workshops offered.</p>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Training Programs Page</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage all content for the Training Programs page.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                  <button onClick={addTrainingProgram} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
-                    <Plus size={18} /> Add Program
-                  </button>
-                  <button disabled={isSaving} onClick={() => handleSaveSection('trainingPrograms', trainingForm)} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
-                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                  <button disabled={isSaving} onClick={handleSaveTrainingPage} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save All Changes
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                {trainingForm.map((p, index) => (
-                  <div key={p.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative">
-                    <button 
-                      onClick={() => removeTrainingProgram(p.id)}
-                      className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                    <div className="space-y-4 pr-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Program Title</label>
-                          <input 
-                            type="text" 
-                            value={p.title || ""}
-                            onChange={(e) => {
-                              const newForm = [...trainingForm];
-                              newForm[index].title = e.target.value;
-                              setTrainingForm(newForm);
-                            }}
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
-                          />
+              {/* 1. Programs List */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">1. Program Cards</h3>
+                  <button onClick={addTrainingProgram} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Program
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                  {trainingForm.map((p, index) => (
+                    <div key={p.id} className="bg-slate-50 rounded-xl border border-slate-200 p-4 relative">
+                      <button onClick={() => removeTrainingProgram(p.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                      <div className="space-y-3 pr-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Title</label>
+                            <input type="text" value={p.title || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].title = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Icon (Lucide)</label>
+                            <input type="text" value={p.iconName || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].iconName = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Duration</label>
+                            <input type="text" value={p.duration || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].duration = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Audience</label>
+                            <input type="text" value={p.audience || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].audience = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Mode</label>
+                            <input type="text" value={p.mode || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].mode = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Icon Name (Lucide)</label>
-                          <input 
-                            type="text" 
-                            value={p.iconName || ""}
-                            onChange={(e) => {
-                              const newForm = [...trainingForm];
-                              newForm[index].iconName = e.target.value;
-                              setTrainingForm(newForm);
-                            }}
-                            placeholder="e.g. Code, MonitorPlay"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
-                          />
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Description</label>
+                          <textarea rows={2} value={p.desc || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].desc = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                         </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Duration</label>
-                          <input 
-                            type="text" 
-                            value={p.duration || ""}
-                            onChange={(e) => {
-                              const newForm = [...trainingForm];
-                              newForm[index].duration = e.target.value;
-                              setTrainingForm(newForm);
-                            }}
-                            placeholder="e.g. 2 Days"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Audience</label>
-                          <input 
-                            type="text" 
-                            value={p.audience || ""}
-                            onChange={(e) => {
-                              const newForm = [...trainingForm];
-                              newForm[index].audience = e.target.value;
-                              setTrainingForm(newForm);
-                            }}
-                            placeholder="e.g. Schools / Colleges"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Mode</label>
-                          <input 
-                            type="text" 
-                            value={p.mode || ""}
-                            onChange={(e) => {
-                              const newForm = [...trainingForm];
-                              newForm[index].mode = e.target.value;
-                              setTrainingForm(newForm);
-                            }}
-                            placeholder="e.g. Hybrid"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
-                        <textarea 
-                          rows={2}
-                          value={p.desc || ""}
-                          onChange={(e) => {
-                            const newForm = [...trainingForm];
-                            newForm[index].desc = e.target.value;
-                            setTrainingForm(newForm);
-                          }}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
-                        />
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
+
+              {/* 2. Topics & Audiences */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">2. Topics & Target Audience</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Topics We Cover (Comma Separated)</label>
+                    <textarea 
+                      rows={4}
+                      value={(trainingTopicsForm || []).join(", ")}
+                      onChange={(e) => setTrainingTopicsForm(e.target.value.split(",").map(s => s.trim()).filter(Boolean))}
+                      placeholder="Web Development, App Development, AI Tools..."
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Who Is This For? (Comma Separated)</label>
+                    <textarea 
+                      rows={4}
+                      value={(trainingAudiencesForm || []).join(", ")}
+                      onChange={(e) => setTrainingAudiencesForm(e.target.value.split(",").map(s => s.trim()).filter(Boolean))}
+                      placeholder="Schools, Colleges, Engineering Students..."
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Delivery Formats */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">3. Program Formats</h3>
+                  <button onClick={addTrainingFormat} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Format
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {trainingFormatsForm.map((f, index) => (
+                    <div key={f.id} className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex items-center gap-3">
+                      <div className="flex-1 space-y-2">
+                        <input 
+                          type="text" 
+                          value={f.title || ""}
+                          onChange={(e) => { const newForm = [...trainingFormatsForm]; newForm[index].title = e.target.value; setTrainingFormatsForm(newForm); }}
+                          placeholder="Format Title"
+                          className="w-full px-2 py-1 rounded border border-slate-300 text-sm text-slate-900 bg-white"
+                        />
+                        <input 
+                          type="text" 
+                          value={f.iconName || ""}
+                          onChange={(e) => { const newForm = [...trainingFormatsForm]; newForm[index].iconName = e.target.value; setTrainingFormatsForm(newForm); }}
+                          placeholder="Lucide Icon Name"
+                          className="w-full px-2 py-1 rounded border border-slate-300 text-xs text-slate-900 bg-white"
+                        />
+                      </div>
+                      <button onClick={() => removeTrainingFormat(f.id)} className="text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Event Highlights (Gallery) */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">4. Event Highlights (Gallery)</h3>
+                  <button onClick={addGalleryImage} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Image
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {trainingGalleryForm.map((img, index) => (
+                    <div key={index} className="bg-slate-50 p-4 rounded-lg border border-slate-200 relative">
+                      <button onClick={() => removeGalleryImage(index)} className="absolute top-2 right-2 text-slate-400 hover:text-red-500 z-10 bg-white rounded-full p-1 shadow-sm"><Trash2 size={14} /></button>
+                      <ImageUploader 
+                        label={`Image ${index + 1}`} 
+                        value={img} 
+                        onChange={(val) => { const newForm = [...trainingGalleryForm]; newForm[index] = val; setTrainingGalleryForm(newForm); }} 
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 5. Institution Testimonials */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">5. Institution Testimonials</h3>
+                  <button onClick={addTrainingTestimonial} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Testimonial
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {trainingTestimonialsForm.map((t, index) => (
+                    <div key={t.id} className="bg-slate-50 rounded-xl border border-slate-200 p-4 relative">
+                      <button onClick={() => removeTrainingTestimonial(t.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                      <div className="space-y-3 pr-6">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Quote</label>
+                          <textarea rows={2} value={t.quote || ""} onChange={(e) => { const newForm = [...trainingTestimonialsForm]; newForm[index].quote = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Author Name</label>
+                            <input type="text" value={t.author || ""} onChange={(e) => { const newForm = [...trainingTestimonialsForm]; newForm[index].author = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Author Role/Institution</label>
+                            <input type="text" value={t.role || ""} onChange={(e) => { const newForm = [...trainingTestimonialsForm]; newForm[index].role = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
             </motion.div>
           )}
 

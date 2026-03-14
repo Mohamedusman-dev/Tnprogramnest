@@ -90,6 +90,19 @@ export type TrainingProgram = {
   desc: string;
 };
 
+export type TrainingFormat = {
+  id: string;
+  title: string;
+  iconName: string;
+};
+
+export type InstitutionTestimonial = {
+  id: string;
+  quote: string;
+  author: string;
+  role: string;
+};
+
 export type SiteData = {
   general: {
     logoUrl: string;
@@ -119,7 +132,15 @@ export type SiteData = {
   products: ProductItem[];
   jobs: JobItem[];
   industries: IndustryItem[];
+  
+  // Training Page Data
   trainingPrograms: TrainingProgram[];
+  trainingTopics: string[];
+  trainingAudiences: string[];
+  trainingFormats: TrainingFormat[];
+  trainingGallery: string[];
+  trainingTestimonials: InstitutionTestimonial[];
+
   testimonials: Testimonial[];
   teamTestimonials: TeamTestimonial[];
   chatbot: ChatbotQA[];
@@ -284,6 +305,33 @@ const defaultData: SiteData = {
     { id: crypto.randomUUID(), title: "Cyber Security Awareness", duration: "1 Day", audience: "Schools / Colleges", mode: "Online / Offline", iconName: "ShieldAlert", desc: "Essential training on internet safety, data privacy, and ethical hacking basics." },
     { id: crypto.randomUUID(), title: "Resume & LinkedIn Building", duration: "1 Day", audience: "Colleges", mode: "Hybrid", iconName: "FileText", desc: "Practical workshop on crafting ATS-friendly resumes and professional LinkedIn profiles." }
   ],
+  trainingTopics: [
+    "Web Development", "App Development", "Full Stack Basics", 
+    "AI Tools for Students", "Career Guidance", "Resume Building", 
+    "Interview Preparation", "Digital Marketing Fundamentals", 
+    "Freelancing Basics", "Cyber Safety Awareness"
+  ],
+  trainingAudiences: [
+    "Schools", "Colleges", "Polytechnic Institutes", 
+    "Engineering Students", "Final Year Students", "Beginners in Tech"
+  ],
+  trainingFormats: [
+    { id: crypto.randomUUID(), title: "One-day Workshop", iconName: "CalendarDays" },
+    { id: crypto.randomUUID(), title: "3-Day Bootcamp", iconName: "Target" },
+    { id: crypto.randomUUID(), title: "Weekly Training Series", iconName: "Clock" },
+    { id: crypto.randomUUID(), title: "Seminar Session", iconName: "Users" },
+    { id: crypto.randomUUID(), title: "Hands-on Lab Session", iconName: "Laptop" },
+  ],
+  trainingGallery: [
+    "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
+    "https://images.unsplash.com/photo-1544531586-fde5298cdd40?w=800&q=80",
+    "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80",
+    "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&q=80"
+  ],
+  trainingTestimonials: [
+    { id: crypto.randomUUID(), quote: "The session was highly engaging and useful for our students. They got to see how real-world coding works.", author: "Dr. Ramesh Kumar", role: "HOD Computer Science, XYZ Engineering College" },
+    { id: crypto.randomUUID(), quote: "A practical workshop that gave our students real exposure to current AI technologies. Highly recommended!", author: "Priya Sharma", role: "Principal, ABC Public School" }
+  ],
   testimonials: [
     { id: crypto.randomUUID(), name: "Sarah Mitchell", company: "NovaTech Inc.", text: "TechNest transformed our outdated platform into a sleek, high-performing web app. Their team's expertise and professionalism exceeded our expectations.", rating: 5 },
     { id: crypto.randomUUID(), name: "James Rodriguez", company: "GreenLeaf Health", text: "Working with TechNest was a game-changer. They delivered our healthcare app on time, within budget, and with exceptional quality.", rating: 5 },
@@ -363,7 +411,14 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         products: getSetting('products', defaultData.products),
         jobs: getSetting('jobs', defaultData.jobs),
         industries: getSetting('industries', defaultData.industries),
+        
         trainingPrograms: getSetting('trainingPrograms', defaultData.trainingPrograms),
+        trainingTopics: getSetting('trainingTopics', defaultData.trainingTopics),
+        trainingAudiences: getSetting('trainingAudiences', defaultData.trainingAudiences),
+        trainingFormats: getSetting('trainingFormats', defaultData.trainingFormats),
+        trainingGallery: getSetting('trainingGallery', defaultData.trainingGallery),
+        trainingTestimonials: getSetting('trainingTestimonials', defaultData.trainingTestimonials),
+        
         footer: getSetting('footer', defaultData.footer),
         teamTestimonials: getSetting('teamTestimonials', defaultData.teamTestimonials),
         testimonials: testimonialsRes.data?.length ? testimonialsRes.data : defaultData.testimonials,
