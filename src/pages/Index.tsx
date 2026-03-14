@@ -52,23 +52,21 @@ const Index = () => {
       <div id="cursor-glow" ref={cursorRef} className="hidden md:block"></div>
 
       <Navbar />
-      <HeroSection />
       
-      <AboutSection />
-      <ServicesSection />
+      {/* Added proper main landmark for accessibility */}
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <ServicesSection />
+        <EcommerceSolutionsSection />
+        <WhyChooseSection />
+        <ProductShowcaseSection />
+        <IndustriesSection />
+        <TransformCTASection />
+        <TestimonialsSection />
+        <ContactSection />
+      </main>
       
-      <EcommerceSolutionsSection />
-      
-      <WhyChooseSection />
-      <ProductShowcaseSection />
-      
-      <IndustriesSection />
-      
-      {/* New White Theme CTA Section */}
-      <TransformCTASection />
-      
-      <TestimonialsSection />
-      <ContactSection />
       <Footer />
       <Chatbot />
       <WhatsAppButton />

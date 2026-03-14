@@ -115,9 +115,14 @@ const Chatbot = () => {
             className={`fixed right-6 z-50 w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.15)] border border-slate-100 hover:shadow-[0_8px_30px_rgb(0,0,0,0.25)] transition-all duration-300 ease-in-out ${bottomPositionClass}`}
             aria-label="Open Chat"
           >
+            {/* Added lazy loading, dimensions, and async decoding */}
             <img 
               src={iconUrl} 
               alt="Chatbot Icon" 
+              loading="lazy"
+              width="32"
+              height="32"
+              decoding="async"
               className="w-8 h-8 object-contain"
             />
           </motion.button>
@@ -148,9 +153,14 @@ const Chatbot = () => {
             <div className="bg-primary p-4 pt-5 flex items-center justify-between text-white shadow-sm z-10 cursor-grab active:cursor-grabbing">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden p-1">
+                  {/* Added lazy loading, dimensions, and async decoding */}
                   <img 
                     src={iconUrl} 
                     alt="Bot" 
+                    loading="lazy"
+                    width="36"
+                    height="36"
+                    decoding="async"
                     className="w-full h-full object-contain"
                   />
                 </div>

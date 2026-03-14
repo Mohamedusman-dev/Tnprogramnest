@@ -155,7 +155,16 @@ const OpenPositionsSection = () => {
                     <div className="flex items-center gap-3 xl:gap-4">
                       <div className="w-10 h-10 xl:w-12 xl:h-12 rounded-xl bg-[#3b82f6] text-white flex items-center justify-center shrink-0 shadow-sm p-2.5">
                         {job.iconUrl ? (
-                           <img src={job.iconUrl} alt="icon" className="w-full h-full object-contain filter brightness-0 invert" />
+                           /* Added lazy loading, dimensions, and async decoding */
+                           <img 
+                             src={job.iconUrl} 
+                             alt={`${job.title} icon`} 
+                             loading="lazy"
+                             width="48"
+                             height="48"
+                             decoding="async"
+                             className="w-full h-full object-contain filter brightness-0 invert" 
+                           />
                         ) : (
                            <Briefcase size={20} strokeWidth={2} />
                         )}

@@ -18,22 +18,17 @@ const Careers = () => {
     <div className="min-h-screen bg-slate-50 text-foreground overflow-x-hidden">
       <Navbar />
       
-      {/* 
-        Added padding-top to account for the fixed navbar since 
-        there is no Hero section on this page to push content down.
-        The wrapper has a dark background to blend with the AboutSection's rounded top if needed,
-        but since AboutSection is light, we use bg-slate-50.
-      */}
-      <div className="pt-28 md:pt-36 bg-slate-50">
-        <AboutSection />
-      </div>
+      {/* Added proper main landmark for accessibility */}
+      <main>
+        <div className="pt-28 md:pt-36 bg-slate-50">
+          <AboutSection />
+        </div>
+        
+        <OpenPositionsSection />
+        <TeamTestimonialsSection />
+        <ContactSection />
+      </main>
       
-      <OpenPositionsSection />
-      
-      {/* New Team Testimonials Section added here */}
-      <TeamTestimonialsSection />
-      
-      <ContactSection />
       <Footer />
       
       <Suspense fallback={null}>

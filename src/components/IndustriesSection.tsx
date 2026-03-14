@@ -98,10 +98,14 @@ const IndustriesSection = () => {
                   transition={{ duration: 0.5, delay: 0.25 }}
                   className="block lg:hidden rounded-xl overflow-hidden mb-6 aspect-[16/10] shadow-[0_4px_12px_rgba(0,0,0,0.1)] group"
                 >
+                  {/* Added lazy loading, dimensions, and async decoding */}
                   <img 
                     src={activeData.image} 
                     alt={activeData.label} 
                     loading="lazy"
+                    width="600"
+                    height="400"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </motion.div>
@@ -166,10 +170,14 @@ const IndustriesSection = () => {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="hidden lg:block rounded-xl overflow-hidden mb-4 aspect-[16/10] shadow-[0_4px_12px_rgba(0,0,0,0.1)] group"
                 >
+                  {/* Added lazy loading, dimensions, and async decoding */}
                   <img 
                     src={activeData.image} 
                     alt={activeData.label} 
                     loading="lazy"
+                    width="600"
+                    height="400"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </motion.div>

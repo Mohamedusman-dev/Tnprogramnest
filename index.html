@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     
-    <!-- Updated Favicon to the provided TechNest logo -->
+    <!-- Optimize Google Fonts Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" />
+    
     <link rel="icon" type="image/webp" href="https://images.dualite.app/e672dfff-bcaf-4170-80dd-44fc387afd17/asset-a7caec02-de4e-43e4-ba60-8444b5e09dfa.webp" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,8 +23,9 @@
     <meta property="og:url" content="https://tn-technest-w738-dualite.netlify.app" />
     <meta name="twitter:card" content="summary_large_image" />
     
-    <!-- FontAwesome for Brand Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Defer non-critical CSS (FontAwesome) to prevent render-blocking -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
     <script type="application/ld+json">
       {

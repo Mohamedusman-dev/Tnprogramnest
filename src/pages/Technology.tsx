@@ -83,6 +83,7 @@ const Technology = () => {
     <div className="min-h-screen bg-[hsl(220,25%,6%)] text-white overflow-x-hidden font-sans flex flex-col">
       <Navbar />
       
+      {/* Main landmark is already present here */}
       <main className="flex-1 relative pt-32 pb-24">
         {/* Background Grid */}
         <div className="absolute inset-0 pointer-events-none z-0" style={{
@@ -145,7 +146,16 @@ const Technology = () => {
                       >
                         <div className="absolute inset-0 rounded-xl bg-[hsl(200,100%,50%)] opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                         <div className={`flex flex-col items-center gap-1 float-${floatIndex}`}>
-                          <img src={item.logo} alt={item.name} className="w-7 h-7 md:w-9 md:h-9 object-contain transition-transform duration-300 group-hover:scale-110 relative z-10" loading="lazy" />
+                          {/* Added lazy loading, dimensions, and async decoding */}
+                          <img 
+                            src={item.logo} 
+                            alt={item.name} 
+                            loading="lazy"
+                            width="36"
+                            height="36"
+                            decoding="async"
+                            className="w-7 h-7 md:w-9 md:h-9 object-contain transition-transform duration-300 group-hover:scale-110 relative z-10" 
+                          />
                           <span className="text-[10px] md:text-xs font-medium text-slate-800 whitespace-nowrap leading-none relative z-10">{item.name}</span>
                         </div>
                       </motion.div>

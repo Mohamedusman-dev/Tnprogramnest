@@ -121,7 +121,16 @@ const TeamTestimonialsSection = () => {
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/10 bg-slate-800 shrink-0">
                       {item.image ? (
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        /* Added lazy loading, dimensions, and async decoding */
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          loading="lazy"
+                          width="48"
+                          height="48"
+                          decoding="async"
+                          className="w-full h-full object-cover" 
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-lg font-bold text-slate-400">
                           {item.name.charAt(0)}

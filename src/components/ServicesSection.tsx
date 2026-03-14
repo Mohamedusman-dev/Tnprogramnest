@@ -43,7 +43,16 @@ const ServicesSection = () => {
             >
               <div className="shrink-0 mt-1 bg-white p-3 rounded-xl shadow-sm border border-slate-100 group-hover:border-primary/30 transition-colors">
                 {s.iconUrl ? (
-                  <img src={s.iconUrl} alt={s.title} className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />
+                  /* Added lazy loading, dimensions, and async decoding */
+                  <img 
+                    src={s.iconUrl} 
+                    alt={s.title} 
+                    loading="lazy"
+                    width="32"
+                    height="32"
+                    decoding="async"
+                    className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" 
+                  />
                 ) : (
                   <Layers className="text-slate-800 w-8 h-8 group-hover:text-primary transition-colors" strokeWidth={1.5} />
                 )}
