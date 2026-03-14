@@ -32,7 +32,7 @@ const ServicesSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {siteData.services.map((s, i) => (
+          {(siteData.services || []).map((s, i) => (
             <motion.div
               key={s.id}
               // Reduced initial y offset from 40 to 20 for smoother mobile appearance

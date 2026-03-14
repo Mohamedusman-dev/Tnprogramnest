@@ -73,6 +73,29 @@ const ImageUploader = ({ value, onChange, label }: { value: string, onChange: (v
   );
 };
 
+// --- Custom Comma Separated Input Component ---
+const CommaSeparatedInput = ({ value, onChange, placeholder, rows = 2, className }: { value: string[], onChange: (val: string[]) => void, placeholder?: string, rows?: number, className?: string }) => {
+  const [str, setStr] = useState((value || []).join(", "));
+  
+  useEffect(() => {
+    const currentArr = str.split(",").map(s => s.trim()).filter(Boolean);
+    const propArr = (value || []).map(s => s.trim()).filter(Boolean);
+    if (currentArr.join(",") !== propArr.join(",")) {
+      setStr((value || []).join(", "));
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    setStr(e.target.value);
+    onChange(e.target.value.split(",").map(s => s.trim()).filter(Boolean));
+  };
+
+  if (rows === 1) {
+    return <input type="text" value={str} onChange={handleChange} placeholder={placeholder} className={className} />;
+  }
+  return <textarea rows={rows} value={str} onChange={handleChange} placeholder={placeholder} className={className} />;
+};
+
 const StatEditor = ({ title, stats, onChange, showIcon = false }: { title: string, stats: any[], onChange: (val: any[]) => void, showIcon?: boolean }) => {
   if (!stats) return null;
   return (
@@ -84,7 +107,7 @@ const StatEditor = ({ title, stats, onChange, showIcon = false }: { title: strin
             <div>
               <label className="block text-[11px] uppercase text-slate-500 font-semibold mb-1">Number Value</label>
               <input type="number" value={stat.value} onChange={(e) => {
-                const newStats = [...stats];
+                const newStats = structuredClone(stats);
                 newStats[index].value = Number(e.target.value);
                 onChange(newStats);
               }} className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 bg-white" />
@@ -92,7 +115,7 @@ const StatEditor = ({ title, stats, onChange, showIcon = false }: { title: strin
             <div>
               <label className="block text-[11px] uppercase text-slate-500 font-semibold mb-1">Suffix (e.g. +, %)</label>
               <input type="text" value={stat.suffix} onChange={(e) => {
-                const newStats = [...stats];
+                const newStats = structuredClone(stats);
                 newStats[index].suffix = e.target.value;
                 onChange(newStats);
               }} className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 bg-white" />
@@ -100,7 +123,7 @@ const StatEditor = ({ title, stats, onChange, showIcon = false }: { title: strin
             <div>
               <label className="block text-[11px] uppercase text-slate-500 font-semibold mb-1">Label</label>
               <input type="text" value={stat.label} onChange={(e) => {
-                const newStats = [...stats];
+                const newStats = structuredClone(stats);
                 newStats[index].label = e.target.value;
                 onChange(newStats);
               }} className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 bg-white" />
@@ -109,7 +132,7 @@ const StatEditor = ({ title, stats, onChange, showIcon = false }: { title: strin
               <div>
                 <label className="block text-[11px] uppercase text-slate-500 font-semibold mb-1">Icon (Lucide)</label>
                 <input type="text" value={stat.icon || ""} onChange={(e) => {
-                  const newStats = [...stats];
+                  const newStats = structuredClone(stats);
                   newStats[index].icon = e.target.value;
                   onChange(newStats);
                 }} className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 bg-white" />
@@ -585,7 +608,7 @@ const Admin = () => {
                           value={footerForm.social?.[platform as keyof typeof footerForm.social] || ""}
                           onChange={(e) => setFooterForm({
                             ...footerForm, 
-                            social: { ...footerForm.social, [platform]: e.target.value }
+                            social: { ...(footerForm.social || {}), [platform]: e.target.value }
                           })}
                           placeholder={platform === 'whatsapp' ? "e.g. 919876543210 (with country code)" : `https://${platform}.com/yourpage`}
                           className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
@@ -632,13 +655,10 @@ const Admin = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1.5">Expertise Tags (Comma Separated)</label>
-                    <textarea 
+                    <CommaSeparatedInput 
                       rows={3}
-                      value={(footerForm.tags || []).join(", ")}
-                      onChange={(e) => setFooterForm({
-                        ...footerForm, 
-                        tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean)
-                      })}
+                      value={footerForm.tags || []}
+                      onChange={(val) => setFooterForm({ ...footerForm, tags: val })}
                       placeholder="Web Dev, Mobile Apps, UI/UX, React..."
                       className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                     />
@@ -781,7 +801,7 @@ const Admin = () => {
                           type="text" 
                           value={s.title || ""}
                           onChange={(e) => {
-                            const newForm = [...servicesForm];
+                            const newForm = structuredClone(servicesForm);
                             newForm[index].title = e.target.value;
                             setServicesForm(newForm);
                           }}
@@ -794,7 +814,7 @@ const Admin = () => {
                           rows={2}
                           value={s.desc || ""}
                           onChange={(e) => {
-                            const newForm = [...servicesForm];
+                            const newForm = structuredClone(servicesForm);
                             newForm[index].desc = e.target.value;
                             setServicesForm(newForm);
                           }}
@@ -805,7 +825,7 @@ const Admin = () => {
                         label="Service Icon" 
                         value={s.iconUrl} 
                         onChange={(val) => {
-                          const newForm = [...servicesForm];
+                          const newForm = structuredClone(servicesForm);
                           newForm[index].iconUrl = val;
                           setServicesForm(newForm);
                         }} 
@@ -852,7 +872,7 @@ const Admin = () => {
                             type="text" 
                             value={p.title || ""}
                             onChange={(e) => {
-                              const newForm = [...productsForm];
+                              const newForm = structuredClone(productsForm);
                               newForm[index].title = e.target.value;
                               setProductsForm(newForm);
                             }}
@@ -864,7 +884,7 @@ const Admin = () => {
                           <select 
                             value={p.category || "left"}
                             onChange={(e) => {
-                              const newForm = [...productsForm];
+                              const newForm = structuredClone(productsForm);
                               newForm[index].category = e.target.value as 'left' | 'right';
                               setProductsForm(newForm);
                             }}
@@ -881,7 +901,7 @@ const Admin = () => {
                           type="text"
                           value={p.desc || ""}
                           onChange={(e) => {
-                            const newForm = [...productsForm];
+                            const newForm = structuredClone(productsForm);
                             newForm[index].desc = e.target.value;
                             setProductsForm(newForm);
                           }}
@@ -892,7 +912,7 @@ const Admin = () => {
                         label="Product Icon" 
                         value={p.iconUrl} 
                         onChange={(val) => {
-                          const newForm = [...productsForm];
+                          const newForm = structuredClone(productsForm);
                           newForm[index].iconUrl = val;
                           setProductsForm(newForm);
                         }} 
@@ -943,7 +963,7 @@ const Admin = () => {
                               type="text" 
                               value={ind.label || ""}
                               onChange={(e) => {
-                                const newForm = [...industriesForm];
+                                const newForm = structuredClone(industriesForm);
                                 newForm[index].label = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
@@ -956,7 +976,7 @@ const Admin = () => {
                               rows={2}
                               value={ind.description || ""}
                               onChange={(e) => {
-                                const newForm = [...industriesForm];
+                                const newForm = structuredClone(industriesForm);
                                 newForm[index].description = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
@@ -969,7 +989,7 @@ const Admin = () => {
                             label="Industry Image" 
                             value={ind.image} 
                             onChange={(val) => {
-                              const newForm = [...industriesForm];
+                              const newForm = structuredClone(industriesForm);
                               newForm[index].image = val;
                               setIndustriesForm(newForm);
                             }} 
@@ -977,12 +997,12 @@ const Admin = () => {
                         </div>
                         <div className="mt-4">
                           <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Bullet Points (Comma Separated)</label>
-                          <textarea 
+                          <CommaSeparatedInput 
                             rows={2}
-                            value={(ind.bullets || []).join(", ")}
-                            onChange={(e) => {
-                              const newForm = [...industriesForm];
-                              newForm[index].bullets = e.target.value.split(",").map(b => b.trim()).filter(Boolean);
+                            value={ind.bullets || []}
+                            onChange={(val) => {
+                              const newForm = structuredClone(industriesForm);
+                              newForm[index].bullets = val;
                               setIndustriesForm(newForm);
                             }}
                             placeholder="e.g. Custom storefront, Payment integration, Analytics"
@@ -1001,7 +1021,7 @@ const Admin = () => {
                               type="text" 
                               value={ind.caseStudy?.title || ""}
                               onChange={(e) => {
-                                const newForm = [...industriesForm];
+                                const newForm = structuredClone(industriesForm);
                                 newForm[index].caseStudy.title = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
@@ -1014,7 +1034,7 @@ const Admin = () => {
                               rows={2}
                               value={ind.caseStudy?.description || ""}
                               onChange={(e) => {
-                                const newForm = [...industriesForm];
+                                const newForm = structuredClone(industriesForm);
                                 newForm[index].caseStudy.description = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
@@ -1031,7 +1051,7 @@ const Admin = () => {
                                   type="text" 
                                   value={stat.label || ""}
                                   onChange={(e) => {
-                                    const newForm = [...industriesForm];
+                                    const newForm = structuredClone(industriesForm);
                                     newForm[index].caseStudy.stats[statIndex].label = e.target.value;
                                     setIndustriesForm(newForm);
                                   }}
@@ -1045,7 +1065,7 @@ const Admin = () => {
                                   type="text" 
                                   value={stat.value || ""}
                                   onChange={(e) => {
-                                    const newForm = [...industriesForm];
+                                    const newForm = structuredClone(industriesForm);
                                     newForm[index].caseStudy.stats[statIndex].value = e.target.value;
                                     setIndustriesForm(newForm);
                                   }}
@@ -1068,7 +1088,7 @@ const Admin = () => {
                               rows={2}
                               value={ind.testimonial?.quote || ""}
                               onChange={(e) => {
-                                const newForm = [...industriesForm];
+                                const newForm = structuredClone(industriesForm);
                                 newForm[index].testimonial.quote = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
@@ -1081,7 +1101,7 @@ const Admin = () => {
                               type="text" 
                               value={ind.testimonial?.author || ""}
                               onChange={(e) => {
-                                const newForm = [...industriesForm];
+                                const newForm = structuredClone(industriesForm);
                                 newForm[index].testimonial.author = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
@@ -1094,7 +1114,7 @@ const Admin = () => {
                               type="text" 
                               value={ind.testimonial?.role || ""}
                               onChange={(e) => {
-                                const newForm = [...industriesForm];
+                                const newForm = structuredClone(industriesForm);
                                 newForm[index].testimonial.role = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
@@ -1142,30 +1162,30 @@ const Admin = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Title</label>
-                            <input type="text" value={p.title || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].title = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                            <input type="text" value={p.title || ""} onChange={(e) => { const newForm = structuredClone(trainingForm); newForm[index].title = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Icon (Lucide)</label>
-                            <input type="text" value={p.iconName || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].iconName = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                            <input type="text" value={p.iconName || ""} onChange={(e) => { const newForm = structuredClone(trainingForm); newForm[index].iconName = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                           </div>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           <div>
                             <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Duration</label>
-                            <input type="text" value={p.duration || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].duration = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                            <input type="text" value={p.duration || ""} onChange={(e) => { const newForm = structuredClone(trainingForm); newForm[index].duration = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Audience</label>
-                            <input type="text" value={p.audience || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].audience = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                            <input type="text" value={p.audience || ""} onChange={(e) => { const newForm = structuredClone(trainingForm); newForm[index].audience = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Mode</label>
-                            <input type="text" value={p.mode || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].mode = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                            <input type="text" value={p.mode || ""} onChange={(e) => { const newForm = structuredClone(trainingForm); newForm[index].mode = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                           </div>
                         </div>
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Description</label>
-                          <textarea rows={2} value={p.desc || ""} onChange={(e) => { const newForm = [...trainingForm]; newForm[index].desc = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          <textarea rows={2} value={p.desc || ""} onChange={(e) => { const newForm = structuredClone(trainingForm); newForm[index].desc = e.target.value; setTrainingForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                         </div>
                       </div>
                     </div>
@@ -1179,20 +1199,20 @@ const Admin = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Topics We Cover (Comma Separated)</label>
-                    <textarea 
+                    <CommaSeparatedInput 
                       rows={4}
-                      value={(trainingTopicsForm || []).join(", ")}
-                      onChange={(e) => setTrainingTopicsForm(e.target.value.split(",").map(s => s.trim()).filter(Boolean))}
+                      value={trainingTopicsForm || []}
+                      onChange={(val) => setTrainingTopicsForm(val)}
                       placeholder="Web Development, App Development, AI Tools..."
                       className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Who Is This For? (Comma Separated)</label>
-                    <textarea 
+                    <CommaSeparatedInput 
                       rows={4}
-                      value={(trainingAudiencesForm || []).join(", ")}
-                      onChange={(e) => setTrainingAudiencesForm(e.target.value.split(",").map(s => s.trim()).filter(Boolean))}
+                      value={trainingAudiencesForm || []}
+                      onChange={(val) => setTrainingAudiencesForm(val)}
                       placeholder="Schools, Colleges, Engineering Students..."
                       className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                     />
@@ -1215,14 +1235,14 @@ const Admin = () => {
                         <input 
                           type="text" 
                           value={f.title || ""}
-                          onChange={(e) => { const newForm = [...trainingFormatsForm]; newForm[index].title = e.target.value; setTrainingFormatsForm(newForm); }}
+                          onChange={(e) => { const newForm = structuredClone(trainingFormatsForm); newForm[index].title = e.target.value; setTrainingFormatsForm(newForm); }}
                           placeholder="Format Title"
                           className="w-full px-2 py-1 rounded border border-slate-300 text-sm text-slate-900 bg-white"
                         />
                         <input 
                           type="text" 
                           value={f.iconName || ""}
-                          onChange={(e) => { const newForm = [...trainingFormatsForm]; newForm[index].iconName = e.target.value; setTrainingFormatsForm(newForm); }}
+                          onChange={(e) => { const newForm = structuredClone(trainingFormatsForm); newForm[index].iconName = e.target.value; setTrainingFormatsForm(newForm); }}
                           placeholder="Lucide Icon Name"
                           className="w-full px-2 py-1 rounded border border-slate-300 text-xs text-slate-900 bg-white"
                         />
@@ -1270,16 +1290,16 @@ const Admin = () => {
                       <div className="space-y-3 pr-6">
                         <div>
                           <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Quote</label>
-                          <textarea rows={2} value={t.quote || ""} onChange={(e) => { const newForm = [...trainingTestimonialsForm]; newForm[index].quote = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          <textarea rows={2} value={t.quote || ""} onChange={(e) => { const newForm = structuredClone(trainingTestimonialsForm); newForm[index].quote = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Author Name</label>
-                            <input type="text" value={t.author || ""} onChange={(e) => { const newForm = [...trainingTestimonialsForm]; newForm[index].author = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                            <input type="text" value={t.author || ""} onChange={(e) => { const newForm = structuredClone(trainingTestimonialsForm); newForm[index].author = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Author Role/Institution</label>
-                            <input type="text" value={t.role || ""} onChange={(e) => { const newForm = [...trainingTestimonialsForm]; newForm[index].role = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                            <input type="text" value={t.role || ""} onChange={(e) => { const newForm = structuredClone(trainingTestimonialsForm); newForm[index].role = e.target.value; setTrainingTestimonialsForm(newForm); }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
                           </div>
                         </div>
                       </div>
@@ -1326,7 +1346,7 @@ const Admin = () => {
                             type="text" 
                             value={j.title || ""}
                             onChange={(e) => {
-                              const newForm = [...jobsForm];
+                              const newForm = structuredClone(jobsForm);
                               newForm[index].title = e.target.value;
                               setJobsForm(newForm);
                             }}
@@ -1339,7 +1359,7 @@ const Admin = () => {
                             type="text" 
                             value={j.category || ""}
                             onChange={(e) => {
-                              const newForm = [...jobsForm];
+                              const newForm = structuredClone(jobsForm);
                               newForm[index].category = e.target.value;
                               setJobsForm(newForm);
                             }}
@@ -1356,7 +1376,7 @@ const Admin = () => {
                             type="text" 
                             value={j.salary || ""}
                             onChange={(e) => {
-                              const newForm = [...jobsForm];
+                              const newForm = structuredClone(jobsForm);
                               newForm[index].salary = e.target.value;
                               setJobsForm(newForm);
                             }}
@@ -1370,7 +1390,7 @@ const Admin = () => {
                             type="text" 
                             value={j.type || ""}
                             onChange={(e) => {
-                              const newForm = [...jobsForm];
+                              const newForm = structuredClone(jobsForm);
                               newForm[index].type = e.target.value;
                               setJobsForm(newForm);
                             }}
@@ -1384,7 +1404,7 @@ const Admin = () => {
                             type="text" 
                             value={j.location || ""}
                             onChange={(e) => {
-                              const newForm = [...jobsForm];
+                              const newForm = structuredClone(jobsForm);
                               newForm[index].location = e.target.value;
                               setJobsForm(newForm);
                             }}
@@ -1400,7 +1420,7 @@ const Admin = () => {
                           type="url" 
                           value={j.applyLink || ""}
                           onChange={(e) => {
-                            const newForm = [...jobsForm];
+                            const newForm = structuredClone(jobsForm);
                             newForm[index].applyLink = e.target.value;
                             setJobsForm(newForm);
                           }}
@@ -1415,7 +1435,7 @@ const Admin = () => {
                           rows={2}
                           value={j.desc || ""}
                           onChange={(e) => {
-                            const newForm = [...jobsForm];
+                            const newForm = structuredClone(jobsForm);
                             newForm[index].desc = e.target.value;
                             setJobsForm(newForm);
                           }}
@@ -1425,12 +1445,12 @@ const Admin = () => {
 
                       <div>
                         <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Requirements (Comma Separated)</label>
-                        <textarea 
+                        <CommaSeparatedInput 
                           rows={3}
-                          value={(j.requirements || []).join(", ")}
-                          onChange={(e) => {
-                            const newForm = [...jobsForm];
-                            newForm[index].requirements = e.target.value.split(",").map(req => req.trim()).filter(Boolean);
+                          value={j.requirements || []}
+                          onChange={(val) => {
+                            const newForm = structuredClone(jobsForm);
+                            newForm[index].requirements = val;
                             setJobsForm(newForm);
                           }}
                           placeholder="e.g. 5+ years experience, React Expert, Strong Python"
@@ -1442,7 +1462,7 @@ const Admin = () => {
                         label="Job Icon" 
                         value={j.iconUrl} 
                         onChange={(val) => {
-                          const newForm = [...jobsForm];
+                          const newForm = structuredClone(jobsForm);
                           newForm[index].iconUrl = val;
                           setJobsForm(newForm);
                         }} 
@@ -1489,7 +1509,7 @@ const Admin = () => {
                             type="text" 
                             value={t.name || ""}
                             onChange={(e) => {
-                              const newForm = [...teamTestimonialsForm];
+                              const newForm = structuredClone(teamTestimonialsForm);
                               newForm[index].name = e.target.value;
                               setTeamTestimonialsForm(newForm);
                             }}
@@ -1502,7 +1522,7 @@ const Admin = () => {
                             type="text" 
                             value={t.role || ""}
                             onChange={(e) => {
-                              const newForm = [...teamTestimonialsForm];
+                              const newForm = structuredClone(teamTestimonialsForm);
                               newForm[index].role = e.target.value;
                               setTeamTestimonialsForm(newForm);
                             }}
@@ -1516,7 +1536,7 @@ const Admin = () => {
                           rows={3}
                           value={t.quote || ""}
                           onChange={(e) => {
-                            const newForm = [...teamTestimonialsForm];
+                            const newForm = structuredClone(teamTestimonialsForm);
                             newForm[index].quote = e.target.value;
                             setTeamTestimonialsForm(newForm);
                           }}
@@ -1531,7 +1551,7 @@ const Admin = () => {
                           max="5"
                           value={t.rating || 5}
                           onChange={(e) => {
-                            const newForm = [...teamTestimonialsForm];
+                            const newForm = structuredClone(teamTestimonialsForm);
                             newForm[index].rating = parseInt(e.target.value) || 5;
                             setTeamTestimonialsForm(newForm);
                           }}
@@ -1542,7 +1562,7 @@ const Admin = () => {
                         label="Profile Image" 
                         value={t.image} 
                         onChange={(val) => {
-                          const newForm = [...teamTestimonialsForm];
+                          const newForm = structuredClone(teamTestimonialsForm);
                           newForm[index].image = val;
                           setTeamTestimonialsForm(newForm);
                         }} 
@@ -1584,12 +1604,12 @@ const Admin = () => {
                     <div className="grid gap-4 pr-8">
                       <div>
                         <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Keywords (comma separated)</label>
-                        <input 
-                          type="text" 
-                          value={(qa.keywords || []).join(", ")}
-                          onChange={(e) => {
-                            const newForm = [...chatbotForm];
-                            newForm[index].keywords = e.target.value.split(",").map(k => k.trim());
+                        <CommaSeparatedInput 
+                          rows={1}
+                          value={qa.keywords || []}
+                          onChange={(val) => {
+                            const newForm = structuredClone(chatbotForm);
+                            newForm[index].keywords = val;
                             setChatbotForm(newForm);
                           }}
                           placeholder="e.g. price, cost, quote"
@@ -1602,7 +1622,7 @@ const Admin = () => {
                           rows={2}
                           value={qa.answer || ""}
                           onChange={(e) => {
-                            const newForm = [...chatbotForm];
+                            const newForm = structuredClone(chatbotForm);
                             newForm[index].answer = e.target.value;
                             setChatbotForm(newForm);
                           }}
@@ -1651,7 +1671,7 @@ const Admin = () => {
                             type="text" 
                             value={t.name || ""}
                             onChange={(e) => {
-                              const newForm = [...testimonialsForm];
+                              const newForm = structuredClone(testimonialsForm);
                               newForm[index].name = e.target.value;
                               setTestimonialsForm(newForm);
                             }}
@@ -1664,7 +1684,7 @@ const Admin = () => {
                             type="text" 
                             value={t.company || ""}
                             onChange={(e) => {
-                              const newForm = [...testimonialsForm];
+                              const newForm = structuredClone(testimonialsForm);
                               newForm[index].company = e.target.value;
                               setTestimonialsForm(newForm);
                             }}
@@ -1679,7 +1699,7 @@ const Admin = () => {
                             max="5"
                             value={t.rating || 5}
                             onChange={(e) => {
-                              const newForm = [...testimonialsForm];
+                              const newForm = structuredClone(testimonialsForm);
                               newForm[index].rating = parseInt(e.target.value) || 5;
                               setTestimonialsForm(newForm);
                             }}
@@ -1693,7 +1713,7 @@ const Admin = () => {
                           rows={3}
                           value={t.text || ""}
                           onChange={(e) => {
-                            const newForm = [...testimonialsForm];
+                            const newForm = structuredClone(testimonialsForm);
                             newForm[index].text = e.target.value;
                             setTestimonialsForm(newForm);
                           }}

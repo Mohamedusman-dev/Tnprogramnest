@@ -51,7 +51,7 @@ const TransformCTASection = () => {
           </button>
           
           <a
-            href={`tel:${siteData.general.phone.replace(/[^0-9+]/g, '')}`}
+            href={`tel:${(siteData.general.phone || '').replace(/[^0-9+]/g, '')}`}
             className="w-full sm:w-auto bg-white border-2 border-primary text-primary hover:bg-primary/5 px-8 py-3.5 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-1"
           >
             <PhoneCall size={18} /> Call Us Now

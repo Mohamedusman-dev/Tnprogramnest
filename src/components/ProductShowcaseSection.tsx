@@ -7,8 +7,9 @@ const ProductShowcaseSection = () => {
   const { ref, isVisible } = useScrollReveal(0.1);
   const { siteData } = useSiteData();
 
-  const leftProducts = siteData.products.filter((p) => p.category === "left");
-  const rightProducts = siteData.products.filter((p) => p.category === "right");
+  const products = siteData.products || [];
+  const leftProducts = products.filter((p) => p.category === "left");
+  const rightProducts = products.filter((p) => p.category === "right");
 
   const defaultLeft = [
     { id: "1", title: "Software Development", desc: "Custom software solutions tailored to your specific business needs and workflows." },

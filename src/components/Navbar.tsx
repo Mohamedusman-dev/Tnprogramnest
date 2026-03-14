@@ -106,7 +106,7 @@ const Navbar = () => {
             <a href={`mailto:${siteData.general.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors">
               <Mail size={14} /> <span className="hidden sm:inline">{siteData.general.email}</span>
             </a>
-            <a href={`tel:${siteData.general.phone.replace(/[^0-9+]/g, '')}`} className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <a href={`tel:${(siteData.general.phone || '').replace(/[^0-9+]/g, '')}`} className="flex items-center gap-1.5 hover:text-primary transition-colors">
               <Phone size={14} /> {siteData.general.phone}
             </a>
           </div>

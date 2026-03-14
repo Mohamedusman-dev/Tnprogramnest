@@ -138,7 +138,7 @@ const ContactSection = () => {
           >
             {[
               { icon: Mail, title: "Email Us", value: siteData.general.email, href: `mailto:${siteData.general.email}` },
-              { icon: Phone, title: "Call Us", value: siteData.general.phone, href: `tel:${siteData.general.phone.replace(/[^0-9+]/g, '')}` },
+              { icon: Phone, title: "Call Us", value: siteData.general.phone, href: `tel:${(siteData.general.phone || '').replace(/[^0-9+]/g, '')}` },
               { icon: MapPin, title: "Visit Us", value: siteData.general.address, href: null },
             ].map((c) => (
               <div key={c.title} className="bg-white p-4 sm:p-5 flex items-start gap-4 rounded-xl shadow-md border border-slate-100">
