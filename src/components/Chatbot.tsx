@@ -3,16 +3,6 @@ import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { X, Send } from "lucide-react";
 import { useSiteData } from "@/context/SiteDataContext";
 
-const suggestions = [
-  "What services do you offer?",
-  "How much does it cost?",
-  "Do you build mobile apps?",
-  "Can I hire developers?",
-  "What is your tech stack?",
-  "How long does a project take?",
-  "How can I contact you?"
-];
-
 const Chatbot = () => {
   const { siteData } = useSiteData(); 
   const [isOpen, setIsOpen] = useState(false);
@@ -24,6 +14,17 @@ const Chatbot = () => {
     { id: 1, text: "Hi there! 👋 I'm the TechNest assistant. How can I help you today?", isBot: true }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Use dynamic suggestions from database or fallback to defaults
+  const suggestions = siteData.general.chatbotSuggestions || [
+    "What services do you offer?",
+    "How much does it cost?",
+    "Do you build mobile apps?",
+    "Can I hire developers?",
+    "What is your tech stack?",
+    "How long does a project take?",
+    "How can I contact you?"
+  ];
 
   // Scroll detection for both button position and auto-open logic
   useEffect(() => {
@@ -178,44 +179,55 @@ const Chatbot = () => {
               </button>
             </div>
 
-            <div className="h-[320px] overflow-y-auto p-4 bg-slate-50 flex flex-col gap-4 touch-pan-y">
-              {messages.map((msg) => (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  key={msg.id} 
-                  className={`flex ${msg.isBot ? "justify-start" : "justify-end"}`}
-                >
-                  <div
-                    className={`max-w-[85%] p-3.5 text-[13px] leading-relaxed shadow-sm ${
-                      msg.isBot
-                        ? "bg-white border border-slate-100 text-slate-800 rounded-2xl rounded-tl-sm"
-                        : "bg-primary text-white rounded-2xl rounded-tr-sm"
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                </motion.div>
-              ))}
-              
-              {isTyping && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-start"
-                >
-                  <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-4 flex gap-1.5 items-center shadow-sm">
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                  </div>
-                </motion.div>
+            <div className="relative h-[320px] bg-slate-50">
+              {/* Optional Background Image */}
+              {siteData.general.chatbotBgUrl && (
+                <div 
+                  className="absolute inset-0 z-0 opacity-15 pointer-events-none bg-center bg-no-repeat bg-contain m-8"
+                  style={{ backgroundImage: `url(${siteData.general.chatbotBgUrl})` }}
+                />
               )}
-              <div ref={messagesEndRef} />
+              
+              {/* Scrollable Chat Area */}
+              <div className="absolute inset-0 z-10 overflow-y-auto p-4 flex flex-col gap-4 touch-pan-y">
+                {messages.map((msg) => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    key={msg.id} 
+                    className={`flex ${msg.isBot ? "justify-start" : "justify-end"}`}
+                  >
+                    <div
+                      className={`max-w-[85%] p-3.5 text-[13px] leading-relaxed shadow-sm ${
+                        msg.isBot
+                          ? "bg-white/95 backdrop-blur-sm border border-slate-100 text-slate-800 rounded-2xl rounded-tl-sm"
+                          : "bg-primary text-white rounded-2xl rounded-tr-sm"
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
+                  </motion.div>
+                ))}
+                
+                {isTyping && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex justify-start"
+                  >
+                    <div className="bg-white/95 backdrop-blur-sm border border-slate-100 rounded-2xl rounded-tl-sm p-4 flex gap-1.5 items-center shadow-sm">
+                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </motion.div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
             </div>
 
-            <div className="px-3 py-2.5 bg-white border-t border-slate-100 flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="px-3 py-2.5 bg-white border-t border-slate-100 flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative z-20">
               {suggestions.map((s, i) => (
                 <button
                   key={i}
@@ -227,7 +239,7 @@ const Chatbot = () => {
               ))}
             </div>
 
-            <form onSubmit={handleSend} className="p-3 bg-white border-t border-slate-100 flex gap-2 items-center">
+            <form onSubmit={handleSend} className="p-3 bg-white border-t border-slate-100 flex gap-2 items-center relative z-20">
               <input
                 type="text"
                 value={input}

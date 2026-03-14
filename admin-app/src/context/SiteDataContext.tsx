@@ -114,6 +114,8 @@ export type SiteData = {
   general: {
     logoUrl: string;
     chatbotIconUrl?: string;
+    chatbotBgUrl?: string;
+    chatbotSuggestions?: string[];
     email: string;
     phone: string;
     address: string;
@@ -175,6 +177,16 @@ const defaultData: SiteData = {
   general: {
     logoUrl: "https://images.dualite.app/a6d4e8ab-0637-401c-aa19-5a07a216a4c1/asset-4b236b1b-285d-4dab-8f78-adb7c236d581.webp",
     chatbotIconUrl: "https://cdn.iconscout.com/icon/premium/png-512-thumb/chatbot-icon-svg-download-png-7186374.png?f=webp&w=512",
+    chatbotBgUrl: "https://images.dualite.app/a3049960-8f3c-4a3e-9330-d77f518d0627/asset-ba1c0277-0885-44dd-a846-710add5dc689.webp",
+    chatbotSuggestions: [
+      "What services do you offer?",
+      "How much does it cost?",
+      "Do you build mobile apps?",
+      "Can I hire developers?",
+      "What is your tech stack?",
+      "How long does a project take?",
+      "How can I contact you?"
+    ],
     email: "hello@technest.dev",
     phone: "+1 (555) 123-4567",
     address: "123 Innovation Drive, Suite 400\nSan Francisco, CA 94105",

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { 
   LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
-  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap
+  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, Mail, Lock
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -282,7 +282,8 @@ const Admin = () => {
     setIsSaving(true);
     try {
       await updateChatbot(chatbotForm);
-      toast.success("Chatbot knowledge saved to database!");
+      await updateSection('general', generalForm); // Save the general settings (like suggestions and bg image)
+      toast.success("Chatbot settings and knowledge saved!");
     } catch (error) {
       toast.error("Failed to save chatbot data.");
     } finally {
@@ -353,64 +354,125 @@ const Admin = () => {
   if (authLoading || (!session && !authLoading && isLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#5B7cFA]" />
       </div>
     );
   }
 
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-sans">
-        <div className="absolute inset-0 bg-slate-900">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent"></div>
-        </div>
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 bg-white/10 backdrop-blur-xl p-6 sm:p-10 rounded-3xl shadow-2xl border border-white/20 w-full max-w-md mx-4"
-        >
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-md border border-primary/30 shadow-inner">
-              <LayoutDashboard className="text-primary" size={32} />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Admin Portal</h1>
-            <p className="text-slate-300 text-sm mt-2">Sign in to manage your website</p>
+      <div className="min-h-screen flex flex-col md:flex-row font-sans bg-slate-50">
+        {/* Left Panel - Blue Design */}
+        <div className="hidden md:flex md:w-1/2 bg-[#5B7cFA] text-white p-12 flex-col justify-center relative overflow-hidden">
+          
+          {/* Decorative Elements mimicking the reference image */}
+          <div className="absolute top-12 left-12 grid grid-cols-3 gap-2 opacity-30">
+            {[...Array(9)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-white rounded-full"></div>)}
           </div>
+          <div className="absolute top-0 left-1/4 w-32 h-64 bg-white/10 rounded-b-full blur-sm transform -translate-y-1/2"></div>
+          <div className="absolute top-20 right-20 w-12 h-12 border-4 border-white/20 rounded-full"></div>
+          
+          <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full border border-white/30 flex items-center justify-center">
+            <div className="w-40 h-40 rounded-full border border-white/20 flex items-center justify-center">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-cyan-300 to-blue-500 shadow-lg shadow-cyan-400/50"></div>
+            </div>
+          </div>
+          <div className="absolute bottom-32 left-8 w-6 h-6 bg-cyan-300 rounded-full shadow-md shadow-cyan-300/50"></div>
+          <div className="absolute bottom-48 left-48 w-4 h-4 bg-cyan-200 rounded-full shadow-md shadow-cyan-200/50"></div>
+          <div className="absolute bottom-20 left-64 text-white/50 text-2xl font-bold rotate-45">+</div>
 
-          <form onSubmit={handleAuth} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-slate-200 mb-1.5">Email Address</label>
-              <input 
-                type="email" 
-                required
-                value={email || ""}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all"
-                placeholder="admin@technest.dev"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-200 mb-1.5">Password</label>
-              <input 
-                type="password" 
-                required
-                value={password || ""}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all"
-                placeholder="••••••••"
-              />
-            </div>
-            <button 
-              type="submit" 
-              disabled={authLoading}
-              className="w-full bg-primary hover:bg-primary/90 text-white py-3.5 rounded-xl font-semibold transition-all disabled:opacity-70 flex justify-center items-center shadow-lg shadow-primary/25 mt-4"
+          <div className="relative z-10 pl-8">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-5xl lg:text-6xl font-bold mb-6 leading-[1.1]"
             >
-              {authLoading ? <Loader2 size={20} className="animate-spin" /> : "Sign In"}
-            </button>
-          </form>
-        </motion.div>
+              Admin<br/>Portal
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-blue-100 text-lg max-w-md"
+            >
+              Manage your website content, settings, and view user interactions securely.
+            </motion.p>
+          </div>
+        </div>
+
+        {/* Right Panel - White Login Form */}
+        <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white relative">
+          
+          {/* Mobile decorative header (only visible on small screens) */}
+          <div className="md:hidden absolute top-0 left-0 w-full h-48 bg-[#5B7cFA] rounded-b-[3rem] -z-10"></div>
+
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="w-full max-w-[400px] bg-white md:bg-transparent p-8 md:p-0 rounded-3xl md:rounded-none shadow-xl md:shadow-none mt-16 md:mt-0"
+          >
+            <div className="text-center mb-10">
+              <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-blue-100">
+                <LayoutDashboard size={40} className="text-[#5B7cFA]" />
+              </div>
+              <h2 className="text-2xl font-semibold text-slate-800">Hello ! Welcome back</h2>
+            </div>
+
+            <form onSubmit={handleAuth} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-600 mb-2">Email</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-[#5B7cFA]" />
+                  </div>
+                  <input 
+                    type="email" 
+                    required
+                    value={email || ""}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-[#5B7cFA]/20 focus:border-[#5B7cFA] outline-none transition-all bg-slate-50/50"
+                    placeholder="Enter your email address"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-600 mb-2">Password</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-[#5B7cFA]" />
+                  </div>
+                  <input 
+                    type="password" 
+                    required
+                    value={password || ""}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-[#5B7cFA]/20 focus:border-[#5B7cFA] outline-none transition-all bg-slate-50/50"
+                    placeholder="••••••••••••"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#5B7cFA] focus:ring-[#5B7cFA]" />
+                  <span className="text-slate-500 group-hover:text-slate-700 transition-colors">Remember me</span>
+                </label>
+                <button type="button" onClick={() => toast.info("Please contact the super admin to reset your password.")} className="text-[#5B7cFA] hover:underline font-medium">
+                  Reset Password!
+                </button>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={authLoading}
+                className="w-full bg-[#5B7cFA] hover:bg-[#4a6be0] text-white py-4 rounded-xl font-semibold transition-all disabled:opacity-70 flex justify-center items-center shadow-lg shadow-[#5B7cFA]/30 mt-2"
+              >
+                {authLoading ? <Loader2 size={20} className="animate-spin" /> : "Login"}
+              </button>
+            </form>
+          </motion.div>
+        </div>
       </div>
     );
   }
@@ -1579,8 +1641,8 @@ const Admin = () => {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
                 <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Chatbot Knowledge Base</h2>
-                  <p className="text-slate-500 mt-1 text-sm md:text-base">Train your AI assistant with questions and answers.</p>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Chatbot Settings</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage your AI assistant's appearance and knowledge.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                   <button onClick={addChatbotQA} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
@@ -1592,6 +1654,32 @@ const Admin = () => {
                 </div>
               </div>
 
+              {/* Appearance & Suggestions */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">Appearance & Default Suggestions</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <ImageUploader 
+                      label="Chat Background Image" 
+                      value={generalForm.chatbotBgUrl || ""} 
+                      onChange={(val) => setGeneralForm({...generalForm, chatbotBgUrl: val})} 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Default Suggestions (Comma Separated)</label>
+                    <CommaSeparatedInput 
+                      rows={4}
+                      value={generalForm.chatbotSuggestions || []}
+                      onChange={(val) => setGeneralForm({...generalForm, chatbotSuggestions: val})}
+                      placeholder="What services do you offer?, How much does it cost?..."
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Knowledge Base */}
+              <h3 className="text-lg font-bold text-slate-900 mb-4">Knowledge Base (Q&A)</h3>
               <div className="space-y-4">
                 {chatbotForm.map((qa, index) => (
                   <div key={qa.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative group">
