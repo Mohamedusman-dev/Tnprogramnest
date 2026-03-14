@@ -4,9 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { 
   LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
-  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, Mail, Lock
+  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon
 } from "lucide-react";
 import { toast } from "sonner";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // --- Custom Image Uploader Component ---
 const ImageUploader = ({ value, onChange, label }: { value: string, onChange: (val: string) => void, label: string }) => {
@@ -157,6 +159,10 @@ const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Contact Messages State
+  const [contactMessages, setContactMessages] = useState<any[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+
   // Local Form States
   const [generalForm, setGeneralForm] = useState(siteData.general);
   const [heroForm, setHeroForm] = useState(siteData.hero);
@@ -215,6 +221,86 @@ const Admin = () => {
     setChatbotForm(siteData.chatbot || []);
     if(siteData.footer) setFooterForm(siteData.footer);
   }, [siteData]);
+
+  // Fetch Contact Messages
+  const fetchMessages = async () => {
+    setLoadingMessages(true);
+    try {
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setContactMessages(data || []);
+    } catch (error) {
+      toast.error("Failed to fetch contact messages.");
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'messages' && session) {
+      fetchMessages();
+    }
+  }, [activeTab, session]);
+
+  // Export Functions
+  const exportToCSV = () => {
+    if (contactMessages.length === 0) return toast.error("No data to export");
+    
+    const headers = ["Date", "Name", "Email", "Phone", "Service", "Details"];
+    const csvData = contactMessages.map(msg => [
+      new Date(msg.created_at).toLocaleDateString(),
+      `"${(msg.name || '').replace(/"/g, '""')}"`,
+      `"${(msg.email || '').replace(/"/g, '""')}"`,
+      `"${(msg.phone || '').replace(/"/g, '""')}"`,
+      `"${(msg.service || '').replace(/"/g, '""')}"`,
+      `"${(msg.details || '').replace(/"/g, '""')}"`
+    ]);
+    
+    const csvContent = [headers.join(","), ...csvData.map(row => row.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `contact_leads_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportToPDF = () => {
+    if (contactMessages.length === 0) return toast.error("No data to export");
+    
+    const doc = new jsPDF();
+    doc.text("Contact Messages / Leads", 14, 15);
+    
+    const tableColumn = ["Date", "Name", "Email", "Phone", "Service"];
+    const tableRows: any[] = [];
+    
+    contactMessages.forEach(msg => {
+      const msgData = [
+        new Date(msg.created_at).toLocaleDateString(),
+        msg.name || '-',
+        msg.email || '-',
+        msg.phone || '-',
+        msg.service || '-'
+      ];
+      tableRows.push(msgData);
+    });
+    
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [91, 124, 250] }
+    });
+    
+    doc.save(`contact_leads_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -347,6 +433,7 @@ const Admin = () => {
     { id: "team_testimonials", label: "Team Testimonials", icon: Heart },
     { id: "testimonials", label: "Client Testimonials", icon: Users },
     { id: "chatbot", label: "Chatbot Data", icon: MessageSquare },
+    { id: "messages", label: "Contact Messages", icon: Mailbox },
     { id: "footer", label: "Footer & Social", icon: Globe },
   ];
 
@@ -637,6 +724,79 @@ const Admin = () => {
                 />
               </div>
 
+            </motion.div>
+          )}
+
+          {/* Contact Messages Tab */}
+          {activeTab === "messages" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Contact Messages</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">View and export leads from your website's contact form.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <button onClick={exportToCSV} className="justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <FileSpreadsheet size={18} /> Export CSV
+                  </button>
+                  <button onClick={exportToPDF} className="justify-center bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <FileTextIcon size={18} /> Export PDF
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                {loadingMessages ? (
+                  <div className="p-12 flex justify-center items-center">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  </div>
+                ) : contactMessages.length === 0 ? (
+                  <div className="p-12 text-center text-slate-500">
+                    <Mailbox className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                    <p>No contact messages found.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm whitespace-nowrap">
+                      <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                        <tr>
+                          <th className="px-6 py-4">Date</th>
+                          <th className="px-6 py-4">Name</th>
+                          <th className="px-6 py-4">Contact Info</th>
+                          <th className="px-6 py-4">Service</th>
+                          <th className="px-6 py-4">Details</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {contactMessages.map((msg) => (
+                          <tr key={msg.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="px-6 py-4 text-slate-500">
+                              {new Date(msg.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 font-medium text-slate-900">
+                              {msg.name}
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col gap-1">
+                                <a href={`mailto:${msg.email}`} className="text-primary hover:underline">{msg.email}</a>
+                                {msg.phone && <a href={`tel:${msg.phone}`} className="text-slate-500 hover:text-slate-700">{msg.phone}</a>}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {msg.service || 'General Inquiry'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 max-w-xs truncate text-slate-600" title={msg.details}>
+                              {msg.details || '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </motion.div>
           )}
 
