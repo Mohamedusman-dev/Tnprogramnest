@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { 
   GraduationCap, Users, Building2, Target, Code, MonitorPlay, 
@@ -10,6 +10,8 @@ import Footer from "@/components/Footer";
 import ContactSection from "@/components/ContactSection";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { useScrollReveal } from "@/components/useScrollReveal";
+
+const ScrollToTop = lazy(() => import("@/components/ScrollToTop"));
 
 // --- Data Models ---
 const programs = [
@@ -434,6 +436,10 @@ const Training = () => {
       <ContactSection />
 
       <Footer />
+      
+      <Suspense fallback={null}>
+        <ScrollToTop />
+      </Suspense>
     </div>
   );
 };

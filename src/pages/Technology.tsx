@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+const ScrollToTop = lazy(() => import("@/components/ScrollToTop"));
 
 const techCategories = [
   {
@@ -157,6 +159,10 @@ const Technology = () => {
       </main>
 
       <Footer />
+      
+      <Suspense fallback={null}>
+        <ScrollToTop />
+      </Suspense>
     </div>
   );
 };
