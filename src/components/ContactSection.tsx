@@ -6,10 +6,24 @@ import { useSiteData } from "@/context/SiteDataContext";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
+// Utility function to sanitize inputs and prevent XSS
+const sanitizeInput = (str: string) => {
+  if (!str) return '';
+  const map: { [key: string]: string } = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;'
+  };
+  return str.replace(/[&<>'"]/g, m => map[m]);
+};
+
 const ContactSection = () => {
   const { ref, isVisible } = useScrollReveal();
   const { siteData } = useSiteData();
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", service: "", details: "" });
+  // Added honeypot field to state
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", service: "", details: "", honeypot: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -18,21 +32,62 @@ const ContactSection = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 1. Honeypot Check: If the hidden field is filled, it's a bot. Silently reject.
+    if (formData.honeypot) {
+      toast.success("Thank you! We'll get back to you shortly.");
+      setFormData({ name: "", email: "", phone: "", service: "", details: "", honeypot: "" });
+      return;
+    }
+
+    // 2. Frontend Rate Limiting
+    const now = Date.now();
+    const tenMins = 10 * 60 * 1000;
+    const submissionHistory = JSON.parse(localStorage.getItem('contact_submissions') || '[]');
+    
+    // Filter out submissions older than 10 mins
+    const recentSubmissions = submissionHistory.filter((time: number) => now - time < tenMins);
+    
+    // Limit to 5 submissions per 10 minutes
+    if (recentSubmissions.length >= 5) {
+      toast.error("Too many requests. Please try again later.");
+      return;
+    }
+
+    // Block repeated submissions from the same email within 2 minutes
+    const lastEmail = localStorage.getItem('last_contact_email');
+    const lastEmailTime = parseInt(localStorage.getItem('last_contact_time') || '0', 10);
+    
+    if (lastEmail === formData.email && (now - lastEmailTime) < 2 * 60 * 1000) {
+       toast.error("You have already submitted a request recently. Please wait a moment.");
+       return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase.from('contact_messages').insert([{
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        service: formData.service,
-        details: formData.details
-      }]);
+      // 3. Sanitize inputs before sending to database
+      const sanitizedData = {
+        name: sanitizeInput(formData.name),
+        email: sanitizeInput(formData.email),
+        phone: sanitizeInput(formData.phone),
+        service: sanitizeInput(formData.service),
+        details: sanitizeInput(formData.details)
+      };
+
+      // 4. Supabase insert automatically uses parameterized queries (Prepared Statements)
+      const { error } = await supabase.from('contact_messages').insert([sanitizedData]);
       
       if (error) throw error;
       
+      // Update rate limit storage upon success
+      recentSubmissions.push(now);
+      localStorage.setItem('contact_submissions', JSON.stringify(recentSubmissions));
+      localStorage.setItem('last_contact_email', formData.email);
+      localStorage.setItem('last_contact_time', now.toString());
+
       toast.success("Thank you! We'll get back to you shortly.");
-      setFormData({ name: "", email: "", phone: "", service: "", details: "" });
+      setFormData({ name: "", email: "", phone: "", service: "", details: "", honeypot: "" });
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to send message. Please try again.");
@@ -59,7 +114,20 @@ const ContactSection = () => {
             transition={{ duration: 0.6 }}
             className="lg:col-span-3"
           >
-            <form onSubmit={handleSubmit} className="bg-white p-5 sm:p-6 md:p-8 space-y-4 sm:space-y-5 rounded-xl sm:rounded-2xl shadow-xl border border-slate-100">
+            <form onSubmit={handleSubmit} className="bg-white p-5 sm:p-6 md:p-8 space-y-4 sm:space-y-5 rounded-xl sm:rounded-2xl shadow-xl border border-slate-100 relative">
+              
+              {/* HONEYPOT FIELD - Hidden from users, catches bots */}
+              <input 
+                type="text" 
+                name="honeypot" 
+                value={formData.honeypot} 
+                onChange={handleChange} 
+                className="opacity-0 absolute -z-10 w-0 h-0 pointer-events-none" 
+                tabIndex={-1} 
+                autoComplete="off" 
+                aria-hidden="true"
+              />
+
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-slate-700 mb-1.5 block">Full Name</label>
@@ -68,6 +136,7 @@ const ContactSection = () => {
                     value={formData.name} 
                     onChange={handleChange} 
                     required 
+                    maxLength={100}
                     placeholder="John Doe" 
                     className="w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" 
                   />
@@ -80,6 +149,7 @@ const ContactSection = () => {
                     value={formData.email} 
                     onChange={handleChange} 
                     required 
+                    maxLength={150}
                     placeholder="john@example.com" 
                     className="w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" 
                   />
@@ -92,6 +162,8 @@ const ContactSection = () => {
                     name="phone" 
                     value={formData.phone} 
                     onChange={handleChange} 
+                    required
+                    maxLength={15}
                     placeholder="+1 (555) 000-0000" 
                     className="w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all" 
                   />
@@ -102,6 +174,7 @@ const ContactSection = () => {
                     name="service" 
                     value={formData.service} 
                     onChange={handleChange} 
+                    required
                     className="w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                   >
                     <option value="" className="text-slate-500">Select a service</option>
@@ -119,6 +192,8 @@ const ContactSection = () => {
                   name="details" 
                   value={formData.details} 
                   onChange={handleChange} 
+                  required
+                  maxLength={2000}
                   rows={4} 
                   placeholder="Tell us about your project..." 
                   className="w-full px-3 py-2.5 sm:px-4 sm:py-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all resize-none" 

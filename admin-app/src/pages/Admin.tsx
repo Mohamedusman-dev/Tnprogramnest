@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { 
   LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
-  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon
+  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
@@ -162,6 +162,7 @@ const Admin = () => {
   // Contact Messages State
   const [contactMessages, setContactMessages] = useState<any[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [editingMessage, setEditingMessage] = useState<any>(null);
 
   // Local Form States
   const [generalForm, setGeneralForm] = useState(siteData.general);
@@ -244,6 +245,49 @@ const Admin = () => {
       fetchMessages();
     }
   }, [activeTab, session]);
+
+  // Contact Message Actions
+  const handleDeleteMessage = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this message? This action cannot be undone.")) return;
+    try {
+      const { error } = await supabase.from('contact_messages').delete().eq('id', id);
+      if (error) throw error;
+      setContactMessages(prev => prev.filter(m => m.id !== id));
+      toast.success("Message deleted successfully.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete message.");
+    }
+  };
+
+  const handleUpdateMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMessage) return;
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('contact_messages')
+        .update({
+          name: editingMessage.name,
+          email: editingMessage.email,
+          phone: editingMessage.phone,
+          service: editingMessage.service,
+          details: editingMessage.details
+        })
+        .eq('id', editingMessage.id);
+        
+      if (error) throw error;
+      
+      setContactMessages(prev => prev.map(m => m.id === editingMessage.id ? editingMessage : m));
+      setEditingMessage(null);
+      toast.success("Message updated successfully.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update message.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Export Functions
   const exportToCSV = () => {
@@ -733,7 +777,7 @@ const Admin = () => {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
                 <div>
                   <h2 className="text-xl md:text-2xl font-bold text-slate-900">Contact Messages</h2>
-                  <p className="text-slate-500 mt-1 text-sm md:text-base">View and export leads from your website's contact form.</p>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">View, edit, and export leads from your website's contact form.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                   <button onClick={exportToCSV} className="justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
@@ -765,6 +809,7 @@ const Admin = () => {
                           <th className="px-6 py-4">Contact Info</th>
                           <th className="px-6 py-4">Service</th>
                           <th className="px-6 py-4">Details</th>
+                          <th className="px-6 py-4 text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -790,6 +835,24 @@ const Admin = () => {
                             <td className="px-6 py-4 max-w-xs truncate text-slate-600" title={msg.details}>
                               {msg.details || '-'}
                             </td>
+                            <td className="px-6 py-4 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <button 
+                                  onClick={() => setEditingMessage(msg)} 
+                                  className="p-1.5 text-slate-400 hover:text-primary transition-colors bg-white rounded-md border border-slate-200 shadow-sm"
+                                  title="Edit Message"
+                                >
+                                  <Pencil size={16} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteMessage(msg.id)} 
+                                  className="p-1.5 text-slate-400 hover:text-red-500 transition-colors bg-white rounded-md border border-slate-200 shadow-sm"
+                                  title="Delete Message"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -797,6 +860,101 @@ const Admin = () => {
                   </div>
                 )}
               </div>
+
+              {/* Edit Message Modal */}
+              <AnimatePresence>
+                {editingMessage && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                  >
+                    <motion.div 
+                      initial={{ scale: 0.95, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.95, opacity: 0 }}
+                      className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden"
+                    >
+                      <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h3 className="text-lg font-bold text-slate-900">Edit Message</h3>
+                        <button onClick={() => setEditingMessage(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                          <X size={20} />
+                        </button>
+                      </div>
+                      <form onSubmit={handleUpdateMessage} className="p-6 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Name</label>
+                            <input 
+                              type="text" 
+                              value={editingMessage.name || ""}
+                              onChange={(e) => setEditingMessage({...editingMessage, name: e.target.value})}
+                              className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                            <input 
+                              type="email" 
+                              value={editingMessage.email || ""}
+                              onChange={(e) => setEditingMessage({...editingMessage, email: e.target.value})}
+                              className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Phone</label>
+                            <input 
+                              type="text" 
+                              value={editingMessage.phone || ""}
+                              onChange={(e) => setEditingMessage({...editingMessage, phone: e.target.value})}
+                              className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Service</label>
+                            <input 
+                              type="text" 
+                              value={editingMessage.service || ""}
+                              onChange={(e) => setEditingMessage({...editingMessage, service: e.target.value})}
+                              className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Details</label>
+                          <textarea 
+                            rows={4}
+                            value={editingMessage.details || ""}
+                            onChange={(e) => setEditingMessage({...editingMessage, details: e.target.value})}
+                            className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          />
+                        </div>
+                        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                          <button 
+                            type="button" 
+                            onClick={() => setEditingMessage(null)} 
+                            className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors text-sm font-medium"
+                          >
+                            Cancel
+                          </button>
+                          <button 
+                            type="submit" 
+                            disabled={isSaving} 
+                            className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium disabled:opacity-70"
+                          >
+                            {isSaving ? <Loader2 size={16} className="animate-spin" /> : "Save Changes"}
+                          </button>
+                        </div>
+                      </form>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
 
