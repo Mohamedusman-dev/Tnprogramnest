@@ -53,7 +53,7 @@ const ImageUploader = ({ value, onChange, label }: { value: string, onChange: (v
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder="https://example.com/image.png"
-          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
         />
       ) : (
         <input 
@@ -61,7 +61,7 @@ const ImageUploader = ({ value, onChange, label }: { value: string, onChange: (v
           type="file" 
           accept="image/*"
           onChange={handleFileChange}
-          className="w-full px-3 py-2 rounded-md border border-slate-300 text-sm text-slate-900 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+          className="w-full px-3 py-2 rounded-md border border-slate-300 text-sm text-slate-900 bg-white file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
         />
       )}
 
@@ -70,6 +70,55 @@ const ImageUploader = ({ value, onChange, label }: { value: string, onChange: (v
           <img src={value} alt="Preview" className="h-10 object-contain" />
         </div>
       )}
+    </div>
+  );
+};
+
+const StatEditor = ({ title, stats, onChange, showIcon = false }: { title: string, stats: any[], onChange: (val: any[]) => void, showIcon?: boolean }) => {
+  if (!stats) return null;
+  return (
+    <div className="mb-6 border-b border-slate-100 pb-6 last:border-0 last:pb-0">
+      <h4 className="font-semibold text-slate-800 mb-3">{title}</h4>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => (
+          <div key={index} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+            <div>
+              <label className="block text-[11px] uppercase text-slate-500 font-semibold mb-1">Number Value</label>
+              <input type="number" value={stat.value} onChange={(e) => {
+                const newStats = [...stats];
+                newStats[index].value = Number(e.target.value);
+                onChange(newStats);
+              }} className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 bg-white" />
+            </div>
+            <div>
+              <label className="block text-[11px] uppercase text-slate-500 font-semibold mb-1">Suffix (e.g. +, %)</label>
+              <input type="text" value={stat.suffix} onChange={(e) => {
+                const newStats = [...stats];
+                newStats[index].suffix = e.target.value;
+                onChange(newStats);
+              }} className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 bg-white" />
+            </div>
+            <div>
+              <label className="block text-[11px] uppercase text-slate-500 font-semibold mb-1">Label</label>
+              <input type="text" value={stat.label} onChange={(e) => {
+                const newStats = [...stats];
+                newStats[index].label = e.target.value;
+                onChange(newStats);
+              }} className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 bg-white" />
+            </div>
+            {showIcon && (
+              <div>
+                <label className="block text-[11px] uppercase text-slate-500 font-semibold mb-1">Icon (Lucide)</label>
+                <input type="text" value={stat.icon || ""} onChange={(e) => {
+                  const newStats = [...stats];
+                  newStats[index].icon = e.target.value;
+                  onChange(newStats);
+                }} className="w-full px-3 py-2 text-sm rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 bg-white" />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -455,7 +504,7 @@ const Admin = () => {
                       type="email" 
                       value={generalForm.email || ""}
                       onChange={(e) => setGeneralForm({...generalForm, email: e.target.value})}
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                     />
                   </div>
                   <div>
@@ -464,7 +513,7 @@ const Admin = () => {
                       type="text" 
                       value={generalForm.phone || ""}
                       onChange={(e) => setGeneralForm({...generalForm, phone: e.target.value})}
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                     />
                   </div>
                 </div>
@@ -475,10 +524,35 @@ const Admin = () => {
                     rows={3}
                     value={generalForm.address || ""}
                     onChange={(e) => setGeneralForm({...generalForm, address: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                   />
                 </div>
               </div>
+
+              {/* Statistics Counters Section */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mt-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-6">Website Statistics Counters</h3>
+                
+                <StatEditor 
+                  title="Hero Section Stats" 
+                  stats={generalForm.stats?.hero || []} 
+                  showIcon={true}
+                  onChange={(newStats) => setGeneralForm({...generalForm, stats: {...generalForm.stats, hero: newStats}})} 
+                />
+                
+                <StatEditor 
+                  title="About Section Stats" 
+                  stats={generalForm.stats?.about || []} 
+                  onChange={(newStats) => setGeneralForm({...generalForm, stats: {...generalForm.stats, about: newStats}})} 
+                />
+                
+                <StatEditor 
+                  title="Training Page Stats" 
+                  stats={generalForm.stats?.training || []} 
+                  onChange={(newStats) => setGeneralForm({...generalForm, stats: {...generalForm.stats, training: newStats}})} 
+                />
+              </div>
+
             </motion.div>
           )}
 
@@ -515,7 +589,7 @@ const Admin = () => {
                             social: { ...footerForm.social, [platform]: e.target.value }
                           })}
                           placeholder={platform === 'whatsapp' ? "e.g. 919876543210 (with country code)" : `https://${platform}.com/yourpage`}
-                          className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                          className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                         />
                       </div>
                     ))}
@@ -532,7 +606,7 @@ const Admin = () => {
                       rows={2}
                       value={footerForm.description || ""}
                       onChange={(e) => setFooterForm({...footerForm, description: e.target.value})}
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                     />
                   </div>
 
@@ -543,7 +617,7 @@ const Admin = () => {
                         type="text" 
                         value={footerForm.newsletterText || ""}
                         onChange={(e) => setFooterForm({...footerForm, newsletterText: e.target.value})}
-                        className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                        className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                       />
                     </div>
                     <div>
@@ -552,7 +626,7 @@ const Admin = () => {
                         type="text" 
                         value={footerForm.copyrightText || ""}
                         onChange={(e) => setFooterForm({...footerForm, copyrightText: e.target.value})}
-                        className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                        className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                       />
                     </div>
                   </div>
@@ -567,7 +641,7 @@ const Admin = () => {
                         tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean)
                       })}
                       placeholder="Web Dev, Mobile Apps, UI/UX, React..."
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                     />
                   </div>
                 </div>
@@ -595,7 +669,7 @@ const Admin = () => {
                     type="text" 
                     value={heroForm.title || ""}
                     onChange={(e) => setHeroForm({...heroForm, title: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                   />
                 </div>
                 <div>
@@ -604,7 +678,7 @@ const Admin = () => {
                     type="text" 
                     value={heroForm.highlight || ""}
                     onChange={(e) => setHeroForm({...heroForm, highlight: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                   />
                 </div>
                 <div>
@@ -613,7 +687,7 @@ const Admin = () => {
                     rows={2}
                     value={heroForm.miniDescription || ""}
                     onChange={(e) => setHeroForm({...heroForm, miniDescription: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                   />
                 </div>
                 <div>
@@ -622,7 +696,7 @@ const Admin = () => {
                     rows={4}
                     value={heroForm.description || ""}
                     onChange={(e) => setHeroForm({...heroForm, description: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                   />
                 </div>
               </div>
@@ -649,7 +723,7 @@ const Admin = () => {
                     type="text" 
                     value={aboutForm.title || ""}
                     onChange={(e) => setAboutForm({...aboutForm, title: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                   />
                 </div>
                 <div>
@@ -658,7 +732,7 @@ const Admin = () => {
                     type="text" 
                     value={aboutForm.highlight || ""}
                     onChange={(e) => setAboutForm({...aboutForm, highlight: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                   />
                 </div>
                 <div>
@@ -667,7 +741,7 @@ const Admin = () => {
                     rows={4}
                     value={aboutForm.description || ""}
                     onChange={(e) => setAboutForm({...aboutForm, description: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                   />
                 </div>
               </div>
@@ -712,7 +786,7 @@ const Admin = () => {
                             newForm[index].title = e.target.value;
                             setServicesForm(newForm);
                           }}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                       <div>
@@ -725,7 +799,7 @@ const Admin = () => {
                             newForm[index].desc = e.target.value;
                             setServicesForm(newForm);
                           }}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                       <ImageUploader 
@@ -783,7 +857,7 @@ const Admin = () => {
                               newForm[index].title = e.target.value;
                               setProductsForm(newForm);
                             }}
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                         <div>
@@ -812,7 +886,7 @@ const Admin = () => {
                             newForm[index].desc = e.target.value;
                             setProductsForm(newForm);
                           }}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                       <ImageUploader 
@@ -874,7 +948,7 @@ const Admin = () => {
                                 newForm[index].label = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                             />
                           </div>
                           <div>
@@ -887,7 +961,7 @@ const Admin = () => {
                                 newForm[index].description = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                             />
                           </div>
                         </div>
@@ -913,7 +987,7 @@ const Admin = () => {
                               setIndustriesForm(newForm);
                             }}
                             placeholder="e.g. Custom storefront, Payment integration, Analytics"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                       </div>
@@ -932,7 +1006,7 @@ const Admin = () => {
                                 newForm[index].caseStudy.title = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                             />
                           </div>
                           <div>
@@ -945,7 +1019,7 @@ const Admin = () => {
                                 newForm[index].caseStudy.description = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                             />
                           </div>
                         </div>
@@ -963,7 +1037,7 @@ const Admin = () => {
                                     setIndustriesForm(newForm);
                                   }}
                                   placeholder="e.g. Revenue Growth"
-                                  className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                                  className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                                 />
                               </div>
                               <div className="flex-1">
@@ -977,7 +1051,7 @@ const Admin = () => {
                                     setIndustriesForm(newForm);
                                   }}
                                   placeholder="e.g. +45%"
-                                  className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                                  className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                                 />
                               </div>
                             </div>
@@ -999,7 +1073,7 @@ const Admin = () => {
                                 newForm[index].testimonial.quote = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                             />
                           </div>
                           <div>
@@ -1012,7 +1086,7 @@ const Admin = () => {
                                 newForm[index].testimonial.author = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                             />
                           </div>
                           <div>
@@ -1025,7 +1099,7 @@ const Admin = () => {
                                 newForm[index].testimonial.role = e.target.value;
                                 setIndustriesForm(newForm);
                               }}
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                             />
                           </div>
                         </div>
@@ -1257,7 +1331,7 @@ const Admin = () => {
                               newForm[index].title = e.target.value;
                               setJobsForm(newForm);
                             }}
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                         <div>
@@ -1271,7 +1345,7 @@ const Admin = () => {
                               setJobsForm(newForm);
                             }}
                             placeholder="e.g. Engineering, Design"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                       </div>
@@ -1288,7 +1362,7 @@ const Admin = () => {
                               setJobsForm(newForm);
                             }}
                             placeholder="e.g. ₹80K - ₹120K"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                         <div>
@@ -1302,7 +1376,7 @@ const Admin = () => {
                               setJobsForm(newForm);
                             }}
                             placeholder="e.g. Full-time"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                         <div>
@@ -1316,7 +1390,7 @@ const Admin = () => {
                               setJobsForm(newForm);
                             }}
                             placeholder="e.g. Remote / Office"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                       </div>
@@ -1332,7 +1406,7 @@ const Admin = () => {
                             setJobsForm(newForm);
                           }}
                           placeholder="https://forms.gle/..."
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
 
@@ -1346,7 +1420,7 @@ const Admin = () => {
                             newForm[index].desc = e.target.value;
                             setJobsForm(newForm);
                           }}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
 
@@ -1361,7 +1435,7 @@ const Admin = () => {
                             setJobsForm(newForm);
                           }}
                           placeholder="e.g. 5+ years experience, React Expert, Strong Python"
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
 
@@ -1420,7 +1494,7 @@ const Admin = () => {
                               newForm[index].name = e.target.value;
                               setTeamTestimonialsForm(newForm);
                             }}
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                         <div>
@@ -1433,7 +1507,7 @@ const Admin = () => {
                               newForm[index].role = e.target.value;
                               setTeamTestimonialsForm(newForm);
                             }}
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                       </div>
@@ -1447,7 +1521,7 @@ const Admin = () => {
                             newForm[index].quote = e.target.value;
                             setTeamTestimonialsForm(newForm);
                           }}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                       <div>
@@ -1462,7 +1536,7 @@ const Admin = () => {
                             newForm[index].rating = parseInt(e.target.value) || 5;
                             setTeamTestimonialsForm(newForm);
                           }}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                       <ImageUploader 
@@ -1520,7 +1594,7 @@ const Admin = () => {
                             setChatbotForm(newForm);
                           }}
                           placeholder="e.g. price, cost, quote"
-                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                       <div>
@@ -1533,7 +1607,7 @@ const Admin = () => {
                             newForm[index].answer = e.target.value;
                             setChatbotForm(newForm);
                           }}
-                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                     </div>
@@ -1582,7 +1656,7 @@ const Admin = () => {
                               newForm[index].name = e.target.value;
                               setTestimonialsForm(newForm);
                             }}
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                         <div>
@@ -1595,7 +1669,7 @@ const Admin = () => {
                               newForm[index].company = e.target.value;
                               setTestimonialsForm(newForm);
                             }}
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                         <div>
@@ -1610,7 +1684,7 @@ const Admin = () => {
                               newForm[index].rating = parseInt(e.target.value) || 5;
                               setTestimonialsForm(newForm);
                             }}
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                       </div>
@@ -1624,7 +1698,7 @@ const Admin = () => {
                             newForm[index].text = e.target.value;
                             setTestimonialsForm(newForm);
                           }}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                     </div>

@@ -48,6 +48,13 @@ const Training = () => {
   const gallery = siteData.trainingGallery || [];
   const testimonials = siteData.trainingTestimonials || [];
 
+  const trainingStats = siteData.general.stats?.training || [
+    { value: 10, suffix: "+", label: "Workshops Conducted" },
+    { value: 500, suffix: "+", label: "Students Trained" },
+    { value: 5, suffix: "+", label: "Institutions Reached" },
+    { value: 100, suffix: "%", label: "Industry-Focused" },
+  ];
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -104,15 +111,10 @@ const Training = () => {
       {/* 2. Stats Section */}
       <section className="py-12 bg-white border-b border-slate-100 relative z-20 -mt-8 mx-4 md:mx-auto md:max-w-5xl rounded-2xl shadow-xl">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-6">
-          {[
-            { val: 10, suf: "+", label: "Workshops Conducted" },
-            { val: 500, suf: "+", label: "Students Trained" },
-            { val: 5, suf: "+", label: "Institutions Reached" },
-            { val: 100, suf: "%", label: "Industry-Focused" },
-          ].map((s, i) => (
+          {trainingStats.map((s, i) => (
             <div key={i} className="text-center">
               <p className="text-3xl md:text-4xl font-bold text-primary font-display mb-1">
-                <AnimatedCounter target={s.val} suffix={s.suf} />
+                <AnimatedCounter target={s.value} suffix={s.suffix} />
               </p>
               <p className="text-xs md:text-sm font-medium text-slate-600 uppercase tracking-wide">{s.label}</p>
             </div>

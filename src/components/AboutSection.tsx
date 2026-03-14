@@ -16,6 +16,13 @@ const AboutSection = () => {
   const { ref, isVisible } = useScrollReveal();
   const { siteData } = useSiteData();
 
+  const aboutStats = siteData.general.stats?.about || [
+    { value: 500, suffix: "+", label: "Projects" },
+    { value: 300, suffix: "+", label: "Clients" },
+    { value: 8, suffix: "+", label: "Years" },
+    { value: 98, suffix: "%", label: "Satisfaction" },
+  ];
+
   return (
     <section 
       id="about" 
@@ -40,15 +47,10 @@ const AboutSection = () => {
             </p>
 
             <div className="grid grid-cols-2 gap-3 md:gap-4 mt-6 md:mt-8">
-              {[
-                { val: 500, suf: "+", label: "Projects" },
-                { val: 300, suf: "+", label: "Clients" },
-                { val: 8, suf: "+", label: "Years" },
-                { val: 98, suf: "%", label: "Satisfaction" },
-              ].map((s) => (
+              {aboutStats.map((s) => (
                 <div key={s.label} className="tc-card-body p-3 md:p-4 text-center">
                   <p className="text-xl md:text-2xl font-bold font-display text-[var(--primary-tc)]">
-                    <AnimatedCounter target={s.val} suffix={s.suf} />
+                    <AnimatedCounter target={s.value} suffix={s.suffix} />
                   </p>
                   <p className="text-[10px] md:text-xs text-slate-500 mt-1 font-medium">{s.label}</p>
                 </div>

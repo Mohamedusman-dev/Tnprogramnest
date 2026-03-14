@@ -103,6 +103,13 @@ export type InstitutionTestimonial = {
   role: string;
 };
 
+export type StatItem = {
+  value: number;
+  suffix: string;
+  label: string;
+  icon?: string;
+};
+
 export type SiteData = {
   general: {
     logoUrl: string;
@@ -111,6 +118,11 @@ export type SiteData = {
     phone: string;
     address: string;
     footerText: string;
+    stats: {
+      hero: StatItem[];
+      about: StatItem[];
+      training: StatItem[];
+    };
   };
   hero: {
     title: string;
@@ -167,6 +179,26 @@ const defaultData: SiteData = {
     phone: "+1 (555) 123-4567",
     address: "123 Innovation Drive, Suite 400\nSan Francisco, CA 94105",
     footerText: "TechNest is run by a dedicated team of developers, designers, and strategists, with help from our amazing clients!",
+    stats: {
+      hero: [
+        { value: 359, suffix: "+", label: "Projects Delivered", icon: "Briefcase" },
+        { value: 216, suffix: "+", label: "Happy Clients", icon: "Users" },
+        { value: 5, suffix: "+", label: "Years of Experience", icon: "Award" },
+        { value: 36, suffix: "+", label: "Expert Developers", icon: "Code2" },
+      ],
+      about: [
+        { value: 500, suffix: "+", label: "Projects" },
+        { value: 300, suffix: "+", label: "Clients" },
+        { value: 8, suffix: "+", label: "Years" },
+        { value: 98, suffix: "%", label: "Satisfaction" },
+      ],
+      training: [
+        { value: 10, suffix: "+", label: "Workshops Conducted" },
+        { value: 500, suffix: "+", label: "Students Trained" },
+        { value: 5, suffix: "+", label: "Institutions Reached" },
+        { value: 100, suffix: "%", label: "Industry-Focused" },
+      ]
+    }
   },
   hero: {
     title: "Building Digital Solutions That",
@@ -402,8 +434,18 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return found ? found.value : fallback;
       };
 
+      const dbGeneral = getSetting('general', defaultData.general);
+
       setSiteData({
-        general: getSetting('general', defaultData.general),
+        general: {
+          ...defaultData.general,
+          ...dbGeneral,
+          stats: {
+            hero: dbGeneral.stats?.hero || defaultData.general.stats.hero,
+            about: dbGeneral.stats?.about || defaultData.general.stats.about,
+            training: dbGeneral.stats?.training || defaultData.general.stats.training,
+          }
+        },
         hero: getSetting('hero', defaultData.hero),
         about: getSetting('about', defaultData.about),
         cta: getSetting('cta', defaultData.cta),

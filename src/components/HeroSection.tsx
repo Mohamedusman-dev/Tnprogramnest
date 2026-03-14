@@ -1,15 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, animate, useMotionValue, useTransform } from "framer-motion";
+import * as Icons from "lucide-react";
 import { ArrowRight, ChevronRight, Code2, Users, Briefcase, Award } from "lucide-react";
 import { AnimatedCounter } from "./AnimatedCounter";
 import { useSiteData } from "@/context/SiteDataContext";
-
-const stats = [
-  { icon: Briefcase, value: 359, suffix: "+", label: "Projects Delivered" },
-  { icon: Users, value: 216, suffix: "+", label: "Happy Clients" },
-  { icon: Award, value: 5, suffix: "+", label: "Years of Experience" },
-  { icon: Code2, value: 36, suffix: "+", label: "Expert Developers" },
-];
 
 const rotatingWords = ["Growth", "Sales", "Leads", "Scale", "Success"];
 
@@ -80,6 +74,13 @@ const HeroSection = () => {
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const heroStats = siteData.general.stats?.hero || [
+    { value: 359, suffix: "+", label: "Projects Delivered", icon: "Briefcase" },
+    { value: 216, suffix: "+", label: "Happy Clients", icon: "Users" },
+    { value: 5, suffix: "+", label: "Years of Experience", icon: "Award" },
+    { value: 36, suffix: "+", label: "Expert Developers", icon: "Code2" },
+  ];
 
   return (
     <section id="home" className="relative min-h-[90vh] flex items-center overflow-hidden px-4 md:px-8 pt-32 pb-12 md:pt-36">
@@ -209,15 +210,18 @@ const HeroSection = () => {
           transition={{ duration: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-10 md:mt-16"
         >
-          {stats.map((s) => (
-            <div key={s.label} className="glass-card p-4 md:p-5 text-center">
-              <s.icon className="mx-auto mb-2 md:mb-3 text-primary" size={24} />
-              <p className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-white">
-                <AnimatedCounter target={s.value} suffix={s.suffix} startDelay={800} />
-              </p>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1 md:mt-2 font-medium">{s.label}</p>
-            </div>
-          ))}
+          {heroStats.map((s) => {
+            const IconComponent = (Icons as any)[s.icon || "Briefcase"] || Icons.Briefcase;
+            return (
+              <div key={s.label} className="glass-card p-4 md:p-5 text-center">
+                <IconComponent className="mx-auto mb-2 md:mb-3 text-primary" size={24} />
+                <p className="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-white">
+                  <AnimatedCounter target={s.value} suffix={s.suffix} startDelay={800} />
+                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 md:mt-2 font-medium">{s.label}</p>
+              </div>
+            );
+          })}
         </motion.div>
       </div>
     </section>
