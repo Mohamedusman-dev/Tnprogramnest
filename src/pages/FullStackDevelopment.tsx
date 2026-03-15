@@ -62,12 +62,12 @@ const whyChooseUsData = [
 
 const industriesWeServe = [
   { label: "Ecommerce Development", desc: "Take your online store to new heights with our eCommerce solutions. We specialize in crafting user-friendly websites and web development services that boost sales and customer satisfaction. From online stores to B2C and B2B platforms, we've got you covered. Let's elevate your online business together.\n\nOur approach extends beyond just creating visually appealing websites. We dive deep into understanding your business model, target market, and industry trends to deliver solutions that are not only aesthetically pleasing but also highly functional and optimized for conversions. Partner with us to create an eCommerce presence that stands out and brings tangible results." },
-  { label: "Laravel Development", desc: "Leverage the power of Laravel to build robust, scalable, and secure web applications. Our expert developers utilize Laravel's elegant syntax and advanced features to deliver custom solutions tailored to your business needs, ensuring high performance and maintainability." },
-  { label: "Node.js Development", desc: "Build fast, scalable network applications with our Node.js development services. Perfect for real-time applications, APIs, and microservices, our Node.js solutions ensure high throughput and low latency for your most demanding projects." },
-  { label: "React Web Development", desc: "Create dynamic and highly responsive user interfaces with React. Our team builds single-page applications (SPAs) that offer seamless user experiences, fast load times, and easy scalability, keeping your users engaged." },
-  { label: "Vue.js Development", desc: "Develop versatile and performant web interfaces using Vue.js. We craft intuitive front-end solutions that easily integrate with your existing projects, providing a smooth and interactive experience for your users." },
-  { label: "Custom Web Application Development", desc: "Get tailor-made web applications designed specifically for your unique business processes. From complex enterprise systems to innovative startup platforms, we deliver secure, scalable, and feature-rich custom solutions." },
-  { label: "WordPress & CMS Development", desc: "Manage your content effortlessly with our custom WordPress and CMS development. We build secure, SEO-friendly, and highly customizable websites that give you full control over your digital presence without technical headaches." }
+  { label: "Laravel Development", desc: "Leverage the power of Laravel to build robust, scalable, and secure web applications. Our expert developers utilize Laravel's elegant syntax and advanced features to deliver custom solutions tailored to your business needs, ensuring high performance and maintainability. We handle everything from complex database migrations to seamless API integrations, providing a solid foundation for your digital ecosystem." },
+  { label: "Node.js Development", desc: "Build fast, scalable network applications with our Node.js development services. Perfect for real-time applications, APIs, and microservices, our Node.js solutions ensure high throughput and low latency for your most demanding projects. By utilizing event-driven, non-blocking I/O models, we create lightweight yet highly efficient backends that can handle thousands of concurrent connections with ease." },
+  { label: "React Web Development", desc: "Create dynamic and highly responsive user interfaces with React. Our team builds single-page applications (SPAs) that offer seamless user experiences, fast load times, and easy scalability, keeping your users engaged. We implement state-of-the-art state management tools like Redux or Zustand, and ensure your frontend architecture is modular, reusable, and easy to maintain as your platform grows." },
+  { label: "Vue.js Development", desc: "Develop versatile and performant web interfaces using Vue.js. We craft intuitive front-end solutions that easily integrate with your existing projects, providing a smooth and interactive experience for your users. Whether you need a lightweight widget or a complex single-page application, our Vue.js expertise ensures a progressive, adaptable, and highly optimized user interface." },
+  { label: "Custom Web Application", desc: "Get tailor-made web applications designed specifically for your unique business processes. From complex enterprise systems to innovative startup platforms, we deliver secure, scalable, and feature-rich custom solutions. Our full-stack approach means we handle the entire lifecycle—from initial wireframing and database design to frontend execution and cloud deployment, ensuring a perfect fit for your operational needs." },
+  { label: "WordPress & CMS", desc: "Manage your content effortlessly with our custom WordPress and CMS development. We build secure, SEO-friendly, and highly customizable websites that give you full control over your digital presence without technical headaches. We go beyond basic templates, developing custom themes, bespoke plugins, and headless WordPress architectures that deliver lightning-fast performance and unparalleled flexibility." }
 ];
 
 const workflowData = [
@@ -126,6 +126,14 @@ const FullStackDevelopment = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Auto slide industries every 2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndustry((prev) => (prev + 1) % industriesWeServe.length);
+    }, 2000);
+    return () => clearInterval(timer);
   }, []);
 
   const scrollToContact = () => {
@@ -411,11 +419,8 @@ const FullStackDevelopment = () => {
                   className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer"
                 >
                   <div 
-                    className="w-full aspect-[4/3] rounded-sm overflow-hidden bg-top bg-no-repeat transition-[background-position] duration-500 ease-out group-hover:bg-bottom group-hover:duration-[15s] group-hover:ease-linear"
-                    style={{ 
-                      backgroundImage: `url(${item.image})`,
-                      backgroundSize: '100% auto',
-                    }}
+                    className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll"
+                    style={{ backgroundImage: `url(${item.image})` }}
                   >
                   </div>
                 </motion.div>
@@ -472,6 +477,14 @@ const FullStackDevelopment = () => {
                 </AccordionTrigger>
                 <AccordionContent className="text-slate-600 leading-relaxed">
                   Yes. We build web applications with SEO best practices in mind, including proper semantic HTML, fast loading speeds (using frameworks like Next.js for Server-Side Rendering), and mobile responsiveness.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-6" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">
+                  Who owns the source code after completion?
+                </AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">
+                  You do. Upon project completion and final payment, we transfer 100% ownership of the source code and intellectual property rights directly to you.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

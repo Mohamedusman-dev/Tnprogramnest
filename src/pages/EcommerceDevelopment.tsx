@@ -44,10 +44,10 @@ const whyChooseUsData = [
 ];
 
 const industriesWeServe = [
-  { label: "B2C Retail", desc: "Create engaging shopping experiences for consumers. We build fast, mobile-optimized stores that drive impulsive buying and build brand loyalty." },
-  { label: "B2B Wholesale", desc: "Develop robust portals for wholesale operations. Features include bulk ordering, custom pricing tiers, and seamless ERP/CRM integrations." },
-  { label: "Marketplaces", desc: "Launch multi-vendor platforms similar to Amazon or Etsy. We handle complex vendor management, split payments, and extensive product catalogs." },
-  { label: "Subscription Services", desc: "Build recurring revenue models with automated billing, subscription management, and customer portals for easy plan modifications." },
+  { label: "B2C Retail", desc: "Create engaging shopping experiences for consumers. We build fast, mobile-optimized stores that drive impulsive buying and build brand loyalty. Our B2C solutions feature personalized product recommendations, seamless social media integrations, one-click checkouts, and dynamic pricing models, all designed to maximize your conversion rates and increase average order values." },
+  { label: "B2B Wholesale", desc: "Develop robust portals for wholesale operations. Features include bulk ordering, custom pricing tiers, and seamless ERP/CRM integrations. We understand the complexities of B2B transactions, implementing features like automated reordering, role-based purchasing approvals, and detailed inventory forecasting to streamline your entire supply chain and procurement process." },
+  { label: "Marketplaces", desc: "Launch multi-vendor platforms similar to Amazon or Etsy. We handle complex vendor management, split payments, and extensive product catalogs. Our marketplace solutions include dedicated seller dashboards, automated commission calculations, robust review systems, and advanced search algorithms to ensure buyers can easily find exactly what they're looking for across thousands of listings." },
+  { label: "Subscription Services", desc: "Build recurring revenue models with automated billing, subscription management, and customer portals for easy plan modifications. We integrate flexible payment gateways that handle prorated upgrades, automated dunning management for failed payments, and personalized subscriber dashboards, helping you reduce churn and build a predictable, scalable revenue stream." },
 ];
 
 const workflowData = [
@@ -84,7 +84,18 @@ const EcommerceDevelopment = () => {
   const navigate = useNavigate();
   const [activeIndustry, setActiveIndustry] = useState(0);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Auto slide industries every 2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndustry((prev) => (prev + 1) % industriesWeServe.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
   const scrollToContact = () => navigate('/#contact-us');
 
   return (
@@ -243,12 +254,12 @@ const EcommerceDevelopment = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
               {[
-                { id: 1, image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=600&auto=format&fit=crop" },
-                { id: 2, image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=600&auto=format&fit=crop" },
-                { id: 3, image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600&auto=format&fit=crop" },
+                { id: 1, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-a2dac705-802d-4455-a18b-5218dceec9d9.webp" },
+                { id: 2, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-2bb48f2b-993b-47a3-82af-6ca9b986a6af.webp" },
+                { id: 3, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-c922d0d7-194e-4cce-bb8c-e3675d23c99a.webp" },
               ].map((item, i) => (
                 <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
-                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden bg-top bg-no-repeat transition-[background-position] duration-500 ease-out group-hover:bg-bottom group-hover:duration-[15s] group-hover:ease-linear" style={{ backgroundImage: `url(${item.image})`, backgroundSize: '100% auto' }}></div>
+                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
                 </motion.div>
               ))}
             </div>
@@ -274,6 +285,18 @@ const EcommerceDevelopment = () => {
               <AccordionItem value="item-3" className="bg-white border border-slate-200 rounded-lg px-4">
                 <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Do you integrate payment gateways?</AccordionTrigger>
                 <AccordionContent className="text-slate-600 leading-relaxed">Absolutely. We can integrate Stripe, PayPal, Razorpay, Apple Pay, Google Pay, and custom local payment gateways based on your target market.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">How do you handle inventory management syncing?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">We integrate your e-commerce platform with your existing ERP or inventory management software to ensure real-time syncing of stock levels, preventing overselling and managing multi-warehouse logistics.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-5" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Are the e-commerce stores mobile-friendly?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Yes, all our e-commerce builds are mobile-first. We ensure the shopping experience, especially the checkout process, is highly optimized for smartphones and tablets to capture mobile shoppers.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-6" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Can you implement custom features like subscriptions?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Yes, we can build custom functionalities including recurring subscription boxes, wholesale (B2B) pricing tiers, custom product builders, and loyalty reward programs.</AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>

@@ -46,11 +46,11 @@ const whyChooseUsData = [
 ];
 
 const industriesWeServe = [
-  { label: "Healthcare Apps", desc: "Develop HIPAA-compliant mobile applications for telemedicine, patient tracking, and health monitoring. We ensure secure data handling and intuitive interfaces for both doctors and patients." },
-  { label: "E-commerce Apps", desc: "Boost your sales with high-performance mobile commerce apps. We integrate secure payment gateways, AR product previews, and personalized push notifications to maximize conversions." },
-  { label: "Fintech Solutions", desc: "Build secure, scalable mobile banking and wallet applications. We implement biometric authentication, real-time transaction processing, and bank-grade security protocols." },
-  { label: "On-Demand Services", desc: "Launch your Uber-like app with real-time GPS tracking, driver/user matching algorithms, and seamless in-app communication and payment systems." },
-  { label: "EdTech Platforms", desc: "Create engaging mobile learning experiences with interactive video streaming, offline course access, gamification, and progress tracking." },
+  { label: "Healthcare Apps", desc: "Develop HIPAA-compliant mobile applications for telemedicine, patient tracking, and health monitoring. We ensure secure data handling and intuitive interfaces for both doctors and patients. Our solutions include real-time video consultations, secure messaging, wearable device integration, and automated appointment scheduling, all wrapped in a user-friendly design that prioritizes accessibility and patient care." },
+  { label: "E-commerce Apps", desc: "Boost your sales with high-performance mobile commerce apps. We integrate secure payment gateways, AR product previews, and personalized push notifications to maximize conversions. By focusing on a frictionless checkout process, intelligent product recommendations, and seamless inventory synchronization, we create shopping experiences that turn casual browsers into loyal, repeat customers." },
+  { label: "Fintech Solutions", desc: "Build secure, scalable mobile banking and wallet applications. We implement biometric authentication, real-time transaction processing, and bank-grade security protocols. Our fintech apps feature intuitive dashboards for expense tracking, seamless peer-to-peer transfers, and robust encryption methods, ensuring your users' financial data remains completely protected while offering a modern banking experience." },
+  { label: "On-Demand Services", desc: "Launch your Uber-like app with real-time GPS tracking, driver/user matching algorithms, and seamless in-app communication and payment systems. We build dynamic two-sided marketplaces with robust admin panels to monitor operations, manage dispatching, and analyze user behavior, ensuring your on-demand service runs smoothly even during peak traffic hours." },
+  { label: "EdTech Platforms", desc: "Create engaging mobile learning experiences with interactive video streaming, offline course access, gamification, and progress tracking. Our educational apps are designed to boost student retention through personalized learning paths, real-time quizzes, and collaborative discussion forums, making remote education as effective and engaging as traditional classroom learning." },
 ];
 
 const workflowData = [
@@ -88,6 +88,15 @@ const MobileAppDevelopment = () => {
   const [activeIndustry, setActiveIndustry] = useState(0);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
+  
+  // Auto slide industries every 2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndustry((prev) => (prev + 1) % industriesWeServe.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
   const scrollToContact = () => navigate('/#contact-us');
 
   return (
@@ -253,7 +262,7 @@ const MobileAppDevelopment = () => {
                 { id: 3, image: "https://images.unsplash.com/photo-1526498460520-4c246339dccb?q=80&w=600&auto=format&fit=crop" },
               ].map((item, i) => (
                 <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
-                  <div className="w-full aspect-[9/16] rounded-sm overflow-hidden bg-top bg-no-repeat transition-[background-position] duration-500 ease-out group-hover:bg-bottom group-hover:duration-[15s] group-hover:ease-linear" style={{ backgroundImage: `url(${item.image})`, backgroundSize: '100% auto' }}></div>
+                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
                 </motion.div>
               ))}
             </div>
@@ -279,6 +288,18 @@ const MobileAppDevelopment = () => {
               <AccordionItem value="item-3" className="bg-white border border-slate-200 rounded-lg px-4">
                 <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">How much does it cost to build an app?</AccordionTrigger>
                 <AccordionContent className="text-slate-600 leading-relaxed">Costs vary widely based on features, platform, and complexity. A simple app might start around $10k, while complex enterprise apps can exceed $50k. Contact us for a precise quote.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Will my app work on both tablets and phones?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Yes, we design and develop responsive mobile applications that provide an optimal viewing and interaction experience across a wide range of devices, including both smartphones and tablets.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-5" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Can you integrate third-party APIs like payment gateways?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Absolutely. We have extensive experience integrating various third-party APIs, including payment gateways (Stripe, PayPal), social media logins, mapping services, and custom backend systems.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-6" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Do you provide post-launch app maintenance?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Yes, we offer comprehensive post-launch support and maintenance packages. This includes bug fixes, OS updates compatibility, performance monitoring, and adding new features as your app grows.</AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>

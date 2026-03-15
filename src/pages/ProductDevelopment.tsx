@@ -46,11 +46,11 @@ const whyChooseUsData = [
 ];
 
 const industriesWeServe = [
-  { label: "Tech Startups", desc: "We help startups validate their ideas quickly by building robust MVPs, allowing them to secure funding and scale efficiently." },
-  { label: "Fintech", desc: "Developing secure, compliant, and innovative financial products including payment gateways, trading platforms, and digital wallets." },
-  { label: "Healthcare", desc: "Building HIPAA-compliant digital health products, telemedicine platforms, and IoT-integrated medical devices." },
-  { label: "Enterprise Software", desc: "Modernizing legacy systems and building custom enterprise resource planning (ERP) and CRM solutions." },
-  { label: "EdTech", desc: "Creating interactive learning management systems (LMS), virtual classrooms, and educational mobile apps." },
+  { label: "Tech Startups", desc: "We help startups validate their ideas quickly by building robust MVPs, allowing them to secure funding and scale efficiently. Our agile development process focuses on core feature delivery, rapid iteration based on early user feedback, and scalable cloud architectures that ensure your product can handle sudden spikes in traffic as your user base grows." },
+  { label: "Fintech", desc: "Developing secure, compliant, and innovative financial products including payment gateways, trading platforms, and digital wallets. We prioritize data encryption, regulatory compliance (such as PCI-DSS and KYC/AML), and real-time transaction processing, ensuring your financial product is not only cutting-edge but also completely trustworthy and secure." },
+  { label: "Healthcare", desc: "Building HIPAA-compliant digital health products, telemedicine platforms, and IoT-integrated medical devices. We bridge the gap between technology and patient care, developing intuitive interfaces for healthcare professionals and patients alike, while ensuring seamless integration with existing Electronic Health Record (EHR) systems and strict adherence to data privacy laws." },
+  { label: "Enterprise Software", desc: "Modernizing legacy systems and building custom enterprise resource planning (ERP) and CRM solutions. We transform outdated, siloed operations into unified, cloud-based ecosystems. Our enterprise products focus on workflow automation, advanced data analytics, and seamless third-party integrations, driving operational efficiency and reducing overhead costs." },
+  { label: "EdTech", desc: "Creating interactive learning management systems (LMS), virtual classrooms, and educational mobile apps. We design digital learning environments that foster engagement through gamification, real-time collaboration tools, and adaptive learning algorithms that tailor educational content to individual student performance and learning styles." },
 ];
 
 const workflowData = [
@@ -87,7 +87,18 @@ const ProductDevelopment = () => {
   const navigate = useNavigate();
   const [activeIndustry, setActiveIndustry] = useState(0);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Auto slide industries every 2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndustry((prev) => (prev + 1) % industriesWeServe.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
   const scrollToContact = () => navigate('/#contact-us');
 
   return (
@@ -251,7 +262,7 @@ const ProductDevelopment = () => {
                 { id: 3, image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
               ].map((item, i) => (
                 <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
-                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden bg-top bg-no-repeat transition-[background-position] duration-500 ease-out group-hover:bg-bottom group-hover:duration-[15s] group-hover:ease-linear" style={{ backgroundImage: `url(${item.image})`, backgroundSize: '100% auto' }}></div>
+                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
                 </motion.div>
               ))}
             </div>
@@ -277,6 +288,18 @@ const ProductDevelopment = () => {
               <AccordionItem value="item-3" className="bg-white border border-slate-200 rounded-lg px-4">
                 <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Who owns the intellectual property (IP)?</AccordionTrigger>
                 <AccordionContent className="text-slate-600 leading-relaxed">You do. Upon project completion and final payment, all source code and intellectual property rights are fully transferred to you.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">How do you handle user feedback and testing?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">We implement beta testing phases, conduct A/B testing, and integrate analytics tools to gather real user data. This feedback loop is crucial for refining the product before a full-scale launch.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-5" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Can you help with product strategy and ideation?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Yes, our product managers and UX strategists work closely with you during the discovery phase to validate your idea, define the target audience, and map out a strategic product roadmap.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-6" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">What happens after the product is launched?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Launch is just the beginning. We offer ongoing maintenance, server scaling, performance monitoring, and continuous iterative development to add new features based on user adoption.</AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>

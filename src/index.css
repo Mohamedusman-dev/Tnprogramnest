@@ -447,6 +447,19 @@
   pointer-events: none;
 }
 
+/* --- Portfolio Image Scroll Animation --- */
+.portfolio-img-scroll {
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  transition: background-position 3s ease-in-out;
+}
+
+.portfolio-img-scroll:hover {
+  background-position: bottom center;
+  transition: background-position 20s linear;
+}
+
 @keyframes move-up-alternate {
   0% { transform: translateY(0); }
   50% { transform: translateY(80%); }

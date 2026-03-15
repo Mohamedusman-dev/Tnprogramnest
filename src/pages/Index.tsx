@@ -10,6 +10,7 @@ import WhyChooseSection from "@/components/WhyChooseSection";
 import IndustriesSection from "@/components/IndustriesSection";
 import TransformCTASection from "@/components/TransformCTASection";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import Chatbot from "@/components/Chatbot";
@@ -64,6 +65,7 @@ const Index = () => {
         <IndustriesSection />
         <TransformCTASection />
         <TestimonialsSection />
+        <FAQSection />
         <ContactSection />
       </main>
       

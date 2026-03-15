@@ -47,11 +47,11 @@ const whyChooseUsData = [
 ];
 
 const industriesWeServe = [
-  { label: "SaaS Platforms", desc: "We build scalable Software-as-a-Service platforms with multi-tenant architectures, subscription billing integrations, and comprehensive admin dashboards." },
-  { label: "Enterprise Portals", desc: "Streamline your internal operations with custom enterprise web portals. We focus on secure data handling, role-based access, and workflow automation." },
-  { label: "Healthcare Systems", desc: "Develop secure, HIPAA-compliant web applications for patient management, telemedicine, and electronic health records (EHR)." },
-  { label: "E-learning Portals", desc: "Create engaging educational platforms with video streaming, progress tracking, and interactive assessment tools." },
-  { label: "Financial Dashboards", desc: "Build secure fintech web applications with real-time data visualization, complex reporting, and bank-grade security protocols." },
+  { label: "SaaS Platforms", desc: "We build scalable Software-as-a-Service platforms with multi-tenant architectures, subscription billing integrations, and comprehensive admin dashboards. Our focus is on creating high-availability systems that can seamlessly handle rapid user growth, complex data processing, and automated onboarding, ensuring your SaaS product delivers consistent value and a frictionless experience to every subscriber." },
+  { label: "Enterprise Portals", desc: "Streamline your internal operations with custom enterprise web portals. We focus on secure data handling, role-based access, and workflow automation. By integrating with your existing legacy systems and third-party APIs, we create centralized hubs that improve team collaboration, boost productivity, and provide actionable real-time analytics for executive decision-making." },
+  { label: "Healthcare Systems", desc: "Develop secure, HIPAA-compliant web applications for patient management, telemedicine, and electronic health records (EHR). Our platforms facilitate seamless communication between healthcare providers and patients, featuring secure document sharing, automated prescription refills, and advanced scheduling systems, all while maintaining the strictest standards of medical data privacy." },
+  { label: "E-learning Portals", desc: "Create engaging educational platforms with video streaming, progress tracking, and interactive assessment tools. We build robust Learning Management Systems (LMS) that support diverse content formats, automated grading, and detailed performance analytics, empowering educators to deliver personalized learning experiences to students across the globe." },
+  { label: "Financial Dashboards", desc: "Build secure fintech web applications with real-time data visualization, complex reporting, and bank-grade security protocols. Our financial dashboards provide users with deep insights into their portfolios, featuring predictive analytics, automated risk assessments, and seamless integration with global financial data providers, all wrapped in a highly secure, compliant architecture." },
 ];
 
 const workflowData = [
@@ -88,7 +88,18 @@ const WebApplicationDevelopment = () => {
   const navigate = useNavigate();
   const [activeIndustry, setActiveIndustry] = useState(0);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Auto slide industries every 2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndustry((prev) => (prev + 1) % industriesWeServe.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
   const scrollToContact = () => navigate('/#contact-us');
 
   return (
@@ -252,7 +263,7 @@ const WebApplicationDevelopment = () => {
                 { id: 3, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-c922d0d7-194e-4cce-bb8c-e3675d23c99a.webp" },
               ].map((item, i) => (
                 <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
-                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden bg-top bg-no-repeat transition-[background-position] duration-500 ease-out group-hover:bg-bottom group-hover:duration-[15s] group-hover:ease-linear" style={{ backgroundImage: `url(${item.image})`, backgroundSize: '100% auto' }}></div>
+                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
                 </motion.div>
               ))}
             </div>
@@ -278,6 +289,18 @@ const WebApplicationDevelopment = () => {
               <AccordionItem value="item-3" className="bg-white border border-slate-200 rounded-lg px-4">
                 <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">How do you ensure security?</AccordionTrigger>
                 <AccordionContent className="text-slate-600 leading-relaxed">We follow OWASP best practices, implement secure authentication (OAuth, JWT), encrypt sensitive data, and conduct regular security audits.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Can you migrate my legacy system to a modern web app?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Yes, we specialize in modernizing legacy applications. We can safely migrate your data and rebuild the frontend and backend using modern, efficient technologies without disrupting your business.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-5" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Do you offer cloud hosting and deployment?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Absolutely. We handle the entire deployment process and can set up scalable cloud hosting environments on platforms like AWS, Google Cloud, or Azure tailored to your app's needs.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-6" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">What is your testing and QA process?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">We perform rigorous Quality Assurance including automated unit testing, integration testing, cross-browser compatibility checks, and manual user acceptance testing (UAT) to ensure a bug-free launch.</AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>

@@ -236,6 +236,27 @@ const HireDedicatedDevelopers = () => {
           </div>
         </section>
 
+        {/* Portfolio */}
+        <section className="py-12 md:py-16 bg-white border-b border-slate-100">
+          <div className="container mx-auto px-4 max-w-[1200px]">
+            <div className="text-center mb-10 md:mb-14">
+              <h2 className="text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-black mb-4 font-display tracking-tight">Our Portfolio</h2>
+              <div className="w-16 h-1 bg-[#c82021] mx-auto"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+              {[
+                { id: 1, image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=600&auto=format&fit=crop" },
+                { id: 2, image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=600&auto=format&fit=crop" },
+                { id: 3, image: "https://images.unsplash.com/photo-1526498460520-4c246339dccb?q=80&w=600&auto=format&fit=crop" },
+              ].map((item, i) => (
+                <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
+                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* FAQs */}
         <section className="py-12 md:py-16 bg-slate-50">
           <div className="container mx-auto px-4 max-w-3xl">

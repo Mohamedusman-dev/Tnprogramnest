@@ -44,11 +44,11 @@ const whyChooseUsData = [
 ];
 
 const industriesWeServe = [
-  { label: "B2B Services", desc: "Generate high-quality leads through targeted LinkedIn campaigns, content marketing, and SEO strategies tailored for decision-makers." },
-  { label: "E-commerce", desc: "Drive sales and reduce cart abandonment using dynamic retargeting, Google Shopping ads, and email marketing automation." },
-  { label: "Real Estate", desc: "Capture local leads with hyper-targeted Facebook ads, local SEO, and virtual tour promotions to sell properties faster." },
-  { label: "Healthcare", desc: "Build trust and attract patients through informative content, local search optimization, and compliant social media strategies." },
-  { label: "Education", desc: "Increase enrollments with targeted PPC campaigns, engaging social media content, and SEO for educational programs." },
+  { label: "B2B Services", desc: "Generate high-quality leads through targeted LinkedIn campaigns, content marketing, and SEO strategies tailored for decision-makers. We focus on account-based marketing (ABM), creating highly personalized touchpoints, authoritative whitepapers, and automated email nurturing sequences that guide enterprise prospects smoothly through complex, multi-stage sales funnels." },
+  { label: "E-commerce", desc: "Drive sales and reduce cart abandonment using dynamic retargeting, Google Shopping ads, and email marketing automation. Our data-driven approach utilizes advanced tracking pixels and machine learning algorithms to serve highly relevant product ads to users who have shown purchase intent, maximizing your return on ad spend (ROAS) and boosting overall store revenue." },
+  { label: "Real Estate", desc: "Capture local leads with hyper-targeted Facebook ads, local SEO, and virtual tour promotions to sell properties faster. We build comprehensive digital funnels that showcase property listings to the right demographics, utilizing lead generation forms, automated SMS follow-ups, and immersive 3D content to turn casual browsers into qualified home buyers." },
+  { label: "Healthcare", desc: "Build trust and attract patients through informative content, local search optimization, and compliant social media strategies. We navigate the complexities of healthcare marketing by creating authoritative, medically accurate content that ranks highly on search engines, while implementing targeted local campaigns to drive foot traffic to your clinics and specialized practices." },
+  { label: "Education", desc: "Increase enrollments with targeted PPC campaigns, engaging social media content, and SEO for educational programs. We help universities and online course creators reach prospective students by highlighting alumni success stories, optimizing program landing pages for conversions, and running highly segmented ad campaigns during peak enrollment seasons." },
 ];
 
 const workflowData = [
@@ -85,7 +85,18 @@ const DigitalMarketing = () => {
   const navigate = useNavigate();
   const [activeIndustry, setActiveIndustry] = useState(0);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Auto slide industries every 2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndustry((prev) => (prev + 1) % industriesWeServe.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
   const scrollToContact = () => navigate('/#contact-us');
 
   return (
@@ -249,7 +260,7 @@ const DigitalMarketing = () => {
                 { id: 3, image: "https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=600&auto=format&fit=crop" },
               ].map((item, i) => (
                 <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
-                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden bg-top bg-no-repeat transition-[background-position] duration-500 ease-out group-hover:bg-bottom group-hover:duration-[15s] group-hover:ease-linear" style={{ backgroundImage: `url(${item.image})`, backgroundSize: '100% auto' }}></div>
+                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
                 </motion.div>
               ))}
             </div>
@@ -275,6 +286,18 @@ const DigitalMarketing = () => {
               <AccordionItem value="item-3" className="bg-white border border-slate-200 rounded-lg px-4">
                 <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">How do you track campaign success?</AccordionTrigger>
                 <AccordionContent className="text-slate-600 leading-relaxed">We use advanced analytics tools like Google Analytics, Tag Manager, and custom dashboards to track KPIs such as conversion rate, cost per acquisition (CPA), and overall ROI.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Do you create content for social media?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Yes, our team of content creators, copywriters, and designers produce high-quality, engaging content tailored specifically for each social media platform to maximize audience engagement.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-5" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Can you help with email marketing automation?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Absolutely. We design and implement automated email drip campaigns, newsletters, and cart abandonment sequences using platforms like Mailchimp, HubSpot, or Klaviyo.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-6" className="bg-white border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">How much should I spend on digital ads?</AccordionTrigger>
+                <AccordionContent className="text-slate-600 leading-relaxed">Your ad budget depends on your industry, goals, and target audience. We offer a free initial consultation to analyze your market and recommend a budget that will yield a positive ROI.</AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>
