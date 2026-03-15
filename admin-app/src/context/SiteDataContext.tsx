@@ -655,36 +655,47 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       };
 
       const dbGeneral = getSetting('general', defaultData.general);
+      const dbServicePages = getSetting('servicePages', defaultData.servicePages);
+      
+      const mergedServicePages: Record<string, ServicePageData> = { ...defaultData.servicePages };
+      Object.keys(defaultData.servicePages).forEach(slug => {
+        const dbPage = dbServicePages[slug] || {};
+        mergedServicePages[slug] = {
+          industries: dbPage.industries?.length ? dbPage.industries : defaultData.servicePages[slug].industries,
+          portfolio: dbPage.portfolio?.length ? dbPage.portfolio : defaultData.servicePages[slug].portfolio,
+          faqs: dbPage.faqs?.length ? dbPage.faqs : defaultData.servicePages[slug].faqs,
+        };
+      });
 
       setSiteData({
         general: {
           ...defaultData.general,
           ...dbGeneral,
           stats: {
-            hero: dbGeneral.stats?.hero || defaultData.general.stats.hero,
-            about: dbGeneral.stats?.about || defaultData.general.stats.about,
-            training: dbGeneral.stats?.training || defaultData.general.stats.training,
+            hero: dbGeneral.stats?.hero?.length ? dbGeneral.stats.hero : defaultData.general.stats.hero,
+            about: dbGeneral.stats?.about?.length ? dbGeneral.stats.about : defaultData.general.stats.about,
+            training: dbGeneral.stats?.training?.length ? dbGeneral.stats.training : defaultData.general.stats.training,
           }
         },
-        hero: getSetting('hero', defaultData.hero),
-        about: getSetting('about', defaultData.about),
-        cta: getSetting('cta', defaultData.cta),
-        services: getSetting('services', defaultData.services),
-        products: getSetting('products', defaultData.products),
-        jobs: getSetting('jobs', defaultData.jobs),
-        industries: getSetting('industries', defaultData.industries),
+        hero: { ...defaultData.hero, ...getSetting('hero', defaultData.hero) },
+        about: { ...defaultData.about, ...getSetting('about', defaultData.about) },
+        cta: { ...defaultData.cta, ...getSetting('cta', defaultData.cta) },
+        services: getSetting('services', defaultData.services)?.length ? getSetting('services', defaultData.services) : defaultData.services,
+        products: getSetting('products', defaultData.products)?.length ? getSetting('products', defaultData.products) : defaultData.products,
+        jobs: getSetting('jobs', defaultData.jobs)?.length ? getSetting('jobs', defaultData.jobs) : defaultData.jobs,
+        industries: getSetting('industries', defaultData.industries)?.length ? getSetting('industries', defaultData.industries) : defaultData.industries,
         
-        servicePages: getSetting('servicePages', defaultData.servicePages),
+        servicePages: mergedServicePages,
 
-        trainingPrograms: getSetting('trainingPrograms', defaultData.trainingPrograms),
-        trainingTopics: getSetting('trainingTopics', defaultData.trainingTopics),
-        trainingAudiences: getSetting('trainingAudiences', defaultData.trainingAudiences),
-        trainingFormats: getSetting('trainingFormats', defaultData.trainingFormats),
-        trainingGallery: getSetting('trainingGallery', defaultData.trainingGallery),
-        trainingTestimonials: getSetting('trainingTestimonials', defaultData.trainingTestimonials),
+        trainingPrograms: getSetting('trainingPrograms', defaultData.trainingPrograms)?.length ? getSetting('trainingPrograms', defaultData.trainingPrograms) : defaultData.trainingPrograms,
+        trainingTopics: getSetting('trainingTopics', defaultData.trainingTopics)?.length ? getSetting('trainingTopics', defaultData.trainingTopics) : defaultData.trainingTopics,
+        trainingAudiences: getSetting('trainingAudiences', defaultData.trainingAudiences)?.length ? getSetting('trainingAudiences', defaultData.trainingAudiences) : defaultData.trainingAudiences,
+        trainingFormats: getSetting('trainingFormats', defaultData.trainingFormats)?.length ? getSetting('trainingFormats', defaultData.trainingFormats) : defaultData.trainingFormats,
+        trainingGallery: getSetting('trainingGallery', defaultData.trainingGallery)?.length ? getSetting('trainingGallery', defaultData.trainingGallery) : defaultData.trainingGallery,
+        trainingTestimonials: getSetting('trainingTestimonials', defaultData.trainingTestimonials)?.length ? getSetting('trainingTestimonials', defaultData.trainingTestimonials) : defaultData.trainingTestimonials,
         
-        footer: getSetting('footer', defaultData.footer),
-        teamTestimonials: getSetting('teamTestimonials', defaultData.teamTestimonials),
+        footer: { ...defaultData.footer, ...getSetting('footer', defaultData.footer) },
+        teamTestimonials: getSetting('teamTestimonials', defaultData.teamTestimonials)?.length ? getSetting('teamTestimonials', defaultData.teamTestimonials) : defaultData.teamTestimonials,
         testimonials: testimonialsRes.data?.length ? testimonialsRes.data : defaultData.testimonials,
         chatbot: chatbotRes.data?.length ? chatbotRes.data : defaultData.chatbot
       });
