@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { 
   LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
-  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil, Layout
+  Globe, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, 
+  FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, 
+  Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil, Layout
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
@@ -203,7 +205,8 @@ const Admin = () => {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'TOKEN_REFRESH_FAILED') {
+      // Fixed TypeScript strict comparison error by casting event to string
+      if ((event as string) === 'TOKEN_REFRESH_FAILED') {
         console.error("Token refresh failed, signing out.");
         setTimeout(() => {
           supabase.auth.signOut().catch(console.error);
