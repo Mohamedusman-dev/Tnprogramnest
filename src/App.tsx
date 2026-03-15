@@ -10,6 +10,7 @@ import Careers from "./pages/Careers";
 import Technology from "./pages/Technology";
 import Training from "./pages/Training";
 import BuildIdea from "./pages/BuildIdea";
+import FullStackDevelopment from "./pages/FullStackDevelopment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => {
               <Route path="/technology" element={<Technology />} />
               <Route path="/training" element={<Training />} />
               <Route path="/build-idea" element={<BuildIdea />} />
+              <Route path="/services/full-stack-development" element={<FullStackDevelopment />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

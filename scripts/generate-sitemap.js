@@ -16,6 +16,7 @@ const routes = [
   { path: '/careers', priority: '0.9', changefreq: 'weekly' },
   { path: '/training', priority: '0.8', changefreq: 'monthly' },
   { path: '/build-idea', priority: '0.8', changefreq: 'monthly' },
+  { path: '/services/full-stack-development', priority: '0.9', changefreq: 'monthly' },
 ];
 
 const generateSitemap = () => {

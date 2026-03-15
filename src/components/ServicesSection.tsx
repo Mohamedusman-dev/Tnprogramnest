@@ -2,11 +2,24 @@ import { motion } from "framer-motion";
 import { Layers, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "./useScrollReveal";
 import { useSiteData } from "@/context/SiteDataContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const ServicesSection = () => {
   // Lowered threshold to 0.05 so it triggers earlier on mobile screens
   const { ref, isVisible } = useScrollReveal(0.05);
   const { siteData } = useSiteData();
+  const navigate = useNavigate();
+
+  const handleReadMore = (title: string) => {
+    // Check if the service is Full Stack Development
+    if (title.toLowerCase().includes('full stack')) {
+      navigate('/services/full-stack-development');
+    } else {
+      // For other services, show a toast indicating it's coming soon
+      toast.info(`${title} detailed page coming soon!`);
+    }
+  };
 
   return (
     <section id="services" className="py-12 md:py-20 px-4 md:px-8 bg-slate-50 relative overflow-hidden" ref={ref}>
@@ -60,7 +73,10 @@ const ServicesSection = () => {
               <div className="flex-1">
                 <h3 className="text-lg font-semibold mb-2 text-slate-900 group-hover:text-primary transition-colors">{s.title}</h3>
                 <p className="text-slate-600 text-sm leading-relaxed mb-4">{s.desc}</p>
-                <button className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto">
+                <button 
+                  onClick={() => handleReadMore(s.title)}
+                  className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all mt-auto"
+                >
                   Read More <ArrowRight size={16} />
                 </button>
               </div>
