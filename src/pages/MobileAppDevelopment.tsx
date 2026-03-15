@@ -10,6 +10,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ServiceTestimonialsSection from "@/components/ServiceTestimonialsSection";
 import ContactSection from "@/components/ContactSection";
+import { useSiteData } from "@/context/SiteDataContext";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const ScrollToTop = lazy(() => import("@/components/ScrollToTop"));
@@ -45,12 +46,27 @@ const whyChooseUsData = [
   { icon: ShieldCheck, title: "Trusted Partner", desc: "Join forces with an ISO 27001 certified firm, recognized for excellence in software solutions." },
 ];
 
-const industriesWeServe = [
+const defaultIndustries = [
   { label: "Healthcare Apps", desc: "Develop HIPAA-compliant mobile applications for telemedicine, patient tracking, and health monitoring. We ensure secure data handling and intuitive interfaces for both doctors and patients. Our solutions include real-time video consultations, secure messaging, wearable device integration, and automated appointment scheduling, all wrapped in a user-friendly design that prioritizes accessibility and patient care." },
   { label: "E-commerce Apps", desc: "Boost your sales with high-performance mobile commerce apps. We integrate secure payment gateways, AR product previews, and personalized push notifications to maximize conversions. By focusing on a frictionless checkout process, intelligent product recommendations, and seamless inventory synchronization, we create shopping experiences that turn casual browsers into loyal, repeat customers." },
   { label: "Fintech Solutions", desc: "Build secure, scalable mobile banking and wallet applications. We implement biometric authentication, real-time transaction processing, and bank-grade security protocols. Our fintech apps feature intuitive dashboards for expense tracking, seamless peer-to-peer transfers, and robust encryption methods, ensuring your users' financial data remains completely protected while offering a modern banking experience." },
   { label: "On-Demand Services", desc: "Launch your Uber-like app with real-time GPS tracking, driver/user matching algorithms, and seamless in-app communication and payment systems. We build dynamic two-sided marketplaces with robust admin panels to monitor operations, manage dispatching, and analyze user behavior, ensuring your on-demand service runs smoothly even during peak traffic hours." },
   { label: "EdTech Platforms", desc: "Create engaging mobile learning experiences with interactive video streaming, offline course access, gamification, and progress tracking. Our educational apps are designed to boost student retention through personalized learning paths, real-time quizzes, and collaborative discussion forums, making remote education as effective and engaging as traditional classroom learning." },
+];
+
+const defaultPortfolio = [
+  { id: 1, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-a2dac705-802d-4455-a18b-5218dceec9d9.webp" },
+  { id: 2, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-2bb48f2b-993b-47a3-82af-6ca9b986a6af.webp" },
+  { id: 3, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-c922d0d7-194e-4cce-bb8c-e3675d23c99a.webp" },
+];
+
+const defaultFaqs = [
+  { q: "Native vs Cross-platform: Which is better?", a: "Native apps offer the best performance and access to hardware features, ideal for complex apps. Cross-platform (React Native/Flutter) is faster to build and cheaper, perfect for most business apps." },
+  { q: "Do you help with App Store submission?", a: "Yes, we handle the entire submission process for both the Apple App Store and Google Play Store, ensuring all guidelines are met." },
+  { q: "How much does it cost to build an app?", a: "Costs vary widely based on features, platform, and complexity. A simple app might start around $10k, while complex enterprise apps can exceed $50k. Contact us for a precise quote." },
+  { q: "Will my app work on both tablets and phones?", a: "Yes, we design and develop responsive mobile applications that provide an optimal viewing and interaction experience across a wide range of devices, including both smartphones and tablets." },
+  { q: "Can you integrate third-party APIs like payment gateways?", a: "Absolutely. We have extensive experience integrating various third-party APIs, including payment gateways (Stripe, PayPal), social media logins, mapping services, and custom backend systems." },
+  { q: "Do you provide post-launch app maintenance?", a: "Yes, we offer comprehensive post-launch support and maintenance packages. This includes bug fixes, OS updates compatibility, performance monitoring, and adding new features as your app grows." }
 ];
 
 const workflowData = [
@@ -85,17 +101,23 @@ const HexCard = ({ item }: { item: any }) => (
 
 const MobileAppDevelopment = () => {
   const navigate = useNavigate();
+  const { siteData } = useSiteData();
   const [activeIndustry, setActiveIndustry] = useState(0);
+
+  const pageData = siteData.servicePages?.['mobile-app-development'] || {};
+  const displayIndustries = pageData.industries?.length ? pageData.industries : defaultIndustries;
+  const displayPortfolio = pageData.portfolio?.length ? pageData.portfolio : defaultPortfolio;
+  const displayFaqs = pageData.faqs?.length ? pageData.faqs : defaultFaqs;
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
   
   // Auto slide industries every 2 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndustry((prev) => (prev + 1) % industriesWeServe.length);
+      setActiveIndustry((prev) => (prev + 1) % displayIndustries.length);
     }, 2000);
     return () => clearInterval(timer);
-  }, []);
+  }, [displayIndustries.length]);
 
   const scrollToContact = () => navigate('/#contact-us');
 
@@ -231,7 +253,7 @@ const MobileAppDevelopment = () => {
             </div>
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
               <div className="w-full lg:w-[40%] flex flex-col">
-                {industriesWeServe.map((ind, i) => (
+                {displayIndustries.map((ind: any, i: number) => (
                   <button key={i} onClick={() => setActiveIndustry(i)} className={`flex items-center justify-between py-3.5 border-b border-slate-200 text-left transition-all duration-300 group ${activeIndustry === i ? 'text-primary font-bold' : 'text-slate-600 font-medium hover:text-primary'}`}>
                     <span className="text-sm md:text-base">{ind.label}</span>
                     <ArrowRight size={18} className={`transition-transform duration-300 ${activeIndustry === i ? 'text-primary translate-x-1' : 'text-slate-400 group-hover:text-primary group-hover:translate-x-1'}`} />
@@ -240,8 +262,8 @@ const MobileAppDevelopment = () => {
               </div>
               <div className="w-full lg:w-[60%]">
                 <motion.div key={activeIndustry} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="bg-white p-6 md:p-8 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 h-full">
-                  <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-4">{industriesWeServe[activeIndustry].label}</h3>
-                  <div className="text-slate-600 text-sm md:text-base leading-relaxed space-y-3 whitespace-pre-line">{industriesWeServe[activeIndustry].desc}</div>
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-4">{displayIndustries[activeIndustry]?.label}</h3>
+                  <div className="text-slate-600 text-sm md:text-base leading-relaxed space-y-3 whitespace-pre-line">{displayIndustries[activeIndustry]?.desc}</div>
                 </motion.div>
               </div>
             </div>
@@ -256,12 +278,8 @@ const MobileAppDevelopment = () => {
               <div className="w-16 h-1 bg-[#c82021] mx-auto"></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-              {[
-                { id: 1, image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=600&auto=format&fit=crop" },
-                { id: 2, image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=600&auto=format&fit=crop" },
-                { id: 3, image: "https://images.unsplash.com/photo-1526498460520-4c246339dccb?q=80&w=600&auto=format&fit=crop" },
-              ].map((item, i) => (
-                <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
+              {displayPortfolio.map((item: any, i: number) => (
+                <motion.div key={item.id || i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
                   <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
                 </motion.div>
               ))}
@@ -277,30 +295,12 @@ const MobileAppDevelopment = () => {
               <div className="w-16 h-1 bg-primary mx-auto rounded-full mb-6"></div>
             </div>
             <Accordion type="single" collapsible className="w-full space-y-4">
-              <AccordionItem value="item-1" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Native vs Cross-platform: Which is better?</AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">Native apps offer the best performance and access to hardware features, ideal for complex apps. Cross-platform (React Native/Flutter) is faster to build and cheaper, perfect for most business apps.</AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Do you help with App Store submission?</AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">Yes, we handle the entire submission process for both the Apple App Store and Google Play Store, ensuring all guidelines are met.</AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">How much does it cost to build an app?</AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">Costs vary widely based on features, platform, and complexity. A simple app might start around $10k, while complex enterprise apps can exceed $50k. Contact us for a precise quote.</AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Will my app work on both tablets and phones?</AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">Yes, we design and develop responsive mobile applications that provide an optimal viewing and interaction experience across a wide range of devices, including both smartphones and tablets.</AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-5" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Can you integrate third-party APIs like payment gateways?</AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">Absolutely. We have extensive experience integrating various third-party APIs, including payment gateways (Stripe, PayPal), social media logins, mapping services, and custom backend systems.</AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-6" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">Do you provide post-launch app maintenance?</AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">Yes, we offer comprehensive post-launch support and maintenance packages. This includes bug fixes, OS updates compatibility, performance monitoring, and adding new features as your app grows.</AccordionContent>
-              </AccordionItem>
+              {displayFaqs.map((faq: any, i: number) => (
+                <AccordionItem key={i} value={`item-${i}`} className="bg-white border border-slate-200 rounded-lg px-4">
+                  <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">{faq.q}</AccordionTrigger>
+                  <AccordionContent className="text-slate-600 leading-relaxed">{faq.a}</AccordionContent>
+                </AccordionItem>
+              ))}
             </Accordion>
           </div>
         </section>

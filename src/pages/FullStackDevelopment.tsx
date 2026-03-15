@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ServiceTestimonialsSection from "@/components/ServiceTestimonialsSection";
 import ContactSection from "@/components/ContactSection";
+import { useSiteData } from "@/context/SiteDataContext";
 import {
   Accordion,
   AccordionContent,
@@ -60,7 +61,7 @@ const whyChooseUsData = [
   { icon: ShieldCheck, title: "Trusted Partner", desc: "Join forces with an ISO 27001 certified firm, recognized for excellence in software solutions." },
 ];
 
-const industriesWeServe = [
+const defaultIndustries = [
   { label: "Ecommerce Development", desc: "Take your online store to new heights with our eCommerce solutions. We specialize in crafting user-friendly websites and web development services that boost sales and customer satisfaction. From online stores to B2C and B2B platforms, we've got you covered. Let's elevate your online business together.\n\nOur approach extends beyond just creating visually appealing websites. We dive deep into understanding your business model, target market, and industry trends to deliver solutions that are not only aesthetically pleasing but also highly functional and optimized for conversions. Partner with us to create an eCommerce presence that stands out and brings tangible results." },
   { label: "Laravel Development", desc: "Leverage the power of Laravel to build robust, scalable, and secure web applications. Our expert developers utilize Laravel's elegant syntax and advanced features to deliver custom solutions tailored to your business needs, ensuring high performance and maintainability. We handle everything from complex database migrations to seamless API integrations, providing a solid foundation for your digital ecosystem." },
   { label: "Node.js Development", desc: "Build fast, scalable network applications with our Node.js development services. Perfect for real-time applications, APIs, and microservices, our Node.js solutions ensure high throughput and low latency for your most demanding projects. By utilizing event-driven, non-blocking I/O models, we create lightweight yet highly efficient backends that can handle thousands of concurrent connections with ease." },
@@ -68,6 +69,21 @@ const industriesWeServe = [
   { label: "Vue.js Development", desc: "Develop versatile and performant web interfaces using Vue.js. We craft intuitive front-end solutions that easily integrate with your existing projects, providing a smooth and interactive experience for your users. Whether you need a lightweight widget or a complex single-page application, our Vue.js expertise ensures a progressive, adaptable, and highly optimized user interface." },
   { label: "Custom Web Application", desc: "Get tailor-made web applications designed specifically for your unique business processes. From complex enterprise systems to innovative startup platforms, we deliver secure, scalable, and feature-rich custom solutions. Our full-stack approach means we handle the entire lifecycle—from initial wireframing and database design to frontend execution and cloud deployment, ensuring a perfect fit for your operational needs." },
   { label: "WordPress & CMS", desc: "Manage your content effortlessly with our custom WordPress and CMS development. We build secure, SEO-friendly, and highly customizable websites that give you full control over your digital presence without technical headaches. We go beyond basic templates, developing custom themes, bespoke plugins, and headless WordPress architectures that deliver lightning-fast performance and unparalleled flexibility." }
+];
+
+const defaultPortfolio = [
+  { id: 1, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-a2dac705-802d-4455-a18b-5218dceec9d9.webp" },
+  { id: 2, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-2bb48f2b-993b-47a3-82af-6ca9b986a6af.webp" },
+  { id: 3, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-c922d0d7-194e-4cce-bb8c-e3675d23c99a.webp" },
+];
+
+const defaultFaqs = [
+  { q: "How long will the development process take?", a: "The timeline depends entirely on the complexity and scope of the project. A basic MVP can take 4-8 weeks, while a complex enterprise application might take 3-6 months. We provide a detailed timeline during the initial consultation." },
+  { q: "What technologies do you use?", a: "We primarily use modern JavaScript/TypeScript stacks (React, Next.js, Node.js) as well as Python (Django) and PHP (Laravel). For databases, we use PostgreSQL, MySQL, or MongoDB depending on your data structure needs." },
+  { q: "Do you provide maintenance after launch?", a: "Yes, absolutely! We offer various post-launch maintenance and support packages to ensure your application remains secure, up-to-date, and runs smoothly as your user base grows." },
+  { q: "Can you redesign or upgrade an existing project?", a: "Yes, we frequently help clients modernize legacy applications. We can audit your existing codebase, suggest improvements, and migrate it to a modern, scalable architecture." },
+  { q: "Will the website be SEO optimized?", a: "Yes. We build web applications with SEO best practices in mind, including proper semantic HTML, fast loading speeds (using frameworks like Next.js for Server-Side Rendering), and mobile responsiveness." },
+  { q: "Who owns the source code after completion?", a: "You do. Upon project completion and final payment, we transfer 100% ownership of the source code and intellectual property rights directly to you." }
 ];
 
 const workflowData = [
@@ -122,7 +138,13 @@ const HexCard = ({ item }: { item: any }) => (
 
 const FullStackDevelopment = () => {
   const navigate = useNavigate();
+  const { siteData } = useSiteData();
   const [activeIndustry, setActiveIndustry] = useState(0);
+
+  const pageData = siteData.servicePages?.['full-stack-development'] || {};
+  const displayIndustries = pageData.industries?.length ? pageData.industries : defaultIndustries;
+  const displayPortfolio = pageData.portfolio?.length ? pageData.portfolio : defaultPortfolio;
+  const displayFaqs = pageData.faqs?.length ? pageData.faqs : defaultFaqs;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -131,10 +153,10 @@ const FullStackDevelopment = () => {
   // Auto slide industries every 2 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndustry((prev) => (prev + 1) % industriesWeServe.length);
+      setActiveIndustry((prev) => (prev + 1) % displayIndustries.length);
     }, 2000);
     return () => clearInterval(timer);
-  }, []);
+  }, [displayIndustries.length]);
 
   const scrollToContact = () => {
     navigate('/#contact-us');
@@ -199,33 +221,15 @@ const FullStackDevelopment = () => {
 
             {/* Desktop Honeycomb Grid */}
             <div className="hidden md:flex justify-center items-start max-w-5xl mx-auto pb-12">
-               {/* Col 1 */}
-               <div className="w-[28%] flex flex-col gap-6">
-                  <HexCard item={whyChooseUsData[0]} />
-                  <HexCard item={whyChooseUsData[4]} />
-               </div>
-               {/* Col 2 */}
-               <div className="w-[28%] -ml-[7%] flex flex-col gap-6" style={{ marginTop: 'calc(12.17% + 0.75rem)' }}>
-                  <HexCard item={whyChooseUsData[1]} />
-                  <HexCard item={whyChooseUsData[5]} />
-               </div>
-               {/* Col 3 */}
-               <div className="w-[28%] -ml-[7%] flex flex-col gap-6">
-                  <HexCard item={whyChooseUsData[2]} />
-                  <HexCard item={whyChooseUsData[6]} />
-               </div>
-               {/* Col 4 */}
-               <div className="w-[28%] -ml-[7%] flex flex-col gap-6" style={{ marginTop: 'calc(12.17% + 0.75rem)' }}>
-                  <HexCard item={whyChooseUsData[3]} />
-                  <HexCard item={whyChooseUsData[7]} />
-               </div>
+               <div className="w-[28%] flex flex-col gap-6"><HexCard item={whyChooseUsData[0]} /><HexCard item={whyChooseUsData[4]} /></div>
+               <div className="w-[28%] -ml-[7%] flex flex-col gap-6" style={{ marginTop: 'calc(12.17% + 0.75rem)' }}><HexCard item={whyChooseUsData[1]} /><HexCard item={whyChooseUsData[5]} /></div>
+               <div className="w-[28%] -ml-[7%] flex flex-col gap-6"><HexCard item={whyChooseUsData[2]} /><HexCard item={whyChooseUsData[6]} /></div>
+               <div className="w-[28%] -ml-[7%] flex flex-col gap-6" style={{ marginTop: 'calc(12.17% + 0.75rem)' }}><HexCard item={whyChooseUsData[3]} /><HexCard item={whyChooseUsData[7]} /></div>
             </div>
 
             {/* Mobile Layout */}
             <div className="flex md:hidden flex-col gap-4 px-8 sm:px-16">
-               {whyChooseUsData.map((item, i) => (
-                 <HexCard item={item} key={i} />
-               ))}
+               {whyChooseUsData.map((item, i) => <HexCard item={item} key={i} />)}
             </div>
           </div>
         </section>
@@ -288,15 +292,7 @@ const FullStackDevelopment = () => {
                   transition={{ duration: 0.5, delay: (i % 10) * 0.05, type: "spring", bounce: 0.4 }}
                   className="w-28 h-28 md:w-32 md:h-32 bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col items-center justify-center gap-3 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all hover:-translate-y-1"
                 >
-                  <img 
-                    src={tech.logo} 
-                    alt={tech.name} 
-                    loading="lazy"
-                    width="40"
-                    height="40"
-                    decoding="async"
-                    className="w-10 h-10 md:w-12 md:h-12 object-contain" 
-                  />
+                  <img src={tech.logo} alt={tech.name} loading="lazy" width="40" height="40" decoding="async" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
                   <span className="text-xs md:text-sm font-bold text-slate-800 text-center leading-tight px-1">{tech.name}</span>
                 </motion.div>
               ))}
@@ -304,7 +300,7 @@ const FullStackDevelopment = () => {
           </div>
         </section>
 
-        {/* 5. Process / Web Development Workflow (Professional Redesign) */}
+        {/* 5. Process / Web Development Workflow */}
         <section className="py-12 md:py-16 bg-white relative overflow-hidden">
           <div className="container mx-auto px-4 max-w-6xl relative z-10">
             <div className="mb-12 md:mb-16 text-center">
@@ -323,11 +319,9 @@ const FullStackDevelopment = () => {
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] bg-white rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 relative overflow-hidden group hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1"
                 >
-                  {/* Large Background Number */}
                   <div className="absolute -top-4 -right-4 text-[100px] font-black text-slate-50 group-hover:text-primary/5 transition-colors duration-300 z-0 pointer-events-none leading-none">
                     {String(i + 1).padStart(2, '0')}
                   </div>
-                  
                   <div className="relative z-10">
                     <div className="w-14 h-14 bg-slate-50 group-hover:bg-primary/10 rounded-xl flex items-center justify-center text-slate-700 group-hover:text-primary mb-6 transition-colors duration-300 border border-slate-100 group-hover:border-primary/20">
                       <item.icon size={26} strokeWidth={1.5} />
@@ -341,7 +335,7 @@ const FullStackDevelopment = () => {
           </div>
         </section>
 
-        {/* 6. Industries We Serve (Compact Vertical Tabs Layout) */}
+        {/* 6. Industries We Serve */}
         <section className="py-12 md:py-16 bg-slate-50 border-y border-slate-100">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center mb-10 md:mb-12">
@@ -350,10 +344,8 @@ const FullStackDevelopment = () => {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-              
-              {/* Left Side - Tabs */}
               <div className="w-full lg:w-[40%] flex flex-col">
-                {industriesWeServe.map((ind, i) => (
+                {displayIndustries.map((ind: any, i: number) => (
                   <button
                     key={i}
                     onClick={() => setActiveIndustry(i)}
@@ -376,7 +368,6 @@ const FullStackDevelopment = () => {
                 ))}
               </div>
 
-              {/* Right Side - Content Box */}
               <div className="w-full lg:w-[60%]">
                 <motion.div
                   key={activeIndustry}
@@ -385,18 +376,17 @@ const FullStackDevelopment = () => {
                   transition={{ duration: 0.3 }}
                   className="bg-white p-6 md:p-8 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 h-full"
                 >
-                  <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-4">{industriesWeServe[activeIndustry].label}</h3>
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-4">{displayIndustries[activeIndustry]?.label}</h3>
                   <div className="text-slate-600 text-sm md:text-base leading-relaxed space-y-3 whitespace-pre-line">
-                    {industriesWeServe[activeIndustry].desc}
+                    {displayIndustries[activeIndustry]?.desc}
                   </div>
                 </motion.div>
               </div>
-
             </div>
           </div>
         </section>
 
-        {/* 7. Our Portfolio (Auto-Scrolling Hover Effect) */}
+        {/* 7. Our Portfolio */}
         <section className="py-12 md:py-16 bg-white border-b border-slate-100">
           <div className="container mx-auto px-4 max-w-[1200px]">
             <div className="text-center mb-10 md:mb-14">
@@ -405,13 +395,9 @@ const FullStackDevelopment = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-              {[
-                { id: 1, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-a2dac705-802d-4455-a18b-5218dceec9d9.webp" },
-                { id: 2, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-2bb48f2b-993b-47a3-82af-6ca9b986a6af.webp" },
-                { id: 3, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-c922d0d7-194e-4cce-bb8c-e3675d23c99a.webp" },
-              ].map((item, i) => (
+              {displayPortfolio.map((item: any, i: number) => (
                 <motion.div
-                  key={item.id}
+                  key={item.id || i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -439,59 +425,21 @@ const FullStackDevelopment = () => {
             </div>
 
             <Accordion type="single" collapsible className="w-full space-y-4">
-              <AccordionItem value="item-1" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">
-                  How long will the development process take?
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">
-                  The timeline depends entirely on the complexity and scope of the project. A basic MVP can take 4-8 weeks, while a complex enterprise application might take 3-6 months. We provide a detailed timeline during the initial consultation.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">
-                  What technologies do you use?
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">
-                  We primarily use modern JavaScript/TypeScript stacks (React, Next.js, Node.js) as well as Python (Django) and PHP (Laravel). For databases, we use PostgreSQL, MySQL, or MongoDB depending on your data structure needs.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">
-                  Do you provide maintenance after launch?
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">
-                  Yes, absolutely! We offer various post-launch maintenance and support packages to ensure your application remains secure, up-to-date, and runs smoothly as your user base grows.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">
-                  Can you redesign or upgrade an existing project?
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">
-                  Yes, we frequently help clients modernize legacy applications. We can audit your existing codebase, suggest improvements, and migrate it to a modern, scalable architecture.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-5" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">
-                  Will the website be SEO optimized?
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">
-                  Yes. We build web applications with SEO best practices in mind, including proper semantic HTML, fast loading speeds (using frameworks like Next.js for Server-Side Rendering), and mobile responsiveness.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-6" className="bg-white border border-slate-200 rounded-lg px-4">
-                <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">
-                  Who owns the source code after completion?
-                </AccordionTrigger>
-                <AccordionContent className="text-slate-600 leading-relaxed">
-                  You do. Upon project completion and final payment, we transfer 100% ownership of the source code and intellectual property rights directly to you.
-                </AccordionContent>
-              </AccordionItem>
+              {displayFaqs.map((faq: any, i: number) => (
+                <AccordionItem key={i} value={`item-${i}`} className="bg-white border border-slate-200 rounded-lg px-4">
+                  <AccordionTrigger className="text-left font-semibold text-slate-900 hover:no-underline hover:text-primary">
+                    {faq.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-slate-600 leading-relaxed">
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
             </Accordion>
           </div>
         </section>
 
-        {/* 9. Service Specific Testimonials (White Theme Slider) */}
+        {/* 9. Service Specific Testimonials */}
         <ServiceTestimonialsSection />
 
         {/* 10. Final CTA */}

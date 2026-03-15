@@ -110,6 +110,12 @@ export type StatItem = {
   icon?: string;
 };
 
+export type ServicePageData = {
+  industries: { label: string; desc: string }[];
+  portfolio: { id: number; image: string }[];
+  faqs: { q: string; a: string }[];
+};
+
 export type SiteData = {
   general: {
     logoUrl: string;
@@ -146,6 +152,9 @@ export type SiteData = {
   products: ProductItem[];
   jobs: JobItem[];
   industries: IndustryItem[];
+  
+  // Service Pages Data
+  servicePages: Record<string, ServicePageData>;
   
   // Training Page Data
   trainingPrograms: TrainingProgram[];
@@ -341,6 +350,7 @@ const defaultData: SiteData = {
       testimonial: { quote: "They turned our idea into a production-ready SaaS product in record time.", author: "Alex Rivera", role: "CEO, LaunchPad.io" }
     }
   ],
+  servicePages: {},
   trainingPrograms: [
     { id: crypto.randomUUID(), title: "Web Development Workshop", duration: "2 Days", audience: "Schools / Colleges", mode: "Hybrid", iconName: "Code", desc: "Hands-on session covering HTML, CSS, JavaScript basics and a real project demo for students." },
     { id: crypto.randomUUID(), title: "AI Tools Awareness Session", duration: "1 Day", audience: "All Students", mode: "Online / Offline", iconName: "MonitorPlay", desc: "Introduction to ChatGPT, Midjourney, and other AI tools to boost productivity and learning." },
@@ -466,6 +476,8 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         jobs: getSetting('jobs', defaultData.jobs),
         industries: getSetting('industries', defaultData.industries),
         
+        servicePages: getSetting('servicePages', defaultData.servicePages),
+
         trainingPrograms: getSetting('trainingPrograms', defaultData.trainingPrograms),
         trainingTopics: getSetting('trainingTopics', defaultData.trainingTopics),
         trainingAudiences: getSetting('trainingAudiences', defaultData.trainingAudiences),

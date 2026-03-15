@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { 
   LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
-  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil
+  Globe, Home, Info, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil, Layout
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
@@ -173,6 +173,10 @@ const Admin = () => {
   const [jobsForm, setJobsForm] = useState(siteData.jobs || []);
   const [industriesForm, setIndustriesForm] = useState(siteData.industries || []);
   
+  // Service Pages State
+  const [selectedServiceSlug, setSelectedServiceSlug] = useState("full-stack-development");
+  const [servicePagesForm, setServicePagesForm] = useState<Record<string, any>>(siteData.servicePages || {});
+  
   // Training Page Forms
   const [trainingForm, setTrainingForm] = useState(siteData.trainingPrograms || []);
   const [trainingTopicsForm, setTrainingTopicsForm] = useState(siteData.trainingTopics || []);
@@ -220,6 +224,7 @@ const Admin = () => {
     setProductsForm(siteData.products || []);
     setJobsForm(siteData.jobs || []);
     setIndustriesForm(siteData.industries || []);
+    setServicePagesForm(siteData.servicePages || {});
     
     setTrainingForm(siteData.trainingPrograms || []);
     setTrainingTopicsForm(siteData.trainingTopics || []);
@@ -388,6 +393,34 @@ const Admin = () => {
     }
   };
 
+  const handleSaveGeneral = async () => {
+    setIsSaving(true);
+    try {
+      await Promise.all([
+        updateSection('general', generalForm),
+        updateSection('hero', heroForm),
+        updateSection('about', aboutForm)
+      ]);
+      toast.success("General, Hero, and About settings saved successfully!");
+    } catch (error) {
+      toast.error("Failed to save general settings.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveServicePages = async () => {
+    setIsSaving(true);
+    try {
+      await updateSection('servicePages', servicePagesForm);
+      toast.success("Service pages data saved successfully!");
+    } catch (error) {
+      toast.error("Failed to save service pages data.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSaveTrainingPage = async () => {
     setIsSaving(true);
     try {
@@ -453,6 +486,18 @@ const Admin = () => {
   }]);
   const removeIndustry = (id: string) => setIndustriesForm(industriesForm.filter(i => i.id !== id));
 
+  // Service Pages Handlers
+  const currentServiceData = servicePagesForm[selectedServiceSlug] || { industries: [], portfolio: [], faqs: [] };
+  const updateCurrentServiceData = (key: string, value: any) => {
+    setServicePagesForm(prev => ({
+      ...prev,
+      [selectedServiceSlug]: {
+        ...(prev[selectedServiceSlug] || { industries: [], portfolio: [], faqs: [] }),
+        [key]: value
+      }
+    }));
+  };
+
   // Training Page Handlers
   const addTrainingProgram = () => setTrainingForm([...trainingForm, { id: crypto.randomUUID(), title: "", duration: "", audience: "", mode: "", iconName: "Code", desc: "" }]);
   const removeTrainingProgram = (id: string) => setTrainingForm(trainingForm.filter(p => p.id !== id));
@@ -478,8 +523,7 @@ const Admin = () => {
 
   const navItems = [
     { id: "general", label: "General Settings", icon: Settings },
-    { id: "hero", label: "Hero Section", icon: Home },
-    { id: "about", label: "About Section", icon: Info },
+    { id: "service_pages", label: "Service Pages", icon: Layout },
     { id: "services", label: "What We Offer", icon: Briefcase },
     { id: "products", label: "Our Products", icon: Package },
     { id: "industries", label: "Focus Industries", icon: Factory },
@@ -696,21 +740,23 @@ const Admin = () => {
 
         <div className="p-4 sm:p-6 md:p-8 lg:p-12 max-w-5xl mx-auto w-full">
           
-          {/* General Settings Tab */}
+          {/* General Settings Tab (Merged Hero & About) */}
           {activeTab === "general" && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
                 <div>
                   <h2 className="text-xl md:text-2xl font-bold text-slate-900">General Settings</h2>
-                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage your website's core information and branding.</p>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage your website's core information, hero, and about sections.</p>
                 </div>
-                <button disabled={isSaving} onClick={() => handleSaveSection('general', generalForm)} className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                <button disabled={isSaving} onClick={handleSaveGeneral} className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
                   {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
                 </button>
               </div>
 
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* Core Information */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">Core Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
                   <ImageUploader 
                     label="Logo Image" 
                     value={generalForm.logoUrl} 
@@ -723,7 +769,7 @@ const Admin = () => {
                   />
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Contact Email</label>
                     <input 
@@ -755,8 +801,85 @@ const Admin = () => {
                 </div>
               </div>
 
+              {/* Hero Section */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">Hero Section</h3>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Main Title</label>
+                    <input 
+                      type="text" 
+                      value={heroForm.title || ""}
+                      onChange={(e) => setHeroForm({...heroForm, title: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Highlight Text (Gradient)</label>
+                    <input 
+                      type="text" 
+                      value={heroForm.highlight || ""}
+                      onChange={(e) => setHeroForm({...heroForm, highlight: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Mini Description (Left Border Text)</label>
+                    <textarea 
+                      rows={2}
+                      value={heroForm.miniDescription || ""}
+                      onChange={(e) => setHeroForm({...heroForm, miniDescription: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Main Description</label>
+                    <textarea 
+                      rows={4}
+                      value={heroForm.description || ""}
+                      onChange={(e) => setHeroForm({...heroForm, description: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* About Section */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">About Section</h3>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Title</label>
+                    <input 
+                      type="text" 
+                      value={aboutForm.title || ""}
+                      onChange={(e) => setAboutForm({...aboutForm, title: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Highlight Text (Gradient)</label>
+                    <input 
+                      type="text" 
+                      value={aboutForm.highlight || ""}
+                      onChange={(e) => setAboutForm({...aboutForm, highlight: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
+                    <textarea 
+                      rows={4}
+                      value={aboutForm.description || ""}
+                      onChange={(e) => setAboutForm({...aboutForm, description: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Statistics Counters Section */}
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mt-8">
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6">
                 <h3 className="text-lg font-bold text-slate-900 mb-6">Website Statistics Counters</h3>
                 
                 <StatEditor 
@@ -777,6 +900,158 @@ const Admin = () => {
                   stats={generalForm.stats?.training || []} 
                   onChange={(newStats) => setGeneralForm({...generalForm, stats: {...generalForm.stats, training: newStats}})} 
                 />
+              </div>
+
+            </motion.div>
+          )}
+
+          {/* Service Pages Content Tab */}
+          {activeTab === "service_pages" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Service Pages Content</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage Industries, Portfolio, and FAQs for each specific service page.</p>
+                </div>
+                <button disabled={isSaving} onClick={handleSaveServicePages} className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                  {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                </button>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Select Service Page to Edit</label>
+                <select 
+                  value={selectedServiceSlug} 
+                  onChange={(e) => setSelectedServiceSlug(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                >
+                  <option value="full-stack-development">Full Stack Development</option>
+                  <option value="mobile-app-development">Mobile App Development</option>
+                  <option value="web-application-development">Web Application Development</option>
+                  <option value="e-commerce-development">E-commerce Development</option>
+                  <option value="digital-marketing-services">Digital Marketing Services</option>
+                  <option value="product-development">Product Development</option>
+                  <option value="hire-dedicated-developers">Hire Dedicated Developers</option>
+                  <option value="managed-services">Managed Services</option>
+                  <option value="cms-development">CMS Development</option>
+                </select>
+              </div>
+
+              {/* Industries We Serve */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">Industries We Serve</h3>
+                  <button onClick={() => updateCurrentServiceData('industries', [...(currentServiceData.industries || []), { label: "New Industry", desc: "" }])} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Industry
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {(currentServiceData.industries || []).map((ind: any, index: number) => (
+                    <div key={index} className="bg-slate-50 p-4 rounded-lg border border-slate-200 relative">
+                      <button onClick={() => {
+                        const newInds = [...currentServiceData.industries];
+                        newInds.splice(index, 1);
+                        updateCurrentServiceData('industries', newInds);
+                      }} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                      <div className="space-y-3 pr-8">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Industry Name</label>
+                          <input type="text" value={ind.label || ""} onChange={(e) => {
+                            const newInds = [...currentServiceData.industries];
+                            newInds[index].label = e.target.value;
+                            updateCurrentServiceData('industries', newInds);
+                          }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Description</label>
+                          <textarea rows={3} value={ind.desc || ""} onChange={(e) => {
+                            const newInds = [...currentServiceData.industries];
+                            newInds[index].desc = e.target.value;
+                            updateCurrentServiceData('industries', newInds);
+                          }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {(!currentServiceData.industries || currentServiceData.industries.length === 0) && (
+                    <p className="text-sm text-slate-500 italic">No industries added yet. The default ones will be shown on the website.</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Our Portfolio */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">Our Portfolio</h3>
+                  <button onClick={() => updateCurrentServiceData('portfolio', [...(currentServiceData.portfolio || []), { id: Date.now(), image: "" }])} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Image
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(currentServiceData.portfolio || []).map((port: any, index: number) => (
+                    <div key={port.id || index} className="bg-slate-50 p-4 rounded-lg border border-slate-200 relative">
+                      <button onClick={() => {
+                        const newPorts = [...currentServiceData.portfolio];
+                        newPorts.splice(index, 1);
+                        updateCurrentServiceData('portfolio', newPorts);
+                      }} className="absolute top-2 right-2 text-slate-400 hover:text-red-500 z-10 bg-white rounded-full p-1 shadow-sm transition-colors"><Trash2 size={14} /></button>
+                      <ImageUploader 
+                        label={`Portfolio Image ${index + 1}`} 
+                        value={port.image} 
+                        onChange={(val) => {
+                          const newPorts = [...currentServiceData.portfolio];
+                          newPorts[index].image = val;
+                          updateCurrentServiceData('portfolio', newPorts);
+                        }} 
+                      />
+                    </div>
+                  ))}
+                </div>
+                {(!currentServiceData.portfolio || currentServiceData.portfolio.length === 0) && (
+                  <p className="text-sm text-slate-500 italic mt-2">No portfolio images added yet. The default ones will be shown on the website.</p>
+                )}
+              </div>
+
+              {/* FAQs */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">Frequently Asked Questions</h3>
+                  <button onClick={() => updateCurrentServiceData('faqs', [...(currentServiceData.faqs || []), { q: "", a: "" }])} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add FAQ
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {(currentServiceData.faqs || []).map((faq: any, index: number) => (
+                    <div key={index} className="bg-slate-50 p-4 rounded-lg border border-slate-200 relative">
+                      <button onClick={() => {
+                        const newFaqs = [...currentServiceData.faqs];
+                        newFaqs.splice(index, 1);
+                        updateCurrentServiceData('faqs', newFaqs);
+                      }} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                      <div className="space-y-3 pr-8">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Question</label>
+                          <input type="text" value={faq.q || ""} onChange={(e) => {
+                            const newFaqs = [...currentServiceData.faqs];
+                            newFaqs[index].q = e.target.value;
+                            updateCurrentServiceData('faqs', newFaqs);
+                          }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Answer</label>
+                          <textarea rows={2} value={faq.a || ""} onChange={(e) => {
+                            const newFaqs = [...currentServiceData.faqs];
+                            newFaqs[index].a = e.target.value;
+                            updateCurrentServiceData('faqs', newFaqs);
+                          }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {(!currentServiceData.faqs || currentServiceData.faqs.length === 0) && (
+                    <p className="text-sm text-slate-500 italic">No FAQs added yet. The default ones will be shown on the website.</p>
+                  )}
+                </div>
               </div>
 
             </motion.div>
@@ -1054,105 +1329,6 @@ const Admin = () => {
                       className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
                     />
                   </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Hero Section Tab */}
-          {activeTab === "hero" && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
-                <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Hero Section</h2>
-                  <p className="text-slate-500 mt-1 text-sm md:text-base">Modify the main landing text of your website.</p>
-                </div>
-                <button disabled={isSaving} onClick={() => handleSaveSection('hero', heroForm)} className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
-                  {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Main Title</label>
-                  <input 
-                    type="text" 
-                    value={heroForm.title || ""}
-                    onChange={(e) => setHeroForm({...heroForm, title: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Highlight Text (Gradient)</label>
-                  <input 
-                    type="text" 
-                    value={heroForm.highlight || ""}
-                    onChange={(e) => setHeroForm({...heroForm, highlight: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Mini Description (Left Border Text)</label>
-                  <textarea 
-                    rows={2}
-                    value={heroForm.miniDescription || ""}
-                    onChange={(e) => setHeroForm({...heroForm, miniDescription: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Main Description</label>
-                  <textarea 
-                    rows={4}
-                    value={heroForm.description || ""}
-                    onChange={(e) => setHeroForm({...heroForm, description: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* About Section Tab */}
-          {activeTab === "about" && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
-                <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">About Section</h2>
-                  <p className="text-slate-500 mt-1 text-sm md:text-base">Modify the text in the 'About TechNest' area.</p>
-                </div>
-                <button disabled={isSaving} onClick={() => handleSaveSection('about', aboutForm)} className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
-                  {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
-                </button>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Title</label>
-                  <input 
-                    type="text" 
-                    value={aboutForm.title || ""}
-                    onChange={(e) => setAboutForm({...aboutForm, title: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Highlight Text (Gradient)</label>
-                  <input 
-                    type="text" 
-                    value={aboutForm.highlight || ""}
-                    onChange={(e) => setAboutForm({...aboutForm, highlight: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
-                  <textarea 
-                    rows={4}
-                    value={aboutForm.description || ""}
-                    onChange={(e) => setAboutForm({...aboutForm, description: e.target.value})}
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
-                  />
                 </div>
               </div>
             </motion.div>
