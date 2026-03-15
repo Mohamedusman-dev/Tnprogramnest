@@ -122,7 +122,7 @@ const HeroSection = () => {
               </h1>
 
               {siteData.hero.miniDescription && (
-                <p className="mt-5 text-sm sm:text-base md:text-lg text-slate-300 font-medium max-w-lg leading-relaxed border-l-2 border-primary pl-4">
+                <p className="mt-5 text-base sm:text-lg md:text-xl text-slate-300 font-medium max-w-lg leading-relaxed border-l-2 border-primary pl-4">
                   {siteData.hero.miniDescription}
                 </p>
               )}

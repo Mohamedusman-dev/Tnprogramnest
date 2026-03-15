@@ -68,8 +68,8 @@ const AboutSection = () => {
                 className="tc-card-body p-4 md:p-5"
               >
                 <p.icon className="text-[var(--primary-tc)] mb-2 md:mb-3 w-5 h-5 md:w-[22px] md:h-[22px]" />
-                <h3 className="font-display font-semibold mb-1.5 md:mb-2 text-sm md:text-base text-slate-900">{p.title}</h3>
-                <p className="text-slate-600 text-xs md:text-sm leading-relaxed">{p.desc}</p>
+                <h3 className="font-display font-semibold mb-1.5 md:mb-2 text-base md:text-lg text-slate-900">{p.title}</h3>
+                <p className="text-slate-600 text-sm md:text-base leading-relaxed">{p.desc}</p>
               </motion.div>
             ))}
           </div>

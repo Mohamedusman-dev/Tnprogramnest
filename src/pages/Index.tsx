@@ -65,8 +65,10 @@ const Index = () => {
         <ProductShowcaseSection />
         <IndustriesSection />
         <TestimonialsSection />
-        <FAQSection />
+        
+        {/* Swapped Order: Contact Us is now above FAQ */}
         <ContactSection />
+        <FAQSection />
       </main>
       
       <Footer />

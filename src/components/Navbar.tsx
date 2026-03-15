@@ -90,8 +90,8 @@ const Navbar = () => {
   const navBgClass = isAtTop
     ? (isHomePage || isTechnologyPage || isTrainingPage || isBuildIdeaPage ? "bg-transparent backdrop-blur-md border-b border-white/10" : "bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200/50")
     : isOverLight
-    ? "bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200/50" 
-    : "bg-slate-900/80 backdrop-blur-md shadow-sm border-b border-white/10"; 
+    ? "bg-white/80 backdrop-blur-lg shadow-sm border-b border-slate-200/50" 
+    : (isTechnologyPage ? "bg-[#0c121e]/60 backdrop-blur-lg shadow-sm border-b border-white/10" : "bg-slate-900/60 backdrop-blur-lg shadow-sm border-b border-white/10"); 
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex flex-col transition-all duration-300">
