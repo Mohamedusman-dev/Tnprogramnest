@@ -61,9 +61,9 @@ const Index = () => {
         <ServicesSection />
         <EcommerceSolutionsSection />
         <WhyChooseSection />
+        <TransformCTASection />
         <ProductShowcaseSection />
         <IndustriesSection />
-        <TransformCTASection />
         <TestimonialsSection />
         <FAQSection />
         <ContactSection />
