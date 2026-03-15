@@ -85,7 +85,6 @@ const HeroSection = () => {
   return (
     <>
       <section id="home" className="relative min-h-[90vh] flex items-center overflow-hidden px-4 md:px-8 pt-32 pb-24 md:pt-36 md:pb-32">
-        {/* Increased top padding to account for the new TopBar */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl floating" />
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/10 rounded-full blur-3xl floating-delayed" />
@@ -105,7 +104,6 @@ const HeroSection = () => {
                 Trusted by 300+ Global Businesses
               </div>
 
-              {/* Adjusted text sizes for mobile to prevent typewriter wrapping issues */}
               <h1 className="section-title text-[2.2rem] leading-[1.2] sm:text-4xl md:text-5xl lg:text-6xl">
                 {siteData.hero.title}{" "}
                 <span className="gradient-text inline-grid whitespace-nowrap">
@@ -113,7 +111,6 @@ const HeroSection = () => {
                     Drive {text}
                     <span className="w-[3px] md:w-[4px] h-[0.9em] bg-primary ml-1.5 animate-[pulse_1s_ease-in-out_infinite]"></span>
                   </span>
-                  {/* Invisible placeholder to maintain consistent width and prevent layout shift */}
                   <span className="invisible col-start-1 row-start-1 flex items-center">
                     Drive Success
                     <span className="w-[3px] md:w-[4px] h-[0.9em] ml-1.5"></span>
@@ -131,18 +128,19 @@ const HeroSection = () => {
                 {siteData.hero.description}
               </p>
 
-              <div className="flex flex-wrap gap-3 mt-8">
+              {/* Fixed Mobile Buttons Layout */}
+              <div className="flex flex-row gap-3 mt-8 w-full sm:w-auto">
                 <button
                   onClick={() => scrollTo("contact-us")}
-                  className="btn-primary-gradient shine-effect flex items-center gap-2 text-sm sm:text-base"
+                  className="btn-primary-gradient shine-effect flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base flex-1 sm:flex-none px-3 sm:px-6 py-3.5 whitespace-nowrap"
                 >
-                  Start Project <ArrowRight size={18} />
+                  Start Project <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
                 </button>
                 <button
                   onClick={() => scrollTo("services")}
-                  className="flex items-center gap-2 px-5 sm:px-6 py-3 rounded-lg border border-border hover:border-primary/50 text-foreground transition-all duration-300 hover:bg-secondary/50 text-sm sm:text-base"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-3.5 rounded-lg border border-border hover:border-primary/50 text-foreground transition-all duration-300 hover:bg-secondary/50 text-sm sm:text-base flex-1 sm:flex-none whitespace-nowrap"
                 >
-                  Explore Services <ChevronRight size={18} />
+                  Explore Services <ChevronRight size={16} className="sm:w-[18px] sm:h-[18px]" />
                 </button>
               </div>
             </motion.div>

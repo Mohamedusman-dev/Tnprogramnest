@@ -188,12 +188,23 @@ const Admin = () => {
 
   // Check Auth Session
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error("Session error:", error.message);
+        // Clear invalid session data from local storage
+        supabase.auth.signOut().catch(console.error);
+      }
       setSession(session);
       setAuthLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'TOKEN_REFRESH_FAILED') {
+        console.error("Token refresh failed, signing out.");
+        setTimeout(() => {
+          supabase.auth.signOut().catch(console.error);
+        }, 0);
+      }
       setSession(session);
     });
 
