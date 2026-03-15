@@ -11,6 +11,14 @@ import Technology from "./pages/Technology";
 import Training from "./pages/Training";
 import BuildIdea from "./pages/BuildIdea";
 import FullStackDevelopment from "./pages/FullStackDevelopment";
+import MobileAppDevelopment from "./pages/MobileAppDevelopment";
+import WebApplicationDevelopment from "./pages/WebApplicationDevelopment";
+import EcommerceDevelopment from "./pages/EcommerceDevelopment";
+import DigitalMarketing from "./pages/DigitalMarketing";
+import ProductDevelopment from "./pages/ProductDevelopment";
+import HireDedicatedDevelopers from "./pages/HireDedicatedDevelopers";
+import ManagedServices from "./pages/ManagedServices";
+import CmsDevelopment from "./pages/CmsDevelopment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,7 +39,19 @@ const App = () => {
               <Route path="/technology" element={<Technology />} />
               <Route path="/training" element={<Training />} />
               <Route path="/build-idea" element={<BuildIdea />} />
+              
+              {/* Service Routes */}
               <Route path="/services/full-stack-development" element={<FullStackDevelopment />} />
+              <Route path="/services/mobile-app-development" element={<MobileAppDevelopment />} />
+              <Route path="/services/web-application-development" element={<WebApplicationDevelopment />} />
+              <Route path="/services/e-commerce-development" element={<EcommerceDevelopment />} />
+              <Route path="/services/digital-marketing-services" element={<DigitalMarketing />} />
+              <Route path="/services/product-development" element={<ProductDevelopment />} />
+              <Route path="/services/hire-developers" element={<HireDedicatedDevelopers />} />
+              <Route path="/services/hire-dedicated-developers" element={<HireDedicatedDevelopers />} />
+              <Route path="/services/managed-services" element={<ManagedServices />} />
+              <Route path="/services/cms-development" element={<CmsDevelopment />} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

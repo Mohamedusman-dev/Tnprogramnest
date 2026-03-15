@@ -5,11 +5,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Replace with your actual production domain
 const DOMAIN = 'https://mydomain.com';
 
-// Define your website routes here. 
-// To update the sitemap when new pages are added, simply add them to this array.
 const routes = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
   { path: '/technology', priority: '0.8', changefreq: 'monthly' },
@@ -17,10 +14,17 @@ const routes = [
   { path: '/training', priority: '0.8', changefreq: 'monthly' },
   { path: '/build-idea', priority: '0.8', changefreq: 'monthly' },
   { path: '/services/full-stack-development', priority: '0.9', changefreq: 'monthly' },
+  { path: '/services/mobile-app-development', priority: '0.9', changefreq: 'monthly' },
+  { path: '/services/web-application-development', priority: '0.9', changefreq: 'monthly' },
+  { path: '/services/e-commerce-development', priority: '0.9', changefreq: 'monthly' },
+  { path: '/services/digital-marketing-services', priority: '0.9', changefreq: 'monthly' },
+  { path: '/services/product-development', priority: '0.9', changefreq: 'monthly' },
+  { path: '/services/hire-dedicated-developers', priority: '0.9', changefreq: 'monthly' },
+  { path: '/services/managed-services', priority: '0.9', changefreq: 'monthly' },
+  { path: '/services/cms-development', priority: '0.9', changefreq: 'monthly' },
 ];
 
 const generateSitemap = () => {
-  // Get current date in YYYY-MM-DD format for <lastmod>
   const today = new Date().toISOString().split('T')[0];
 
   const urls = routes.map(route => `
@@ -40,14 +44,12 @@ const generateSitemap = () => {
 
   const publicDir = path.resolve(__dirname, '../public');
   
-  // Ensure public directory exists
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  // Write the sitemap to the public folder
   fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap.trim());
-  console.log('✅ sitemap.xml generated successfully!');
+  console.log('✅ sitemap.xml generated successfully with all service pages!');
 };
 
 generateSitemap();

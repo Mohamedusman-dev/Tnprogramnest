@@ -3,27 +3,20 @@ import { Layers, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "./useScrollReveal";
 import { useSiteData } from "@/context/SiteDataContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 const ServicesSection = () => {
-  // Lowered threshold to 0.05 so it triggers earlier on mobile screens
   const { ref, isVisible } = useScrollReveal(0.05);
   const { siteData } = useSiteData();
   const navigate = useNavigate();
 
   const handleReadMore = (title: string) => {
-    // Check if the service is Full Stack Development
-    if (title.toLowerCase().includes('full stack')) {
-      navigate('/services/full-stack-development');
-    } else {
-      // For other services, show a toast indicating it's coming soon
-      toast.info(`${title} detailed page coming soon!`);
-    }
+    // Generate URL slug from title (e.g. "Mobile App Development" -> "mobile-app-development")
+    const slug = title.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/services/${slug}`);
   };
 
   return (
     <section id="services" className="py-12 md:py-20 px-4 md:px-8 bg-slate-50 relative overflow-hidden" ref={ref}>
-      {/* Subtle Background Blobs to enhance the glass effect */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-3xl"></div>
         <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-blue-400/5 blur-3xl"></div>
@@ -48,7 +41,6 @@ const ServicesSection = () => {
           {(siteData.services || []).map((s, i) => (
             <motion.div
               key={s.id}
-              // Reduced initial y offset from 40 to 20 for smoother mobile appearance
               initial={{ opacity: 0, y: 20 }}
               animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ delay: i * 0.15, duration: 0.6, ease: "easeOut" }}
@@ -56,7 +48,6 @@ const ServicesSection = () => {
             >
               <div className="shrink-0 mt-1 bg-white p-3 rounded-xl shadow-sm border border-slate-100 group-hover:border-primary/30 transition-colors">
                 {s.iconUrl ? (
-                  /* Added lazy loading, dimensions, and async decoding */
                   <img 
                     src={s.iconUrl} 
                     alt={s.title} 
