@@ -3,7 +3,7 @@ import { useSiteData } from "@/context/SiteDataContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { 
-  LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
+  LayoutDashboard, Settings, MessageSquare, Save, Plus, Trash2, 
   Globe, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, 
   FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, 
   Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil, Layout, FolderGit2, Star
