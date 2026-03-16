@@ -10,6 +10,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ServiceTestimonialsSection from "@/components/ServiceTestimonialsSection";
 import ContactSection from "@/components/ContactSection";
+import HomePortfolioSection from "@/components/HomePortfolioSection";
 import { useSiteData } from "@/context/SiteDataContext";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -52,12 +53,6 @@ const defaultIndustries = [
   { label: "Fintech Solutions", desc: "Build secure, scalable mobile banking and wallet applications. We implement biometric authentication, real-time transaction processing, and bank-grade security protocols. Our fintech apps feature intuitive dashboards for expense tracking, seamless peer-to-peer transfers, and robust encryption methods, ensuring your users' financial data remains completely protected while offering a modern banking experience." },
   { label: "On-Demand Services", desc: "Launch your Uber-like app with real-time GPS tracking, driver/user matching algorithms, and seamless in-app communication and payment systems. We build dynamic two-sided marketplaces with robust admin panels to monitor operations, manage dispatching, and analyze user behavior, ensuring your on-demand service runs smoothly even during peak traffic hours." },
   { label: "EdTech Platforms", desc: "Create engaging mobile learning experiences with interactive video streaming, offline course access, gamification, and progress tracking. Our educational apps are designed to boost student retention through personalized learning paths, real-time quizzes, and collaborative discussion forums, making remote education as effective and engaging as traditional classroom learning." },
-];
-
-const defaultPortfolio = [
-  { id: 1, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-a2dac705-802d-4455-a18b-5218dceec9d9.webp" },
-  { id: 2, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-2bb48f2b-993b-47a3-82af-6ca9b986a6af.webp" },
-  { id: 3, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-c922d0d7-194e-4cce-bb8c-e3675d23c99a.webp" },
 ];
 
 const defaultFaqs = [
@@ -106,7 +101,6 @@ const MobileAppDevelopment = () => {
 
   const pageData = siteData.servicePages?.['mobile-app-development'] || {};
   const displayIndustries = pageData.industries?.length ? pageData.industries : defaultIndustries;
-  const displayPortfolio = pageData.portfolio?.length ? pageData.portfolio : defaultPortfolio;
   const displayFaqs = pageData.faqs?.length ? pageData.faqs : defaultFaqs;
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -271,21 +265,7 @@ const MobileAppDevelopment = () => {
         </section>
 
         {/* Portfolio */}
-        <section className="py-12 md:py-16 bg-white border-b border-slate-100">
-          <div className="container mx-auto px-4 max-w-[1200px]">
-            <div className="text-center mb-10 md:mb-14">
-              <h2 className="text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-black mb-4 font-display tracking-tight">Our Portfolio</h2>
-              <div className="w-16 h-1 bg-[#c82021] mx-auto"></div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-              {displayPortfolio.map((item: any, i: number) => (
-                <motion.div key={item.id || i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
-                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <HomePortfolioSection />
 
         {/* FAQs */}
         <section className="py-12 md:py-16 bg-slate-50">

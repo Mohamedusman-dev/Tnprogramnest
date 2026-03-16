@@ -10,6 +10,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ServiceTestimonialsSection from "@/components/ServiceTestimonialsSection";
 import ContactSection from "@/components/ContactSection";
+import HomePortfolioSection from "@/components/HomePortfolioSection";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const ScrollToTop = lazy(() => import("@/components/ScrollToTop"));
@@ -246,25 +247,7 @@ const EcommerceDevelopment = () => {
         </section>
 
         {/* Portfolio */}
-        <section className="py-12 md:py-16 bg-white border-b border-slate-100">
-          <div className="container mx-auto px-4 max-w-[1200px]">
-            <div className="text-center mb-10 md:mb-14">
-              <h2 className="text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-black mb-4 font-display tracking-tight">Our Portfolio</h2>
-              <div className="w-16 h-1 bg-[#c82021] mx-auto"></div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-              {[
-                { id: 1, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-a2dac705-802d-4455-a18b-5218dceec9d9.webp" },
-                { id: 2, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-2bb48f2b-993b-47a3-82af-6ca9b986a6af.webp" },
-                { id: 3, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-c922d0d7-194e-4cce-bb8c-e3675d23c99a.webp" },
-              ].map((item, i) => (
-                <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }} className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer">
-                  <div className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll" style={{ backgroundImage: `url(${item.image})` }}></div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <HomePortfolioSection />
 
         {/* FAQs */}
         <section className="py-12 md:py-16 bg-slate-50">

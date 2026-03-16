@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ServiceTestimonialsSection from "@/components/ServiceTestimonialsSection";
 import ContactSection from "@/components/ContactSection";
+import HomePortfolioSection from "@/components/HomePortfolioSection";
 import { useSiteData } from "@/context/SiteDataContext";
 import {
   Accordion,
@@ -69,12 +70,6 @@ const defaultIndustries = [
   { label: "Vue.js Development", desc: "Develop versatile and performant web interfaces using Vue.js. We craft intuitive front-end solutions that easily integrate with your existing projects, providing a smooth and interactive experience for your users. Whether you need a lightweight widget or a complex single-page application, our Vue.js expertise ensures a progressive, adaptable, and highly optimized user interface." },
   { label: "Custom Web Application", desc: "Get tailor-made web applications designed specifically for your unique business processes. From complex enterprise systems to innovative startup platforms, we deliver secure, scalable, and feature-rich custom solutions. Our full-stack approach means we handle the entire lifecycle—from initial wireframing and database design to frontend execution and cloud deployment, ensuring a perfect fit for your operational needs." },
   { label: "WordPress & CMS", desc: "Manage your content effortlessly with our custom WordPress and CMS development. We build secure, SEO-friendly, and highly customizable websites that give you full control over your digital presence without technical headaches. We go beyond basic templates, developing custom themes, bespoke plugins, and headless WordPress architectures that deliver lightning-fast performance and unparalleled flexibility." }
-];
-
-const defaultPortfolio = [
-  { id: 1, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-a2dac705-802d-4455-a18b-5218dceec9d9.webp" },
-  { id: 2, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-2bb48f2b-993b-47a3-82af-6ca9b986a6af.webp" },
-  { id: 3, image: "https://images.dualite.app/109cb605-1b9d-44d5-a79d-86b38bdfbe3a/asset-c922d0d7-194e-4cce-bb8c-e3675d23c99a.webp" },
 ];
 
 const defaultFaqs = [
@@ -143,7 +138,6 @@ const FullStackDevelopment = () => {
 
   const pageData = siteData.servicePages?.['full-stack-development'] || {};
   const displayIndustries = pageData.industries?.length ? pageData.industries : defaultIndustries;
-  const displayPortfolio = pageData.portfolio?.length ? pageData.portfolio : defaultPortfolio;
   const displayFaqs = pageData.faqs?.length ? pageData.faqs : defaultFaqs;
 
   useEffect(() => {
@@ -387,33 +381,7 @@ const FullStackDevelopment = () => {
         </section>
 
         {/* 7. Our Portfolio */}
-        <section className="py-12 md:py-16 bg-white border-b border-slate-100">
-          <div className="container mx-auto px-4 max-w-[1200px]">
-            <div className="text-center mb-10 md:mb-14">
-              <h2 className="text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-black mb-4 font-display tracking-tight">Our Portfolio</h2>
-              <div className="w-16 h-1 bg-[#c82021] mx-auto"></div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-              {displayPortfolio.map((item: any, i: number) => (
-                <motion.div
-                  key={item.id || i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="bg-white p-2 sm:p-3 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.2)] group cursor-pointer"
-                >
-                  <div 
-                    className="w-full aspect-[4/3] rounded-sm overflow-hidden portfolio-img-scroll"
-                    style={{ backgroundImage: `url(${item.image})` }}
-                  >
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <HomePortfolioSection />
 
         {/* 8. FAQ Section */}
         <section className="py-12 md:py-16 bg-slate-50">
