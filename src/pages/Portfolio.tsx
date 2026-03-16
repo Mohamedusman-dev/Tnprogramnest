@@ -5,12 +5,52 @@ import * as Icons from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactSection from "@/components/ContactSection";
+import ServiceTestimonialsSection from "@/components/ServiceTestimonialsSection";
 import { useSiteData } from "@/context/SiteDataContext";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 
 const ScrollToTop = lazy(() => import("@/components/ScrollToTop"));
 
 const tabs = ["All Projects", "Completed Projects", "Currently Working", "Upcoming / Concepts"];
+
+// Helper function to map technology names to their respective logos
+const getTechLogo = (techName: string) => {
+  const normalized = techName.toLowerCase().trim();
+  const map: Record<string, string> = {
+    'react': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+    'react native': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+    'next.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
+    'node.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+    'django': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg',
+    'postgresql': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg',
+    'mysql': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+    'mongodb': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
+    'aws': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
+    'tailwind': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg',
+    'stripe': 'https://cdn.iconscout.com/icon/free/png-256/free-stripe-logo-icon-download-in-svg-png-gif-file-formats--technology-social-media-company-brand-vol-6-pack-logos-icons-2945170.png?f=webp&w=256',
+    'openai': 'https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg',
+    'express.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg',
+    'vercel': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg',
+    'firebase': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg',
+    'google maps': 'https://cdn.iconscout.com/icon/free/png-256/free-google-maps-logo-icon-download-in-svg-png-gif-file-formats--technology-social-media-company-brand-vol-3-pack-logos-icons-2944983.png?f=webp&w=256',
+    'supabase': 'https://seeklogo.com/images/S/supabase-logo-DCC676FFE2-seeklogo.com.png',
+    'angular': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg',
+    'vue.js': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg',
+    'php': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',
+    'laravel': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/laravel/laravel-original.svg',
+    'flutter': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg',
+    'swift': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg',
+    'kotlin': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg',
+    'docker': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+    'kubernetes': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg',
+    'figma': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+    'wordpress': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/wordpress/wordpress-original.svg',
+    'shopify': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/shopify/shopify-original.svg',
+    'woocommerce': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/woocommerce/woocommerce-original.svg',
+    'magento': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/magento/magento-original.svg',
+  };
+  return map[normalized] || null;
+};
 
 const Portfolio = () => {
   const { siteData } = useSiteData();
@@ -45,7 +85,6 @@ const Portfolio = () => {
   const featuredProject = projects.find(p => p.featured) || projects[0];
   const highlightProject = projects.find(p => p.highlight && !p.featured) || projects[1];
 
-  // Exact colors from the reference image
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Completed": return "text-[#059669] bg-[#ecfdf5] border-[#a7f3d0]"; // Emerald
@@ -54,6 +93,31 @@ const Portfolio = () => {
       default: return "text-slate-600 bg-slate-50 border-slate-200";
     }
   };
+
+  // Reusable component to render tech stack logos or fallback text
+  const TechStackRenderer = ({ techStack }: { techStack: string[] }) => (
+    <div className="flex flex-wrap gap-2">
+      {techStack.map(tech => {
+        const logo = getTechLogo(tech);
+        return logo ? (
+          <div 
+            key={tech} 
+            className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center p-1.5 shadow-sm hover:scale-110 hover:shadow-md transition-transform" 
+            title={tech}
+          >
+            <img src={logo} alt={tech} className="w-full h-full object-contain" />
+          </div>
+        ) : (
+          <span 
+            key={tech} 
+            className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-full text-[11px] font-medium shadow-sm flex items-center"
+          >
+            {tech}
+          </span>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
@@ -114,7 +178,7 @@ const Portfolio = () => {
 
         <div className="container mx-auto px-4 max-w-7xl py-16 md:py-24">
           
-          {/* Featured Project - Light Dark Theme */}
+          {/* Featured Project - Reverted to White Theme & Fixed Mobile Layout */}
           {featuredProject && (
             <motion.section 
               initial={{ opacity: 0, y: 30 }}
@@ -123,25 +187,23 @@ const Portfolio = () => {
               transition={{ duration: 0.6 }}
               className="mb-16 md:mb-24"
             >
-              <div className="bg-slate-900 rounded-[1.5rem] border border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-all duration-300 overflow-hidden group text-white">
-                <div className="grid md:grid-cols-2 gap-0">
+              <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden group">
+                <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-0">
                   <div className="p-8 md:p-12 flex flex-col justify-center">
-                    <span className="inline-block px-3 py-1 bg-primary/20 text-primary border border-primary/30 rounded-md text-[10px] font-semibold uppercase tracking-widest w-fit mb-6">Featured Project</span>
-                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">{featuredProject.title}</h3>
-                    <p className="text-slate-400 mb-6 leading-relaxed">
+                    <span className="inline-block px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-md text-[10px] font-semibold uppercase tracking-widest w-fit mb-6">Featured Project</span>
+                    <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">{featuredProject.title}</h3>
+                    <p className="text-slate-600 mb-6 leading-relaxed">
                       {featuredProject.description}
                     </p>
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {featuredProject.techStack.map(tech => (
-                        <span key={tech} className="px-2.5 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded text-[10px] font-semibold uppercase tracking-wider">{tech}</span>
-                      ))}
+                    <div className="mb-8">
+                      <TechStackRenderer techStack={featuredProject.techStack} />
                     </div>
-                    <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 w-fit group-hover:gap-3">
+                    <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 w-fit group-hover:gap-3 shadow-md">
                       {featuredProject.cta} <ArrowRight size={16} className="transition-transform" />
                     </button>
                   </div>
-                  <div className="p-5 flex items-center justify-center bg-slate-800/50">
-                    <div className="rounded-xl overflow-hidden shadow-2xl w-full h-full relative">
+                  <div className="p-5 flex items-center justify-center bg-[#f4f9ff]">
+                    <div className="rounded-xl overflow-hidden shadow-lg w-full relative min-h-[250px] md:min-h-[350px]">
                       <img src={featuredProject.image} alt={featuredProject.title} className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-700" />
                     </div>
                   </div>
@@ -164,9 +226,9 @@ const Portfolio = () => {
                 <h2 className="text-xl font-bold text-slate-900">Highlight Project</h2>
               </div>
               <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden group">
-                <div className="grid md:grid-cols-[2fr_3fr] gap-0">
+                <div className="flex flex-col md:grid md:grid-cols-[2fr_3fr] gap-0">
                   <div className="p-5 flex items-center justify-center bg-[#f4f9ff]">
-                    <div className="rounded-xl overflow-hidden shadow-lg w-full h-full relative min-h-[250px]">
+                    <div className="rounded-xl overflow-hidden shadow-lg w-full relative min-h-[250px] md:h-full">
                       <img src={highlightProject.image} alt={highlightProject.title} className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-700" />
                     </div>
                   </div>
@@ -179,12 +241,10 @@ const Portfolio = () => {
                     <p className="text-slate-600 mb-6 leading-relaxed">
                       {highlightProject.description}
                     </p>
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {highlightProject.techStack.map(tech => (
-                        <span key={tech} className="px-3 py-1 bg-white border border-slate-200 text-slate-700 rounded-full text-[11px] font-medium shadow-sm">{tech}</span>
-                      ))}
+                    <div className="mb-8">
+                      <TechStackRenderer techStack={highlightProject.techStack} />
                     </div>
-                    <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 w-fit group-hover:gap-3">
+                    <button className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 w-fit group-hover:gap-3 shadow-md">
                       {highlightProject.cta} <ArrowRight size={16} className="transition-transform" />
                     </button>
                   </div>
@@ -253,12 +313,8 @@ const Portfolio = () => {
                           </span>
                         </div>
                         <p className="text-sm text-slate-500 mb-6 line-clamp-2 flex-1 leading-relaxed">{p.description}</p>
-                        <div className="flex flex-wrap gap-2 mt-auto">
-                          {p.techStack.map(tech => (
-                            <span key={tech} className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-full text-[11px] font-medium shadow-sm">
-                              {tech}
-                            </span>
-                          ))}
+                        <div className="mt-auto">
+                          <TechStackRenderer techStack={p.techStack} />
                         </div>
                       </div>
                     </motion.div>
@@ -277,6 +333,10 @@ const Portfolio = () => {
           </section>
 
         </div>
+        
+        {/* Added Clutch Reviews Section */}
+        <ServiceTestimonialsSection />
+        
         <ContactSection />
       </main>
 
