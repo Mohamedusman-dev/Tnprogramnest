@@ -58,6 +58,16 @@ const Navbar = () => {
       return;
     }
 
+    // Route "Home" to top of the page
+    if (item === "Home") {
+      if (location.pathname !== "/") {
+        navigate('/');
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
+
     let id = item.toLowerCase().replace(/\s+/g, "-");
     
     // Map "contact" back to the "contact-us" section ID
@@ -68,7 +78,10 @@ const Navbar = () => {
     if (location.pathname !== "/") {
       navigate(`/#${id}`);
     } else {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      // Add a slight delay to allow mobile menu to close before scrolling
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
     }
   };
 
