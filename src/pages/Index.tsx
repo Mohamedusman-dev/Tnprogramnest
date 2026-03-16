@@ -7,6 +7,7 @@ import EcommerceSolutionsSection from "@/components/EcommerceSolutionsSection";
 import ProductShowcaseSection from "@/components/ProductShowcaseSection";
 import AboutSection from "@/components/AboutSection";
 import WhyChooseSection from "@/components/WhyChooseSection";
+import HomePortfolioSection from "@/components/HomePortfolioSection";
 import IndustriesSection from "@/components/IndustriesSection";
 import TransformCTASection from "@/components/TransformCTASection";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -61,6 +62,7 @@ const Index = () => {
         <ServicesSection />
         <EcommerceSolutionsSection />
         <WhyChooseSection />
+        <HomePortfolioSection />
         <TransformCTASection />
         <ProductShowcaseSection />
         <IndustriesSection />
