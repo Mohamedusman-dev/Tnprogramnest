@@ -10,7 +10,7 @@ import WhyChooseSection from "@/components/WhyChooseSection";
 import HomePortfolioSection from "@/components/HomePortfolioSection";
 import IndustriesSection from "@/components/IndustriesSection";
 import TransformCTASection from "@/components/TransformCTASection";
-import TestimonialsSection from "@/components/TestimonialsSection";
+import ServiceTestimonialsSection from "@/components/ServiceTestimonialsSection";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
@@ -66,7 +66,9 @@ const Index = () => {
         <TransformCTASection />
         <ProductShowcaseSection />
         <IndustriesSection />
-        <TestimonialsSection />
+        
+        {/* Replaced old Testimonials with Clutch Reviews */}
+        <ServiceTestimonialsSection />
         
         {/* Swapped Order: Contact Us is now above FAQ */}
         <ContactSection />

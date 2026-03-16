@@ -80,17 +80,20 @@ const HomePortfolioSection = () => {
   if (projects.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-24 bg-white" ref={ref}>
+    <section className="py-10 md:py-16 bg-white" ref={ref}>
       <div className="container mx-auto px-4 max-w-[1200px]">
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12 md:mb-16"
+          className="text-center mb-10 md:mb-14"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 font-display">Our Portfolio</h2>
-          <div className="w-16 h-1 bg-primary mx-auto rounded-full"></div>
+          <div className="w-16 h-1 bg-primary mx-auto rounded-full mb-4"></div>
+          <p className="text-slate-600 max-w-2xl mx-auto text-sm md:text-base leading-relaxed px-4">
+            Discover how we've transformed ideas into powerful digital solutions. Browse through our latest projects showcasing our expertise in web, mobile, and custom software development.
+          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
