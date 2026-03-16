@@ -229,7 +229,6 @@ const Admin = () => {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Fixed TypeScript strict comparison error by casting event to string
       if ((event as string) === 'TOKEN_REFRESH_FAILED') {
         console.error("Token refresh failed, signing out.");
         clearInvalidSession();
@@ -535,12 +534,12 @@ const Admin = () => {
   const removePortfolioProject = (id: string) => setPortfolioProjectsForm(portfolioProjectsForm.filter(p => p.id !== id));
 
   // Service Pages Handlers
-  const currentServiceData = servicePagesForm[selectedServiceSlug] || { industries: [], portfolio: [], faqs: [] };
+  const currentServiceData = servicePagesForm[selectedServiceSlug] || { industries: [], faqs: [] };
   const updateCurrentServiceData = (key: string, value: any) => {
     setServicePagesForm(prev => ({
       ...prev,
       [selectedServiceSlug]: {
-        ...(prev[selectedServiceSlug] || { industries: [], portfolio: [], faqs: [] }),
+        ...(prev[selectedServiceSlug] || { industries: [], faqs: [] }),
         [key]: value
       }
     }));
@@ -967,7 +966,7 @@ const Admin = () => {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
                 <div>
                   <h2 className="text-xl md:text-2xl font-bold text-slate-900">Service Pages Content</h2>
-                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage Industries, Portfolio, and FAQs for each specific service page.</p>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage Industries and FAQs for each specific service page.</p>
                 </div>
                 <button disabled={isSaving} onClick={handleSaveServicePages} className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
                   {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
@@ -1033,39 +1032,6 @@ const Admin = () => {
                     <p className="text-sm text-slate-500 italic">No industries added yet. The default ones will be shown on the website.</p>
                   )}
                 </div>
-              </div>
-
-              {/* Our Portfolio */}
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-bold text-slate-900">Our Portfolio</h3>
-                  <button onClick={() => updateCurrentServiceData('portfolio', [...(currentServiceData.portfolio || []), { id: Date.now(), image: "" }])} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
-                    <Plus size={16} /> Add Image
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {(currentServiceData.portfolio || []).map((port: any, index: number) => (
-                    <div key={port.id || index} className="bg-slate-50 p-4 rounded-lg border border-slate-200 relative">
-                      <button onClick={() => {
-                        const newPorts = [...currentServiceData.portfolio];
-                        newPorts.splice(index, 1);
-                        updateCurrentServiceData('portfolio', newPorts);
-                      }} className="absolute top-2 right-2 text-slate-400 hover:text-red-500 z-10 bg-white rounded-full p-1 shadow-sm transition-colors"><Trash2 size={14} /></button>
-                      <ImageUploader 
-                        label={`Portfolio Image ${index + 1}`} 
-                        value={port.image} 
-                        onChange={(val) => {
-                          const newPorts = [...currentServiceData.portfolio];
-                          newPorts[index].image = val;
-                          updateCurrentServiceData('portfolio', newPorts);
-                        }} 
-                      />
-                    </div>
-                  ))}
-                </div>
-                {(!currentServiceData.portfolio || currentServiceData.portfolio.length === 0) && (
-                  <p className="text-sm text-slate-500 italic mt-2">No portfolio images added yet. The default ones will be shown on the website.</p>
-                )}
               </div>
 
               {/* FAQs */}
@@ -1790,6 +1756,850 @@ const Admin = () => {
                   </div>
                 ))}
               </div>
+            </motion.div>
+          )}
+
+          {/* Training Programs Tab */}
+          {activeTab === "training" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Training Programs</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage workshops, topics, audiences, and gallery.</p>
+                </div>
+                <button disabled={isSaving} onClick={handleSaveTrainingPage} className="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                  {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                </button>
+              </div>
+
+              {/* Programs List */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">Training Programs</h3>
+                  <button onClick={addTrainingProgram} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Program
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {trainingForm.map((prog, index) => (
+                    <div key={prog.id} className="bg-slate-50 p-4 rounded-lg border border-slate-200 relative">
+                      <button onClick={() => removeTrainingProgram(prog.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                      <div className="space-y-3 pr-8">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Title</label>
+                          <input type="text" value={prog.title || ""} onChange={(e) => {
+                            const newForm = structuredClone(trainingForm);
+                            newForm[index].title = e.target.value;
+                            setTrainingForm(newForm);
+                          }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Duration</label>
+                            <input type="text" value={prog.duration || ""} onChange={(e) => {
+                              const newForm = structuredClone(trainingForm);
+                              newForm[index].duration = e.target.value;
+                              setTrainingForm(newForm);
+                            }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Mode</label>
+                            <input type="text" value={prog.mode || ""} onChange={(e) => {
+                              const newForm = structuredClone(trainingForm);
+                              newForm[index].mode = e.target.value;
+                              setTrainingForm(newForm);
+                            }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Audience</label>
+                            <input type="text" value={prog.audience || ""} onChange={(e) => {
+                              const newForm = structuredClone(trainingForm);
+                              newForm[index].audience = e.target.value;
+                              setTrainingForm(newForm);
+                            }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Icon (Lucide)</label>
+                            <input type="text" value={prog.iconName || ""} onChange={(e) => {
+                              const newForm = structuredClone(trainingForm);
+                              newForm[index].iconName = e.target.value;
+                              setTrainingForm(newForm);
+                            }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Description</label>
+                          <textarea rows={2} value={prog.desc || ""} onChange={(e) => {
+                            const newForm = structuredClone(trainingForm);
+                            newForm[index].desc = e.target.value;
+                            setTrainingForm(newForm);
+                          }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Topics & Audiences */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6">
+                  <h3 className="text-lg font-bold text-slate-900 mb-4">Topics Covered</h3>
+                  <CommaSeparatedInput 
+                    rows={4}
+                    value={trainingTopicsForm || []}
+                    onChange={(val) => setTrainingTopicsForm(val)}
+                    placeholder="Web Development, App Development, AI Tools..."
+                    className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">Comma separated list of topics.</p>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6">
+                  <h3 className="text-lg font-bold text-slate-900 mb-4">Target Audiences</h3>
+                  <CommaSeparatedInput 
+                    rows={4}
+                    value={trainingAudiencesForm || []}
+                    onChange={(val) => setTrainingAudiencesForm(val)}
+                    placeholder="Schools, Colleges, Engineering Students..."
+                    className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">Comma separated list of audiences.</p>
+                </div>
+              </div>
+
+              {/* Formats & Gallery */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">Program Formats</h3>
+                  <button onClick={addTrainingFormat} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Format
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {trainingFormatsForm.map((format, index) => (
+                    <div key={format.id} className="flex items-center gap-2 bg-slate-50 p-2 rounded border border-slate-200">
+                      <input type="text" value={format.title} onChange={(e) => {
+                        const newForm = structuredClone(trainingFormatsForm);
+                        newForm[index].title = e.target.value;
+                        setTrainingFormatsForm(newForm);
+                      }} className="flex-1 px-2 py-1 text-sm border border-slate-300 rounded" placeholder="Format Title" />
+                      <input type="text" value={format.iconName} onChange={(e) => {
+                        const newForm = structuredClone(trainingFormatsForm);
+                        newForm[index].iconName = e.target.value;
+                        setTrainingFormatsForm(newForm);
+                      }} className="w-24 px-2 py-1 text-sm border border-slate-300 rounded" placeholder="Icon" />
+                      <button onClick={() => removeTrainingFormat(format.id)} className="text-red-500 hover:bg-red-50 p-1 rounded"><Trash2 size={14} /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Gallery */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">Event Gallery</h3>
+                  <button onClick={addGalleryImage} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Image
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {trainingGalleryForm.map((img, index) => (
+                    <div key={index} className="bg-slate-50 p-3 rounded-lg border border-slate-200 relative">
+                      <button onClick={() => removeGalleryImage(index)} className="absolute top-2 right-2 text-slate-400 hover:text-red-500 z-10 bg-white rounded-full p-1 shadow-sm transition-colors"><Trash2 size={14} /></button>
+                      <ImageUploader 
+                        label={`Image ${index + 1}`} 
+                        value={img} 
+                        onChange={(val) => {
+                          const newForm = [...trainingGalleryForm];
+                          newForm[index] = val;
+                          setTrainingGalleryForm(newForm);
+                        }} 
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Institution Testimonials */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-slate-900">Institution Testimonials</h3>
+                  <button onClick={addTrainingTestimonial} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium flex items-center gap-1 text-sm transition-all">
+                    <Plus size={16} /> Add Testimonial
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {trainingTestimonialsForm.map((t, index) => (
+                    <div key={t.id} className="bg-slate-50 p-4 rounded-lg border border-slate-200 relative">
+                      <button onClick={() => removeTrainingTestimonial(t.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                      <div className="space-y-3 pr-8">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Quote</label>
+                          <textarea rows={2} value={t.quote || ""} onChange={(e) => {
+                            const newForm = structuredClone(trainingTestimonialsForm);
+                            newForm[index].quote = e.target.value;
+                            setTrainingTestimonialsForm(newForm);
+                          }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Author Name</label>
+                            <input type="text" value={t.author || ""} onChange={(e) => {
+                              const newForm = structuredClone(trainingTestimonialsForm);
+                              newForm[index].author = e.target.value;
+                              setTrainingTestimonialsForm(newForm);
+                            }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Role / Institution</label>
+                            <input type="text" value={t.role || ""} onChange={(e) => {
+                              const newForm = structuredClone(trainingTestimonialsForm);
+                              newForm[index].role = e.target.value;
+                              setTrainingTestimonialsForm(newForm);
+                            }} className="w-full px-3 py-1.5 rounded border border-slate-300 text-sm text-slate-900 bg-white" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </motion.div>
+          )}
+
+          {/* Jobs Tab */}
+          {activeTab === "jobs" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Open Positions</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage career opportunities displayed on the Careers page.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <button onClick={addJob} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <Plus size={18} /> Add Job
+                  </button>
+                  <button disabled={isSaving} onClick={() => handleSaveSection('jobs', jobsForm)} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 md:gap-8">
+                {jobsForm.map((job, index) => (
+                  <div key={job.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 relative">
+                    <button 
+                      onClick={() => removeJob(job.id)}
+                      className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    
+                    <div className="space-y-6 pr-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Job Title</label>
+                          <input 
+                            type="text" 
+                            value={job.title || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(jobsForm);
+                              newForm[index].title = e.target.value;
+                              setJobsForm(newForm);
+                            }}
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Category</label>
+                            <input 
+                              type="text" 
+                              value={job.category || ""}
+                              onChange={(e) => {
+                                const newForm = structuredClone(jobsForm);
+                                newForm[index].category = e.target.value;
+                                setJobsForm(newForm);
+                              }}
+                              placeholder="e.g. Engineering"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Job Type</label>
+                            <select 
+                              value={job.type || "Full Time"}
+                              onChange={(e) => {
+                                const newForm = structuredClone(jobsForm);
+                                newForm[index].type = e.target.value;
+                                setJobsForm(newForm);
+                              }}
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                            >
+                              <option value="Full Time">Full Time</option>
+                              <option value="Part Time">Part Time</option>
+                              <option value="Contract">Contract</option>
+                              <option value="Internship">Internship</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Location</label>
+                          <input 
+                            type="text" 
+                            value={job.location || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(jobsForm);
+                              newForm[index].location = e.target.value;
+                              setJobsForm(newForm);
+                            }}
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Salary</label>
+                          <input 
+                            type="text" 
+                            value={job.salary || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(jobsForm);
+                              newForm[index].salary = e.target.value;
+                              setJobsForm(newForm);
+                            }}
+                            placeholder="e.g. Not Disclosed"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Apply Link (Optional)</label>
+                          <input 
+                            type="url" 
+                            value={job.applyLink || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(jobsForm);
+                              newForm[index].applyLink = e.target.value;
+                              setJobsForm(newForm);
+                            }}
+                            placeholder="https://forms.gle/..."
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Job Description</label>
+                        <textarea 
+                          rows={3}
+                          value={job.desc || ""}
+                          onChange={(e) => {
+                            const newForm = structuredClone(jobsForm);
+                            newForm[index].desc = e.target.value;
+                            setJobsForm(newForm);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Requirements (Comma Separated)</label>
+                        <CommaSeparatedInput 
+                          rows={3}
+                          value={job.requirements || []}
+                          onChange={(val) => {
+                            const newForm = structuredClone(jobsForm);
+                            newForm[index].requirements = val;
+                            setJobsForm(newForm);
+                          }}
+                          placeholder="5+ years experience, Expert in React, Strong communication..."
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+
+                      <ImageUploader 
+                        label="Job Icon (Optional)" 
+                        value={job.iconUrl} 
+                        onChange={(val) => {
+                          const newForm = structuredClone(jobsForm);
+                          newForm[index].iconUrl = val;
+                          setJobsForm(newForm);
+                        }} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Team Testimonials Tab */}
+          {activeTab === "team_testimonials" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Team Testimonials</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage employee feedback shown on the Careers page.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <button onClick={addTeamTestimonial} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <Plus size={18} /> Add Testimonial
+                  </button>
+                  <button disabled={isSaving} onClick={() => handleSaveSection('teamTestimonials', teamTestimonialsForm)} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                {teamTestimonialsForm.map((t, index) => (
+                  <div key={t.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative">
+                    <button 
+                      onClick={() => removeTeamTestimonial(t.id)}
+                      className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    <div className="space-y-4 pr-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Employee Name</label>
+                          <input 
+                            type="text" 
+                            value={t.name || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(teamTestimonialsForm);
+                              newForm[index].name = e.target.value;
+                              setTeamTestimonialsForm(newForm);
+                            }}
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Role / Position</label>
+                          <input 
+                            type="text" 
+                            value={t.role || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(teamTestimonialsForm);
+                              newForm[index].role = e.target.value;
+                              setTeamTestimonialsForm(newForm);
+                            }}
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Rating (1-5)</label>
+                        <input 
+                          type="number" 
+                          min="1" max="5"
+                          value={t.rating || 5}
+                          onChange={(e) => {
+                            const newForm = structuredClone(teamTestimonialsForm);
+                            newForm[index].rating = parseInt(e.target.value) || 5;
+                            setTeamTestimonialsForm(newForm);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Quote</label>
+                        <textarea 
+                          rows={3}
+                          value={t.quote || ""}
+                          onChange={(e) => {
+                            const newForm = structuredClone(teamTestimonialsForm);
+                            newForm[index].quote = e.target.value;
+                            setTeamTestimonialsForm(newForm);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+                      <ImageUploader 
+                        label="Employee Profile Image" 
+                        value={t.image} 
+                        onChange={(val) => {
+                          const newForm = structuredClone(teamTestimonialsForm);
+                          newForm[index].image = val;
+                          setTeamTestimonialsForm(newForm);
+                        }} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Testimonials Tab */}
+          {activeTab === "testimonials" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Client Testimonials</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage the testimonials shown on the home page.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <button onClick={addTestimonial} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <Plus size={18} /> Add Testimonial
+                  </button>
+                  <button disabled={isSaving} onClick={handleSaveTestimonials} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                {testimonialsForm.map((t, index) => (
+                  <div key={t.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative">
+                    <button 
+                      onClick={() => removeTestimonial(t.id)}
+                      className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    <div className="space-y-4 pr-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Client Name</label>
+                          <input 
+                            type="text" 
+                            value={t.name || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(testimonialsForm);
+                              newForm[index].name = e.target.value;
+                              setTestimonialsForm(newForm);
+                            }}
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Company</label>
+                          <input 
+                            type="text" 
+                            value={t.company || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(testimonialsForm);
+                              newForm[index].company = e.target.value;
+                              setTestimonialsForm(newForm);
+                            }}
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Rating (1-5)</label>
+                        <input 
+                          type="number" 
+                          min="1" max="5"
+                          value={t.rating || 5}
+                          onChange={(e) => {
+                            const newForm = structuredClone(testimonialsForm);
+                            newForm[index].rating = parseInt(e.target.value) || 5;
+                            setTestimonialsForm(newForm);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Testimonial Text</label>
+                        <textarea 
+                          rows={3}
+                          value={t.text || ""}
+                          onChange={(e) => {
+                            const newForm = structuredClone(testimonialsForm);
+                            newForm[index].text = e.target.value;
+                            setTestimonialsForm(newForm);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Chatbot Tab */}
+          {activeTab === "chatbot" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Chatbot Knowledge Base</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Train the chatbot on how to respond to specific keywords.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <button onClick={addChatbotQA} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <Plus size={18} /> Add Q&A
+                  </button>
+                  <button disabled={isSaving} onClick={handleSaveChatbot} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                  </button>
+                </div>
+              </div>
+
+              {/* Chatbot General Settings */}
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 mb-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">Chatbot Settings</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Suggested Questions (Comma Separated)</label>
+                    <CommaSeparatedInput 
+                      rows={3}
+                      value={generalForm.chatbotSuggestions || []}
+                      onChange={(val) => setGeneralForm({ ...generalForm, chatbotSuggestions: val })}
+                      placeholder="What services do you offer?, How much does it cost?..."
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 bg-white"
+                    />
+                    <p className="text-xs text-slate-500 mt-2">These appear as quick-click chips above the chat input.</p>
+                  </div>
+                  <div>
+                    <ImageUploader 
+                      label="Chatbot Background Image (Optional)" 
+                      value={generalForm.chatbotBgUrl || ""} 
+                      onChange={(val) => setGeneralForm({...generalForm, chatbotBgUrl: val})} 
+                    />
+                    <p className="text-xs text-slate-500 mt-2">A subtle background watermark for the chat window.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Knowledge Base */}
+              <div className="grid grid-cols-1 gap-4 md:gap-6">
+                {chatbotForm.map((c, index) => (
+                  <div key={c.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative">
+                    <button 
+                      onClick={() => removeChatbotQA(c.id)}
+                      className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    <div className="space-y-4 pr-6">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Keywords (Comma Separated)</label>
+                        <CommaSeparatedInput 
+                          rows={1}
+                          value={c.keywords || []}
+                          onChange={(val) => {
+                            const newForm = structuredClone(chatbotForm);
+                            newForm[index].keywords = val;
+                            setChatbotForm(newForm);
+                          }}
+                          placeholder="price, cost, quote"
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Bot Answer</label>
+                        <textarea 
+                          rows={2}
+                          value={c.answer || ""}
+                          onChange={(e) => {
+                            const newForm = structuredClone(chatbotForm);
+                            newForm[index].answer = e.target.value;
+                            setChatbotForm(newForm);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Contact Messages Tab */}
+          {activeTab === "messages" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Contact Messages</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">View and manage leads from the website.</p>
+                </div>
+                <div className="flex gap-3 w-full sm:w-auto">
+                  <button onClick={exportToCSV} className="flex-1 sm:flex-none justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <FileSpreadsheet size={18} className="text-green-600" /> Export CSV
+                  </button>
+                  <button onClick={exportToPDF} className="flex-1 sm:flex-none justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <FileTextIcon size={18} className="text-red-500" /> Export PDF
+                  </button>
+                </div>
+              </div>
+
+              {loadingMessages ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : contactMessages.length === 0 ? (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+                  <Mailbox className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">No Messages Yet</h3>
+                  <p className="text-slate-500">When users submit the contact form, their messages will appear here.</p>
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200">
+                          <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
+                          <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Name</th>
+                          <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact Info</th>
+                          <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Service</th>
+                          <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Details</th>
+                          <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {contactMessages.map((msg) => (
+                          <tr key={msg.id} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
+                              {new Date(msg.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 text-sm font-medium text-slate-900 whitespace-nowrap">
+                              {msg.name}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-600">
+                              <div className="flex flex-col gap-1">
+                                <a href={`mailto:${msg.email}`} className="hover:text-primary transition-colors">{msg.email}</a>
+                                <a href={`tel:${msg.phone}`} className="hover:text-primary transition-colors">{msg.phone}</a>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
+                              <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                                {msg.service || 'Not specified'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate" title={msg.details}>
+                              {msg.details}
+                            </td>
+                            <td className="px-6 py-4 text-right whitespace-nowrap">
+                              <div className="flex items-center justify-end gap-2">
+                                <button 
+                                  onClick={() => setEditingMessage(msg)}
+                                  className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                  title="Edit Message"
+                                >
+                                  <Pencil size={16} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeleteMessage(msg.id)}
+                                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                  title="Delete Message"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Edit Message Modal */}
+              <AnimatePresence>
+                {editingMessage && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+                    >
+                      <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+                        <h3 className="text-lg font-bold text-slate-900">Edit Lead Details</h3>
+                        <button onClick={() => setEditingMessage(null)} className="text-slate-400 hover:text-slate-600">
+                          <X size={20} />
+                        </button>
+                      </div>
+                      
+                      <div className="p-6 overflow-y-auto">
+                        <form id="edit-message-form" onSubmit={handleUpdateMessage} className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Name</label>
+                              <input 
+                                type="text" 
+                                required
+                                value={editingMessage.name || ""}
+                                onChange={(e) => setEditingMessage({...editingMessage, name: e.target.value})}
+                                className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Service</label>
+                              <input 
+                                type="text" 
+                                value={editingMessage.service || ""}
+                                onChange={(e) => setEditingMessage({...editingMessage, service: e.target.value})}
+                                className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Email</label>
+                              <input 
+                                type="email" 
+                                required
+                                value={editingMessage.email || ""}
+                                onChange={(e) => setEditingMessage({...editingMessage, email: e.target.value})}
+                                className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Phone</label>
+                              <input 
+                                type="text" 
+                                value={editingMessage.phone || ""}
+                                onChange={(e) => setEditingMessage({...editingMessage, phone: e.target.value})}
+                                className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Project Details</label>
+                            <textarea 
+                              rows={5}
+                              value={editingMessage.details || ""}
+                              onChange={(e) => setEditingMessage({...editingMessage, details: e.target.value})}
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm resize-none"
+                            />
+                          </div>
+                        </form>
+                      </div>
+                      
+                      <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 shrink-0">
+                        <button 
+                          onClick={() => setEditingMessage(null)}
+                          className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          type="submit"
+                          form="edit-message-form"
+                          disabled={isSaving}
+                          className="px-6 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-70"
+                        >
+                          {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save Changes
+                        </button>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </AnimatePresence>
+
             </motion.div>
           )}
 
