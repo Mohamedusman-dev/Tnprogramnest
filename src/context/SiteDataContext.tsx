@@ -18,6 +18,14 @@ export type TeamTestimonial = {
   rating: number;
 };
 
+export type ClutchReview = {
+  id: string;
+  text: string;
+  author: string;
+  company: string;
+  rating: string;
+};
+
 export type ChatbotQA = {
   id: string;
   keywords: string[];
@@ -190,6 +198,7 @@ export type SiteData = {
 
   testimonials: Testimonial[];
   teamTestimonials: TeamTestimonial[];
+  clutchReviews: ClutchReview[];
   chatbot: ChatbotQA[];
   footer: {
     description: string;
@@ -692,6 +701,13 @@ const defaultData: SiteData = {
       rating: 5
     }
   ],
+  clutchReviews: [
+    { id: "1", text: "They immediately understood our needs and were always available.", author: "Managing Director,", company: "TMI Special Network", rating: "5.0" },
+    { id: "2", text: "The team was hands-on with their approach throughout the process.", author: "Founder,", company: "E-Commerce Fulfillment Company", rating: "5.0" },
+    { id: "3", text: "Their feedback time is really quick, and they take action immediately.", author: "Board of Director,", company: "LINK Global", rating: "5.0" },
+    { id: "4", text: "Their creativeness is impressive.", author: "Director,", company: "Paramanand Yoga Institute", rating: "5.0" },
+    { id: "5", text: "Highly professional and delivered the project exactly on time.", author: "CEO,", company: "Tech Startup", rating: "5.0" }
+  ],
   chatbot: [
     { id: crypto.randomUUID(), keywords: ["service", "offer", "do you do", "what can you"], answer: "We offer Full Stack Development, Mobile App Development, Web Development, E-commerce Solutions, and Digital Marketing." },
     { id: crypto.randomUUID(), keywords: ["price", "cost", "quote", "estimate", "much"], answer: "Our pricing is project-based and highly competitive. Please leave your email or use the Contact Us form for a custom quote!" },
@@ -786,6 +802,7 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         
         footer: { ...defaultData.footer, ...getSetting('footer', defaultData.footer) },
         teamTestimonials: getSetting('teamTestimonials', defaultData.teamTestimonials)?.length ? getSetting('teamTestimonials', defaultData.teamTestimonials) : defaultData.teamTestimonials,
+        clutchReviews: getSetting('clutchReviews', defaultData.clutchReviews)?.length ? getSetting('clutchReviews', defaultData.clutchReviews) : defaultData.clutchReviews,
         testimonials: testimonialsRes.data?.length ? testimonialsRes.data : defaultData.testimonials,
         chatbot: chatbotRes.data?.length ? chatbotRes.data : defaultData.chatbot
       });

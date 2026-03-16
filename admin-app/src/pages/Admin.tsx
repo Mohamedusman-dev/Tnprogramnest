@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
   Globe, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, 
   FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, 
-  Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil, Layout, FolderGit2
+  Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil, Layout, FolderGit2, Star
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
@@ -150,7 +150,7 @@ const StatEditor = ({ title, stats, onChange, showIcon = false }: { title: strin
 };
 
 const Admin = () => {
-  const { siteData, updateSection, updateTestimonials, updateChatbot, isLoading } = useSiteData();
+  const { siteData, updateSection, updateChatbot, isLoading } = useSiteData();
   const [session, setSession] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("general");
@@ -191,8 +191,8 @@ const Admin = () => {
   const [trainingGalleryForm, setTrainingGalleryForm] = useState(siteData.trainingGallery || []);
   const [trainingTestimonialsForm, setTrainingTestimonialsForm] = useState(siteData.trainingTestimonials || []);
 
-  const [testimonialsForm, setTestimonialsForm] = useState(siteData.testimonials);
   const [teamTestimonialsForm, setTeamTestimonialsForm] = useState(siteData.teamTestimonials || []);
+  const [clutchReviewsForm, setClutchReviewsForm] = useState(siteData.clutchReviews || []);
   const [chatbotForm, setChatbotForm] = useState(siteData.chatbot);
   const [footerForm, setFooterForm] = useState(siteData.footer);
 
@@ -259,8 +259,8 @@ const Admin = () => {
     setTrainingGalleryForm(siteData.trainingGallery || []);
     setTrainingTestimonialsForm(siteData.trainingTestimonials || []);
 
-    setTestimonialsForm(siteData.testimonials || []);
     setTeamTestimonialsForm(siteData.teamTestimonials || []);
+    setClutchReviewsForm(siteData.clutchReviews || []);
     setChatbotForm(siteData.chatbot || []);
     if(siteData.footer) setFooterForm(siteData.footer);
   }, [siteData]);
@@ -481,18 +481,6 @@ const Admin = () => {
     }
   };
 
-  const handleSaveTestimonials = async () => {
-    setIsSaving(true);
-    try {
-      await updateTestimonials(testimonialsForm);
-      toast.success("Testimonials saved to database!");
-    } catch (error) {
-      toast.error("Failed to save testimonials.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const handleSaveChatbot = async () => {
     setIsSaving(true);
     try {
@@ -559,8 +547,8 @@ const Admin = () => {
   const removeTrainingTestimonial = (id: string) => setTrainingTestimonialsForm(trainingTestimonialsForm.filter(t => t.id !== id));
 
   // Other Handlers
-  const addTestimonial = () => setTestimonialsForm([...testimonialsForm, { id: crypto.randomUUID(), name: "", company: "", text: "", rating: 5 }]);
-  const removeTestimonial = (id: string) => setTestimonialsForm(testimonialsForm.filter(t => t.id !== id));
+  const addClutchReview = () => setClutchReviewsForm([...clutchReviewsForm, { id: crypto.randomUUID(), author: "", company: "", text: "", rating: "5.0" }]);
+  const removeClutchReview = (id: string) => setClutchReviewsForm(clutchReviewsForm.filter(t => t.id !== id));
 
   const addTeamTestimonial = () => setTeamTestimonialsForm([...teamTestimonialsForm, { id: crypto.randomUUID(), name: "", role: "", quote: "", image: "", rating: 5 }]);
   const removeTeamTestimonial = (id: string) => setTeamTestimonialsForm(teamTestimonialsForm.filter(t => t.id !== id));
@@ -578,7 +566,7 @@ const Admin = () => {
     { id: "training", label: "Training Programs", icon: GraduationCap },
     { id: "jobs", label: "Open Positions", icon: FileText },
     { id: "team_testimonials", label: "Team Testimonials", icon: Heart },
-    { id: "testimonials", label: "Client Testimonials", icon: Users },
+    { id: "clutch_reviews", label: "Clutch Reviews", icon: Star },
     { id: "chatbot", label: "Chatbot Data", icon: MessageSquare },
     { id: "messages", label: "Contact Messages", icon: Mailbox },
     { id: "footer", label: "Footer & Social", icon: Globe },
@@ -595,31 +583,31 @@ const Admin = () => {
 
   if (!session) {
     return (
-      <div className="min-h-screen flex flex-col md:flex-row font-sans bg-slate-50">
-        {/* Left Panel - Blue Design */}
-        <div className="hidden md:flex md:w-1/2 bg-[#5B7cFA] text-white p-12 flex-col justify-center relative overflow-hidden">
+      <div className="min-h-screen flex flex-col md:flex-row font-sans relative bg-[#5B7cFA] md:bg-slate-50">
+        {/* Background/Left Panel - Blue Design */}
+        <div className="absolute inset-0 md:relative md:w-1/2 bg-[#5B7cFA] text-white p-8 md:p-12 flex flex-col justify-start md:justify-center overflow-hidden z-0">
           
           {/* Decorative Elements mimicking the reference image */}
           <div className="absolute top-12 left-12 grid grid-cols-3 gap-2 opacity-30">
             {[...Array(9)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-white rounded-full"></div>)}
           </div>
           <div className="absolute top-0 left-1/4 w-32 h-64 bg-white/10 rounded-b-full blur-sm transform -translate-y-1/2"></div>
-          <div className="absolute top-20 right-20 w-12 h-12 border-4 border-white/20 rounded-full"></div>
+          <div className="absolute top-20 right-8 md:right-20 w-12 h-12 border-4 border-white/20 rounded-full"></div>
           
-          <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full border border-white/30 flex items-center justify-center">
+          <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full border border-white/30 flex items-center justify-center opacity-50 md:opacity-100">
             <div className="w-40 h-40 rounded-full border border-white/20 flex items-center justify-center">
               <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-cyan-300 to-blue-500 shadow-lg shadow-cyan-400/50"></div>
             </div>
           </div>
-          <div className="absolute bottom-32 left-8 w-6 h-6 bg-cyan-300 rounded-full shadow-md shadow-cyan-300/50"></div>
-          <div className="absolute bottom-48 left-48 w-4 h-4 bg-cyan-200 rounded-full shadow-md shadow-cyan-200/50"></div>
-          <div className="absolute bottom-20 left-64 text-white/50 text-2xl font-bold rotate-45">+</div>
+          <div className="absolute bottom-32 left-8 w-6 h-6 bg-cyan-300 rounded-full shadow-md shadow-cyan-300/50 hidden md:block"></div>
+          <div className="absolute bottom-48 left-48 w-4 h-4 bg-cyan-200 rounded-full shadow-md shadow-cyan-200/50 hidden md:block"></div>
+          <div className="absolute bottom-20 left-64 text-white/50 text-2xl font-bold rotate-45 hidden md:block">+</div>
 
-          <div className="relative z-10 pl-8">
+          <div className="relative z-10 pl-2 md:pl-8 mt-16 md:mt-0">
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl lg:text-6xl font-bold mb-6 leading-[1.1]"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-[1.1]"
             >
               Admin<br/>Portal
             </motion.h1>
@@ -627,7 +615,7 @@ const Admin = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-blue-100 text-lg max-w-md"
+              className="text-blue-100 text-base md:text-lg max-w-md"
             >
               Manage your website content, settings, and view user interactions securely.
             </motion.p>
@@ -635,15 +623,11 @@ const Admin = () => {
         </div>
 
         {/* Right Panel - White Login Form */}
-        <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white relative">
-          
-          {/* Mobile decorative header (only visible on small screens) */}
-          <div className="md:hidden absolute top-0 left-0 w-full h-48 bg-[#5B7cFA] rounded-b-[3rem] -z-10"></div>
-
+        <div className="w-full md:w-1/2 flex items-center justify-center p-4 sm:p-8 relative z-10 min-h-screen md:min-h-0 pt-64 md:pt-8">
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="w-full max-w-[400px] bg-white md:bg-transparent p-8 md:p-0 rounded-3xl md:rounded-none shadow-xl md:shadow-none mt-16 md:mt-0"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-[400px] bg-white p-8 rounded-3xl shadow-2xl"
           >
             <div className="text-center mb-10">
               <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-blue-100">
@@ -2236,29 +2220,29 @@ const Admin = () => {
             </motion.div>
           )}
 
-          {/* Testimonials Tab */}
-          {activeTab === "testimonials" && (
+          {/* Clutch Reviews Tab */}
+          {activeTab === "clutch_reviews" && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
                 <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Client Testimonials</h2>
-                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage the testimonials shown on the home page.</p>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Clutch Reviews</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage the reviews shown in the Clutch carousel.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                  <button onClick={addTestimonial} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
-                    <Plus size={18} /> Add Testimonial
+                  <button onClick={addClutchReview} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <Plus size={18} /> Add Review
                   </button>
-                  <button disabled={isSaving} onClick={handleSaveTestimonials} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                  <button disabled={isSaving} onClick={() => handleSaveSection('clutchReviews', clutchReviewsForm)} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
                     {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
                   </button>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                {testimonialsForm.map((t, index) => (
-                  <div key={t.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative">
+                {clutchReviewsForm.map((r, index) => (
+                  <div key={r.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative">
                     <button 
-                      onClick={() => removeTestimonial(t.id)}
+                      onClick={() => removeClutchReview(r.id)}
                       className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
                     >
                       <Trash2 size={18} />
@@ -2266,14 +2250,14 @@ const Admin = () => {
                     <div className="space-y-4 pr-6">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Client Name</label>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Author (e.g. CEO,)</label>
                           <input 
                             type="text" 
-                            value={t.name || ""}
+                            value={r.author || ""}
                             onChange={(e) => {
-                              const newForm = structuredClone(testimonialsForm);
-                              newForm[index].name = e.target.value;
-                              setTestimonialsForm(newForm);
+                              const newForm = structuredClone(clutchReviewsForm);
+                              newForm[index].author = e.target.value;
+                              setClutchReviewsForm(newForm);
                             }}
                             className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
@@ -2282,39 +2266,38 @@ const Admin = () => {
                           <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Company</label>
                           <input 
                             type="text" 
-                            value={t.company || ""}
+                            value={r.company || ""}
                             onChange={(e) => {
-                              const newForm = structuredClone(testimonialsForm);
+                              const newForm = structuredClone(clutchReviewsForm);
                               newForm[index].company = e.target.value;
-                              setTestimonialsForm(newForm);
+                              setClutchReviewsForm(newForm);
                             }}
                             className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Rating (1-5)</label>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Rating (e.g. 5.0)</label>
                         <input 
-                          type="number" 
-                          min="1" max="5"
-                          value={t.rating || 5}
+                          type="text" 
+                          value={r.rating || "5.0"}
                           onChange={(e) => {
-                            const newForm = structuredClone(testimonialsForm);
-                            newForm[index].rating = parseInt(e.target.value) || 5;
-                            setTestimonialsForm(newForm);
+                            const newForm = structuredClone(clutchReviewsForm);
+                            newForm[index].rating = e.target.value;
+                            setClutchReviewsForm(newForm);
                           }}
                           className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Testimonial Text</label>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Review Text</label>
                         <textarea 
                           rows={3}
-                          value={t.text || ""}
+                          value={r.text || ""}
                           onChange={(e) => {
-                            const newForm = structuredClone(testimonialsForm);
+                            const newForm = structuredClone(clutchReviewsForm);
                             newForm[index].text = e.target.value;
-                            setTestimonialsForm(newForm);
+                            setClutchReviewsForm(newForm);
                           }}
                           className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
                         />
