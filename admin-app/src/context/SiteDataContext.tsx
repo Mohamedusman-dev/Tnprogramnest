@@ -18,6 +18,14 @@ export type TeamTestimonial = {
   rating: number;
 };
 
+export type ClutchReview = {
+  id: string;
+  text: string;
+  author: string;
+  company: string;
+  rating: string;
+};
+
 export type ChatbotQA = {
   id: string;
   keywords: string[];
@@ -127,6 +135,7 @@ export type PortfolioProject = {
   cta: string;
   featured?: boolean;
   highlight?: boolean;
+  rating?: number;
 };
 
 export type SiteData = {
@@ -189,6 +198,7 @@ export type SiteData = {
 
   testimonials: Testimonial[];
   teamTestimonials: TeamTestimonial[];
+  clutchReviews: ClutchReview[];
   chatbot: ChatbotQA[];
   footer: {
     description: string;
@@ -392,7 +402,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=600&q=80",
       category: "Web App", status: "Completed",
       techStack: ["React", "Django", "PostgreSQL", "Supabase"],
-      cta: "View Case Study", featured: true
+      cta: "View Case Study", featured: true, rating: 5
     },
     {
       id: crypto.randomUUID(), title: "Hospital Booking System",
@@ -400,7 +410,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=600&q=80",
       category: "SaaS", status: "Completed",
       techStack: ["React", "Node.js", "MongoDB", "AWS"],
-      cta: "View Project", highlight: true
+      cta: "View Project", highlight: true, rating: 5
     },
     {
       id: crypto.randomUUID(), title: "E-Commerce Platform",
@@ -408,7 +418,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80",
       category: "Web App", status: "Completed",
       techStack: ["Next.js", "Tailwind", "Supabase", "Stripe"],
-      cta: "View Project"
+      cta: "View Project", rating: 5
     },
     {
       id: crypto.randomUUID(), title: "Resume Analyzer",
@@ -416,7 +426,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80",
       category: "SaaS", status: "In Progress",
       techStack: ["React", "Django", "PostgreSQL", "OpenAI"],
-      cta: "View Project"
+      cta: "View Project", rating: 4
     },
     {
       id: crypto.randomUUID(), title: "Tourism Admin Dashboard",
@@ -424,7 +434,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80",
       category: "Web App", status: "In Progress",
       techStack: ["React", "Express.js", "MySQL", "Vercel"],
-      cta: "View Project"
+      cta: "View Project", rating: 5
     },
     {
       id: crypto.randomUUID(), title: "Delivery Tracking App",
@@ -432,7 +442,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&q=80",
       category: "Mobile App", status: "Coming Soon",
       techStack: ["React Native", "Node.js", "Firebase", "Google Maps"],
-      cta: "View Case Study"
+      cta: "View Case Study", rating: 5
     }
   ],
   servicePages: {
@@ -691,6 +701,13 @@ const defaultData: SiteData = {
       rating: 5
     }
   ],
+  clutchReviews: [
+    { id: "1", text: "They immediately understood our needs and were always available.", author: "Managing Director,", company: "TMI Special Network", rating: "5.0" },
+    { id: "2", text: "The team was hands-on with their approach throughout the process.", author: "Founder,", company: "E-Commerce Fulfillment Company", rating: "5.0" },
+    { id: "3", text: "Their feedback time is really quick, and they take action immediately.", author: "Board of Director,", company: "LINK Global", rating: "5.0" },
+    { id: "4", text: "Their creativeness is impressive.", author: "Director,", company: "Paramanand Yoga Institute", rating: "5.0" },
+    { id: "5", text: "Highly professional and delivered the project exactly on time.", author: "CEO,", company: "Tech Startup", rating: "5.0" }
+  ],
   chatbot: [
     { id: crypto.randomUUID(), keywords: ["service", "offer", "do you do", "what can you"], answer: "We offer Full Stack Development, Mobile App Development, Web Development, E-commerce Solutions, and Digital Marketing." },
     { id: crypto.randomUUID(), keywords: ["price", "cost", "quote", "estimate", "much"], answer: "Our pricing is project-based and highly competitive. Please leave your email or use the Contact Us form for a custom quote!" },
@@ -785,6 +802,7 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         
         footer: { ...defaultData.footer, ...getSetting('footer', defaultData.footer) },
         teamTestimonials: getSetting('teamTestimonials', defaultData.teamTestimonials)?.length ? getSetting('teamTestimonials', defaultData.teamTestimonials) : defaultData.teamTestimonials,
+        clutchReviews: getSetting('clutchReviews', defaultData.clutchReviews)?.length ? getSetting('clutchReviews', defaultData.clutchReviews) : defaultData.clutchReviews,
         testimonials: testimonialsRes.data?.length ? testimonialsRes.data : defaultData.testimonials,
         chatbot: chatbotRes.data?.length ? chatbotRes.data : defaultData.chatbot
       });
