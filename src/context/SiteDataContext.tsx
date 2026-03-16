@@ -127,6 +127,7 @@ export type PortfolioProject = {
   cta: string;
   featured?: boolean;
   highlight?: boolean;
+  rating?: number;
 };
 
 export type SiteData = {
@@ -392,7 +393,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=600&q=80",
       category: "Web App", status: "Completed",
       techStack: ["React", "Django", "PostgreSQL", "Supabase"],
-      cta: "View Case Study", featured: true
+      cta: "View Case Study", featured: true, rating: 5
     },
     {
       id: crypto.randomUUID(), title: "Hospital Booking System",
@@ -400,7 +401,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=600&q=80",
       category: "SaaS", status: "Completed",
       techStack: ["React", "Node.js", "MongoDB", "AWS"],
-      cta: "View Project", highlight: true
+      cta: "View Project", highlight: true, rating: 5
     },
     {
       id: crypto.randomUUID(), title: "E-Commerce Platform",
@@ -408,7 +409,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80",
       category: "Web App", status: "Completed",
       techStack: ["Next.js", "Tailwind", "Supabase", "Stripe"],
-      cta: "View Project"
+      cta: "View Project", rating: 5
     },
     {
       id: crypto.randomUUID(), title: "Resume Analyzer",
@@ -416,7 +417,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80",
       category: "SaaS", status: "In Progress",
       techStack: ["React", "Django", "PostgreSQL", "OpenAI"],
-      cta: "View Project"
+      cta: "View Project", rating: 4
     },
     {
       id: crypto.randomUUID(), title: "Tourism Admin Dashboard",
@@ -424,7 +425,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80",
       category: "Web App", status: "In Progress",
       techStack: ["React", "Express.js", "MySQL", "Vercel"],
-      cta: "View Project"
+      cta: "View Project", rating: 5
     },
     {
       id: crypto.randomUUID(), title: "Delivery Tracking App",
@@ -432,7 +433,7 @@ const defaultData: SiteData = {
       image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&q=80",
       category: "Mobile App", status: "Coming Soon",
       techStack: ["React Native", "Node.js", "Firebase", "Google Maps"],
-      cta: "View Case Study"
+      cta: "View Case Study", rating: 5
     }
   ],
   servicePages: {

@@ -99,21 +99,14 @@ const Portfolio = () => {
     <div className="flex flex-wrap gap-2">
       {techStack.map(tech => {
         const logo = getTechLogo(tech);
-        return logo ? (
+        return (
           <div 
             key={tech} 
-            className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center p-1.5 shadow-sm hover:scale-110 hover:shadow-md transition-transform" 
-            title={tech}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-white border border-slate-200 rounded-full text-[11px] font-medium text-slate-700 shadow-sm hover:shadow-md transition-shadow"
           >
-            <img src={logo} alt={tech} className="w-full h-full object-contain" />
+            {logo && <img src={logo} alt={tech} className="w-3.5 h-3.5 object-contain" />}
+            <span>{tech}</span>
           </div>
-        ) : (
-          <span 
-            key={tech} 
-            className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-full text-[11px] font-medium shadow-sm flex items-center"
-          >
-            {tech}
-          </span>
         );
       })}
     </div>
@@ -178,7 +171,7 @@ const Portfolio = () => {
 
         <div className="container mx-auto px-4 max-w-7xl py-16 md:py-24">
           
-          {/* Featured Project - Reverted to White Theme & Fixed Mobile Layout */}
+          {/* Featured Project */}
           {featuredProject && (
             <motion.section 
               initial={{ opacity: 0, y: 30 }}
@@ -191,7 +184,14 @@ const Portfolio = () => {
                 <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-0">
                   <div className="p-8 md:p-12 flex flex-col justify-center">
                     <span className="inline-block px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-md text-[10px] font-semibold uppercase tracking-widest w-fit mb-6">Featured Project</span>
-                    <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">{featuredProject.title}</h3>
+                    <div className="flex items-center gap-3 mb-3">
+                      <h3 className="text-2xl md:text-3xl font-bold text-slate-900">{featuredProject.title}</h3>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} size={16} className={i < (featuredProject.rating || 5) ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200"} />
+                        ))}
+                      </div>
+                    </div>
                     <p className="text-slate-600 mb-6 leading-relaxed">
                       {featuredProject.description}
                     </p>
@@ -204,7 +204,7 @@ const Portfolio = () => {
                   </div>
                   <div className="p-5 flex items-center justify-center bg-[#f4f9ff]">
                     <div className="rounded-xl overflow-hidden shadow-lg w-full relative min-h-[250px] md:min-h-[350px]">
-                      <img src={featuredProject.image} alt={featuredProject.title} className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-700" />
+                      <div className="w-full h-full absolute inset-0 portfolio-img-scroll" style={{ backgroundImage: `url(${featuredProject.image})` }}></div>
                     </div>
                   </div>
                 </div>
@@ -229,7 +229,7 @@ const Portfolio = () => {
                 <div className="flex flex-col md:grid md:grid-cols-[2fr_3fr] gap-0">
                   <div className="p-5 flex items-center justify-center bg-[#f4f9ff]">
                     <div className="rounded-xl overflow-hidden shadow-lg w-full relative min-h-[250px] md:h-full">
-                      <img src={highlightProject.image} alt={highlightProject.title} className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-700" />
+                      <div className="w-full h-full absolute inset-0 portfolio-img-scroll" style={{ backgroundImage: `url(${highlightProject.image})` }}></div>
                     </div>
                   </div>
                   <div className="p-8 md:p-10 flex flex-col justify-center">
@@ -237,7 +237,14 @@ const Portfolio = () => {
                       <span className="px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded text-[10px] font-semibold uppercase tracking-wider">{highlightProject.category}</span>
                       <span className={`px-2.5 py-1 rounded text-[10px] font-semibold uppercase tracking-wider ${getStatusColor(highlightProject.status)}`}>{highlightProject.status}</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-2">{highlightProject.title}</h3>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-2xl font-bold text-slate-900">{highlightProject.title}</h3>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} size={14} className={i < (highlightProject.rating || 5) ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200"} />
+                        ))}
+                      </div>
+                    </div>
                     <p className="text-slate-600 mb-6 leading-relaxed">
                       {highlightProject.description}
                     </p>
@@ -293,24 +300,22 @@ const Portfolio = () => {
                         
                         {/* Image Container */}
                         <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden shadow-[0_8px_25px_rgba(0,0,0,0.1)] group-hover:-translate-y-1 transition-transform duration-300">
-                          <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
-                          
-                          {/* Overlay CTA */}
-                          <div className="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                            <button className="bg-white text-slate-900 px-5 py-2 rounded-full font-bold flex items-center gap-2 shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 text-xs">
-                              {p.cta} <ArrowRight size={14} />
-                            </button>
-                          </div>
+                          <div className="w-full h-full absolute inset-0 portfolio-img-scroll" style={{ backgroundImage: `url(${p.image})` }}></div>
                         </div>
                       </div>
 
                       {/* Content Area */}
                       <div className="p-6 flex flex-col flex-1 bg-white rounded-b-[20px]">
-                        <div className="flex justify-between items-start gap-4 mb-3">
+                        <div className="flex justify-between items-start gap-4 mb-2">
                           <h4 className="text-xl font-bold text-slate-900 leading-tight">{p.title}</h4>
                           <span className={`px-3 py-1 border rounded-full text-[10px] font-bold whitespace-nowrap ${getStatusColor(p.status)}`}>
                             {p.status}
                           </span>
+                        </div>
+                        <div className="flex gap-0.5 mb-3">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} size={14} className={i < (p.rating || 5) ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200"} />
+                          ))}
                         </div>
                         <p className="text-sm text-slate-500 mb-6 line-clamp-2 flex-1 leading-relaxed">{p.description}</p>
                         <div className="mt-auto">
