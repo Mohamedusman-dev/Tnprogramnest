@@ -575,7 +575,7 @@ const Admin = () => {
   // --- Render Auth Screen if not logged in ---
   if (authLoading || (!session && !authLoading && isLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#eef2f6]">
         <Loader2 className="w-8 h-8 animate-spin text-[#5B7cFA]" />
       </div>
     );
@@ -583,113 +583,121 @@ const Admin = () => {
 
   if (!session) {
     return (
-      <div className="min-h-screen flex flex-col md:flex-row font-sans relative bg-[#5B7cFA] md:bg-slate-50">
-        {/* Background/Left Panel - Blue Design */}
-        <div className="absolute inset-0 md:relative md:w-1/2 bg-[#5B7cFA] text-white p-8 md:p-12 flex flex-col justify-start md:justify-center overflow-hidden z-0">
+      <div className="min-h-screen flex items-center justify-center bg-[#eef2f6] p-4 sm:p-6 md:p-8 font-sans">
+        <div className="max-w-[1000px] w-full bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row min-h-[600px]">
           
-          {/* Decorative Elements mimicking the reference image */}
-          <div className="absolute top-12 left-12 grid grid-cols-3 gap-2 opacity-30">
-            {[...Array(9)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-white rounded-full"></div>)}
-          </div>
-          <div className="absolute top-0 left-1/4 w-32 h-64 bg-white/10 rounded-b-full blur-sm transform -translate-y-1/2"></div>
-          <div className="absolute top-20 right-8 md:right-20 w-12 h-12 border-4 border-white/20 rounded-full"></div>
-          
-          <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full border border-white/30 flex items-center justify-center opacity-50 md:opacity-100">
-            <div className="w-40 h-40 rounded-full border border-white/20 flex items-center justify-center">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-cyan-300 to-blue-500 shadow-lg shadow-cyan-400/50"></div>
+          {/* Left Side - Blue Gradient & Decorations */}
+          <div className="w-full md:w-[45%] lg:w-1/2 bg-[#5b7cfa] p-10 md:p-16 text-white relative overflow-hidden flex flex-col justify-center min-h-[320px] md:min-h-full">
+            {/* Decorative Elements matching the reference */}
+            {/* Top Left Dots */}
+            <div className="absolute top-8 left-8 grid grid-cols-4 gap-2 opacity-40">
+              {[...Array(16)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-white rounded-full"></div>)}
+            </div>
+            {/* Top Shapes */}
+            <div className="absolute top-0 left-24 w-16 h-16 bg-white/10 rounded-b-full"></div>
+            <div className="absolute top-12 left-40 w-4 h-16 bg-white/10 rounded-full"></div>
+            <div className="absolute top-8 left-52 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
+            <div className="absolute top-16 left-60 w-8 h-8 border-2 border-white/30 rounded-full"></div>
+            
+            {/* Bottom Right Concentric Circles & Cyan Orb */}
+            <div className="absolute -bottom-16 -right-16 w-64 h-64 border-[1px] border-white/20 rounded-full flex items-center justify-center">
+              <div className="w-48 h-48 border-[2px] border-white/30 rounded-full flex items-center justify-center">
+                <div className="w-32 h-32 bg-gradient-to-br from-cyan-300 to-blue-600 rounded-full shadow-[0_0_30px_rgba(34,211,238,0.6)]"></div>
+              </div>
+            </div>
+            {/* Bottom Left Dots & Cross */}
+            <div className="absolute bottom-12 left-10 grid grid-cols-4 gap-2 opacity-40">
+              {[...Array(16)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-white rounded-full"></div>)}
+            </div>
+            <div className="absolute bottom-24 left-12 w-4 h-4 bg-cyan-300 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.8)]"></div>
+            <div className="absolute bottom-12 left-32 text-white/50 text-2xl font-bold rotate-45">+</div>
+            
+            {/* Content */}
+            <div className="relative z-10 mt-8 md:mt-0">
+              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold mb-4 leading-[1.1] tracking-tight">
+                Adventure<br/>starts here
+              </h1>
+              <p className="text-white/90 text-sm md:text-base max-w-[280px] leading-relaxed">
+                Sign in to manage your website content, view leads, and control your digital presence.
+              </p>
             </div>
           </div>
-          <div className="absolute bottom-32 left-8 w-6 h-6 bg-cyan-300 rounded-full shadow-md shadow-cyan-300/50 hidden md:block"></div>
-          <div className="absolute bottom-48 left-48 w-4 h-4 bg-cyan-200 rounded-full shadow-md shadow-cyan-200/50 hidden md:block"></div>
-          <div className="absolute bottom-20 left-64 text-white/50 text-2xl font-bold rotate-45 hidden md:block">+</div>
 
-          <div className="relative z-10 pl-2 md:pl-8 mt-16 md:mt-0">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-[1.1]"
-            >
-              Admin<br/>Portal
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-blue-100 text-base md:text-lg max-w-md"
-            >
-              Manage your website content, settings, and view user interactions securely.
-            </motion.p>
-          </div>
-        </div>
-
-        {/* Right Panel - White Login Form */}
-        <div className="w-full md:w-1/2 flex items-center justify-center p-4 sm:p-8 relative z-10 min-h-screen md:min-h-0 pt-64 md:pt-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-[400px] bg-white p-8 rounded-3xl shadow-2xl"
-          >
-            <div className="text-center mb-10">
-              <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-blue-100">
-                <LayoutDashboard size={40} className="text-[#5B7cFA]" />
-              </div>
-              <h2 className="text-2xl font-semibold text-slate-800">Hello ! Welcome back</h2>
+          {/* Right Side - Login Form */}
+          <div className="w-full md:w-[55%] lg:w-1/2 p-8 md:p-16 flex flex-col justify-center items-center bg-white relative">
+            {/* Subtle background circles on the right side like the reference */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#f4f7fb] rounded-bl-full opacity-50 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 border-[20px] border-[#f4f7fb] rounded-tr-full opacity-50 pointer-events-none"></div>
+            <div className="absolute -bottom-10 -right-10 grid grid-cols-5 gap-2 opacity-20 pointer-events-none">
+              {[...Array(25)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>)}
             </div>
 
-            <form onSubmit={handleAuth} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-2">Email</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-[#5B7cFA]" />
-                  </div>
-                  <input 
-                    type="email" 
-                    required
-                    value={email || ""}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-[#5B7cFA]/20 focus:border-[#5B7cFA] outline-none transition-all bg-slate-50/50"
-                    placeholder="Enter your email address"
-                  />
+            <div className="w-full max-w-[360px] relative z-10">
+              <div className="text-center mb-10">
+                <div className="w-16 h-16 bg-white text-[#5b7cfa] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_8px_20px_rgba(91,124,250,0.15)] border border-slate-50">
+                  <LayoutDashboard size={32} strokeWidth={2.5} />
                 </div>
+                <h2 className="text-[22px] font-bold text-slate-800">Hello ! Welcome back</h2>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-2">Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-[#5B7cFA]" />
+              <form onSubmit={handleAuth} className="space-y-5">
+                <div>
+                  <label className="block text-[13px] font-medium text-slate-600 mb-2">Email</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Mail className="h-4 w-4 text-[#5b7cfa]" />
+                    </div>
+                    <input 
+                      type="email" 
+                      required
+                      value={email || ""}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-[#f8fafc] border border-transparent text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-[#5b7cfa]/30 focus:ring-4 focus:ring-[#5b7cfa]/10 outline-none transition-all text-[14px]"
+                      placeholder="Enter your email address"
+                    />
                   </div>
-                  <input 
-                    type="password" 
-                    required
-                    value={password || ""}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-[#5B7cFA]/20 focus:border-[#5B7cFA] outline-none transition-all bg-slate-50/50"
-                    placeholder="••••••••••••"
-                  />
                 </div>
-              </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 cursor-pointer group">
-                  <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#5B7cFA] focus:ring-[#5B7cFA]" />
-                  <span className="text-slate-500 group-hover:text-slate-700 transition-colors">Remember me</span>
-                </label>
-                <button type="button" onClick={() => toast.info("Please contact the super admin to reset your password.")} className="text-[#5B7cFA] hover:underline font-medium">
-                  Reset Password!
+                <div>
+                  <label className="block text-[13px] font-medium text-slate-600 mb-2">Password</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Lock className="h-4 w-4 text-[#5b7cfa]" />
+                    </div>
+                    <input 
+                      type="password" 
+                      required
+                      value={password || ""}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-[#f8fafc] border border-transparent text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-[#5b7cfa]/30 focus:ring-4 focus:ring-[#5b7cfa]/10 outline-none transition-all text-[14px]"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[13px] pt-2 pb-4">
+                  <label className="flex items-center gap-2.5 cursor-pointer group">
+                    <div className="relative flex items-center justify-center">
+                      <input type="checkbox" className="peer appearance-none w-4 h-4 rounded bg-[#f8fafc] border border-slate-200 checked:bg-[#5b7cfa] checked:border-[#5b7cfa] transition-colors cursor-pointer" />
+                      <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <span className="text-slate-500 font-medium group-hover:text-slate-700 transition-colors">Remember me</span>
+                  </label>
+                  <button type="button" onClick={() => toast.info("Please contact the super admin to reset your password.")} className="text-[#5b7cfa] hover:underline font-medium">
+                    Reset Password!
+                  </button>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={authLoading}
+                  className="w-full bg-[#5b7cfa] hover:bg-[#4a6be0] text-white py-3.5 rounded-xl font-semibold transition-all disabled:opacity-70 flex justify-center items-center shadow-[0_8px_20px_rgba(91,124,250,0.25)] hover:shadow-[0_10px_25px_rgba(91,124,250,0.35)] hover:-translate-y-0.5 text-[15px]"
+                >
+                  {authLoading ? <Loader2 size={18} className="animate-spin" /> : "Login"}
                 </button>
-              </div>
-
-              <button 
-                type="submit" 
-                disabled={authLoading}
-                className="w-full bg-[#5B7cFA] hover:bg-[#4a6be0] text-white py-4 rounded-xl font-semibold transition-all disabled:opacity-70 flex justify-center items-center shadow-lg shadow-[#5B7cFA]/30 mt-2"
-              >
-                {authLoading ? <Loader2 size={20} className="animate-spin" /> : "Login"}
-              </button>
-            </form>
-          </motion.div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     );
