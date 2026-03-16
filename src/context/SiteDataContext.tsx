@@ -116,6 +116,19 @@ export type ServicePageData = {
   faqs: { q: string; a: string }[];
 };
 
+export type PortfolioProject = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  status: string;
+  techStack: string[];
+  cta: string;
+  featured?: boolean;
+  highlight?: boolean;
+};
+
 export type SiteData = {
   general: {
     logoUrl: string;
@@ -130,6 +143,7 @@ export type SiteData = {
       hero: StatItem[];
       about: StatItem[];
       training: StatItem[];
+      portfolio?: StatItem[];
     };
   };
   hero: {
@@ -152,6 +166,15 @@ export type SiteData = {
   products: ProductItem[];
   jobs: JobItem[];
   industries: IndustryItem[];
+  
+  // Portfolio Page Data
+  portfolioPage: {
+    badge: string;
+    title1: string;
+    title2: string;
+    description: string;
+  };
+  portfolioProjects: PortfolioProject[];
   
   // Service Pages Data
   servicePages: Record<string, ServicePageData>;
@@ -218,6 +241,12 @@ const defaultData: SiteData = {
         { value: 500, suffix: "+", label: "Students Trained" },
         { value: 5, suffix: "+", label: "Institutions Reached" },
         { value: 100, suffix: "%", label: "Industry-Focused" },
+      ],
+      portfolio: [
+        { value: 500, suffix: "+", label: "Projects Delivered", icon: "Briefcase" },
+        { value: 50, suffix: "+", label: "Industries Served", icon: "Globe" },
+        { value: 99, suffix: "%", label: "Client Satisfaction", icon: "Heart" },
+        { value: 10, suffix: "+", label: "Years Experience", icon: "Award" },
       ]
     }
   },
@@ -348,6 +377,62 @@ const defaultData: SiteData = {
       bullets: ["MVP development & validation", "Rapid prototyping & iteration", "Scalable SaaS architecture", "CI/CD & DevOps setup"],
       caseStudy: { title: "MVP to Market in 8 Weeks", description: "Rapid prototyping and agile development helped a startup launch and secure Series A funding.", stats: [{ label: "Time to Market", value: "8 weeks" }, { label: "Funding Raised", value: "$5M" }] },
       testimonial: { quote: "They turned our idea into a production-ready SaaS product in record time.", author: "Alex Rivera", role: "CEO, LaunchPad.io" }
+    }
+  ],
+  portfolioPage: {
+    badge: "Our Work",
+    title1: "Explore Our",
+    title2: "Portfolio",
+    description: "Discover how we've helped businesses transform their digital presence with innovative, scalable, and beautifully designed solutions."
+  },
+  portfolioProjects: [
+    {
+      id: crypto.randomUUID(), title: "FarmConnect",
+      description: "Full Stack Marketplace Platform connecting farmers directly with buyers for fresh produce trading.",
+      image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=600&q=80",
+      category: "Web App", status: "Completed",
+      techStack: ["React", "Django", "PostgreSQL", "Supabase"],
+      cta: "View Case Study", featured: true
+    },
+    {
+      id: crypto.randomUUID(), title: "Hospital Booking System",
+      description: "Streamlined appointment scheduling platform for healthcare providers and patients.",
+      image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=600&q=80",
+      category: "SaaS", status: "Completed",
+      techStack: ["React", "Node.js", "MongoDB", "AWS"],
+      cta: "View Project", highlight: true
+    },
+    {
+      id: crypto.randomUUID(), title: "E-Commerce Platform",
+      description: "Modern business website with integrated product catalog, cart, and payment processing.",
+      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80",
+      category: "Web App", status: "Completed",
+      techStack: ["Next.js", "Tailwind", "Supabase", "Stripe"],
+      cta: "View Project"
+    },
+    {
+      id: crypto.randomUUID(), title: "Resume Analyzer",
+      description: "AI-powered resume analysis tool with ATS scoring and skill gap identification.",
+      image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80",
+      category: "SaaS", status: "In Progress",
+      techStack: ["React", "Django", "PostgreSQL", "OpenAI"],
+      cta: "View Project"
+    },
+    {
+      id: crypto.randomUUID(), title: "Tourism Admin Dashboard",
+      description: "Comprehensive admin panel for tourism agencies to manage bookings and destinations.",
+      image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80",
+      category: "Web App", status: "In Progress",
+      techStack: ["React", "Express.js", "MySQL", "Vercel"],
+      cta: "View Project"
+    },
+    {
+      id: crypto.randomUUID(), title: "Delivery Tracking App",
+      description: "Real-time delivery tracking with driver management and route optimization.",
+      image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&q=80",
+      category: "Mobile App", status: "Coming Soon",
+      techStack: ["React Native", "Node.js", "Firebase", "Google Maps"],
+      cta: "View Case Study"
     }
   ],
   servicePages: {
@@ -675,6 +760,7 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             hero: dbGeneral.stats?.hero?.length ? dbGeneral.stats.hero : defaultData.general.stats.hero,
             about: dbGeneral.stats?.about?.length ? dbGeneral.stats.about : defaultData.general.stats.about,
             training: dbGeneral.stats?.training?.length ? dbGeneral.stats.training : defaultData.general.stats.training,
+            portfolio: dbGeneral.stats?.portfolio?.length ? dbGeneral.stats.portfolio : defaultData.general.stats.portfolio,
           }
         },
         hero: { ...defaultData.hero, ...getSetting('hero', defaultData.hero) },
@@ -684,6 +770,9 @@ export const SiteDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         products: getSetting('products', defaultData.products)?.length ? getSetting('products', defaultData.products) : defaultData.products,
         jobs: getSetting('jobs', defaultData.jobs)?.length ? getSetting('jobs', defaultData.jobs) : defaultData.jobs,
         industries: getSetting('industries', defaultData.industries)?.length ? getSetting('industries', defaultData.industries) : defaultData.industries,
+        
+        portfolioPage: getSetting('portfolioPage', defaultData.portfolioPage),
+        portfolioProjects: getSetting('portfolioProjects', defaultData.portfolioProjects)?.length ? getSetting('portfolioProjects', defaultData.portfolioProjects) : defaultData.portfolioProjects,
         
         servicePages: mergedServicePages,
 

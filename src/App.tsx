@@ -10,6 +10,7 @@ import Careers from "./pages/Careers";
 import Technology from "./pages/Technology";
 import Training from "./pages/Training";
 import BuildIdea from "./pages/BuildIdea";
+import Portfolio from "./pages/Portfolio";
 import FullStackDevelopment from "./pages/FullStackDevelopment";
 import MobileAppDevelopment from "./pages/MobileAppDevelopment";
 import WebApplicationDevelopment from "./pages/WebApplicationDevelopment";
@@ -39,6 +40,7 @@ const App = () => {
               <Route path="/technology" element={<Technology />} />
               <Route path="/training" element={<Training />} />
               <Route path="/build-idea" element={<BuildIdea />} />
+              <Route path="/portfolio" element={<Portfolio />} />
               
               {/* Service Routes */}
               <Route path="/services/full-stack-development" element={<FullStackDevelopment />} />

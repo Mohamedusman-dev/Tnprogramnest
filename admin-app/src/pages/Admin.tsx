@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Settings, MessageSquare, Users, Save, Plus, Trash2, 
   Globe, Loader2, LogOut, Briefcase, Package, Image as ImageIcon, Upload, 
   FileText, Menu, X, Link as LinkIcon, Factory, Heart, GraduationCap, 
-  Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil, Layout
+  Mail, Lock, Mailbox, FileSpreadsheet, FileText as FileTextIcon, Pencil, Layout, FolderGit2
 } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from 'jspdf';
@@ -174,6 +174,7 @@ const Admin = () => {
   const [productsForm, setProductsForm] = useState(siteData.products);
   const [jobsForm, setJobsForm] = useState(siteData.jobs || []);
   const [industriesForm, setIndustriesForm] = useState(siteData.industries || []);
+  const [portfolioProjectsForm, setPortfolioProjectsForm] = useState(siteData.portfolioProjects || []);
   
   // Service Pages State
   const [selectedServiceSlug, setSelectedServiceSlug] = useState("full-stack-development");
@@ -194,23 +195,41 @@ const Admin = () => {
 
   // Check Auth Session
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error("Session error:", error.message);
-        // Clear invalid session data from local storage
-        supabase.auth.signOut().catch(console.error);
+    const clearInvalidSession = async () => {
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+          keysToRemove.push(key);
+        }
       }
-      setSession(session);
-      setAuthLoading(false);
-    });
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+      await supabase.auth.signOut().catch(console.error);
+    };
+
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Session error:", error.message);
+          await clearInvalidSession();
+        }
+        setSession(session);
+      } catch (err) {
+        console.error("Unexpected session error:", err);
+        await clearInvalidSession();
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       // Fixed TypeScript strict comparison error by casting event to string
       if ((event as string) === 'TOKEN_REFRESH_FAILED') {
         console.error("Token refresh failed, signing out.");
-        setTimeout(() => {
-          supabase.auth.signOut().catch(console.error);
-        }, 0);
+        clearInvalidSession();
       }
       setSession(session);
     });
@@ -227,6 +246,7 @@ const Admin = () => {
     setProductsForm(siteData.products || []);
     setJobsForm(siteData.jobs || []);
     setIndustriesForm(siteData.industries || []);
+    setPortfolioProjectsForm(siteData.portfolioProjects || []);
     setServicePagesForm(siteData.servicePages || {});
     
     setTrainingForm(siteData.trainingPrograms || []);
@@ -489,6 +509,12 @@ const Admin = () => {
   }]);
   const removeIndustry = (id: string) => setIndustriesForm(industriesForm.filter(i => i.id !== id));
 
+  // Portfolio Handlers
+  const addPortfolioProject = () => setPortfolioProjectsForm([...portfolioProjectsForm, { 
+    id: crypto.randomUUID(), title: "", description: "", image: "", category: "Web App", status: "Completed", techStack: [], cta: "View Project" 
+  }]);
+  const removePortfolioProject = (id: string) => setPortfolioProjectsForm(portfolioProjectsForm.filter(p => p.id !== id));
+
   // Service Pages Handlers
   const currentServiceData = servicePagesForm[selectedServiceSlug] || { industries: [], portfolio: [], faqs: [] };
   const updateCurrentServiceData = (key: string, value: any) => {
@@ -527,6 +553,7 @@ const Admin = () => {
   const navItems = [
     { id: "general", label: "General Settings", icon: Settings },
     { id: "service_pages", label: "Service Pages", icon: Layout },
+    { id: "portfolio_projects", label: "Portfolio Projects", icon: FolderGit2 },
     { id: "services", label: "What We Offer", icon: Briefcase },
     { id: "products", label: "Our Products", icon: Package },
     { id: "industries", label: "Focus Industries", icon: Factory },
@@ -903,6 +930,13 @@ const Admin = () => {
                   stats={generalForm.stats?.training || []} 
                   onChange={(newStats) => setGeneralForm({...generalForm, stats: {...generalForm.stats, training: newStats}})} 
                 />
+
+                <StatEditor 
+                  title="Portfolio Page Stats" 
+                  stats={generalForm.stats?.portfolio || []} 
+                  showIcon={true}
+                  onChange={(newStats) => setGeneralForm({...generalForm, stats: {...generalForm.stats, portfolio: newStats}})} 
+                />
               </div>
 
             </motion.div>
@@ -1057,6 +1091,173 @@ const Admin = () => {
                 </div>
               </div>
 
+            </motion.div>
+          )}
+
+          {/* Portfolio Projects Tab */}
+          {activeTab === "portfolio_projects" && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900">Portfolio Projects</h2>
+                  <p className="text-slate-500 mt-1 text-sm md:text-base">Manage the projects displayed on the main Portfolio page.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <button onClick={addPortfolioProject} className="justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all">
+                    <Plus size={18} /> Add Project
+                  </button>
+                  <button disabled={isSaving} onClick={() => handleSaveSection('portfolioProjects', portfolioProjectsForm)} className="justify-center bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all disabled:opacity-70">
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />} Save Changes
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 md:gap-8">
+                {portfolioProjectsForm.map((p, index) => (
+                  <div key={p.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 relative">
+                    <button 
+                      onClick={() => removePortfolioProject(p.id)}
+                      className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                    
+                    <div className="space-y-6 pr-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Project Title</label>
+                          <input 
+                            type="text" 
+                            value={p.title || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(portfolioProjectsForm);
+                              newForm[index].title = e.target.value;
+                              setPortfolioProjectsForm(newForm);
+                            }}
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Category</label>
+                            <input 
+                              type="text" 
+                              value={p.category || ""}
+                              onChange={(e) => {
+                                const newForm = structuredClone(portfolioProjectsForm);
+                                newForm[index].category = e.target.value;
+                                setPortfolioProjectsForm(newForm);
+                              }}
+                              placeholder="e.g. Web App, SaaS"
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Status</label>
+                            <select 
+                              value={p.status || "Completed"}
+                              onChange={(e) => {
+                                const newForm = structuredClone(portfolioProjectsForm);
+                                newForm[index].status = e.target.value;
+                                setPortfolioProjectsForm(newForm);
+                              }}
+                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                            >
+                              <option value="Completed">Completed</option>
+                              <option value="In Progress">In Progress</option>
+                              <option value="Coming Soon">Coming Soon</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
+                        <textarea 
+                          rows={2}
+                          value={p.description || ""}
+                          onChange={(e) => {
+                            const newForm = structuredClone(portfolioProjectsForm);
+                            newForm[index].description = e.target.value;
+                            setPortfolioProjectsForm(newForm);
+                          }}
+                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tech Stack (Comma Separated)</label>
+                          <CommaSeparatedInput 
+                            rows={2}
+                            value={p.techStack || []}
+                            onChange={(val) => {
+                              const newForm = structuredClone(portfolioProjectsForm);
+                              newForm[index].techStack = val;
+                              setPortfolioProjectsForm(newForm);
+                            }}
+                            placeholder="React, Node.js, AWS..."
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Button Text (CTA)</label>
+                          <input 
+                            type="text" 
+                            value={p.cta || ""}
+                            onChange={(e) => {
+                              const newForm = structuredClone(portfolioProjectsForm);
+                              newForm[index].cta = e.target.value;
+                              setPortfolioProjectsForm(newForm);
+                            }}
+                            placeholder="e.g. View Project"
+                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-900 bg-white mb-4"
+                          />
+                          
+                          <div className="flex gap-6">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={p.featured || false}
+                                onChange={(e) => {
+                                  const newForm = structuredClone(portfolioProjectsForm);
+                                  newForm[index].featured = e.target.checked;
+                                  setPortfolioProjectsForm(newForm);
+                                }}
+                                className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary"
+                              />
+                              <span className="text-sm font-medium text-slate-700">Set as Featured (Top)</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={p.highlight || false}
+                                onChange={(e) => {
+                                  const newForm = structuredClone(portfolioProjectsForm);
+                                  newForm[index].highlight = e.target.checked;
+                                  setPortfolioProjectsForm(newForm);
+                                }}
+                                className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary"
+                              />
+                              <span className="text-sm font-medium text-slate-700">Set as Highlight (2nd)</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <ImageUploader 
+                        label="Project Image" 
+                        value={p.image} 
+                        onChange={(val) => {
+                          const newForm = structuredClone(portfolioProjectsForm);
+                          newForm[index].image = val;
+                          setPortfolioProjectsForm(newForm);
+                        }} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           )}
 

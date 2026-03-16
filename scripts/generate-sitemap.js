@@ -13,6 +13,7 @@ const routes = [
   { path: '/careers', priority: '0.9', changefreq: 'weekly' },
   { path: '/training', priority: '0.8', changefreq: 'monthly' },
   { path: '/build-idea', priority: '0.8', changefreq: 'monthly' },
+  { path: '/portfolio', priority: '0.9', changefreq: 'weekly' },
   { path: '/services/full-stack-development', priority: '0.9', changefreq: 'monthly' },
   { path: '/services/mobile-app-development', priority: '0.9', changefreq: 'monthly' },
   { path: '/services/web-application-development', priority: '0.9', changefreq: 'monthly' },

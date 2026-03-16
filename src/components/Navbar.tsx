@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSiteData } from "@/context/SiteDataContext";
 
-const navItems = ["Home", "About", "Services", "Training Programs", "Technology", "Contact"];
+const navItems = ["Home", "About", "Portfolio", "Training Programs", "Technology", "Contact"];
 
 const Navbar = () => {
   const { siteData } = useSiteData();
@@ -52,6 +52,12 @@ const Navbar = () => {
       return;
     }
 
+    // Route "Portfolio" to its own dedicated page
+    if (item === "Portfolio") {
+      navigate('/portfolio');
+      return;
+    }
+
     let id = item.toLowerCase().replace(/\s+/g, "-");
     
     // Map "contact" back to the "contact-us" section ID
@@ -81,14 +87,15 @@ const Navbar = () => {
   const isTechnologyPage = location.pathname === "/technology";
   const isTrainingPage = location.pathname === "/training";
   const isBuildIdeaPage = location.pathname === "/build-idea";
+  const isPortfolioPage = location.pathname === "/portfolio";
   
   const useDarkText = (!isHomePage && !isTrainingPage && !isBuildIdeaPage && isAtTop) ? true : (isAtTop ? false : isOverLight);
 
   // Special case for pages which have a dark background at the top
-  const finalUseDarkText = (isTechnologyPage || isTrainingPage || isBuildIdeaPage) && isAtTop ? false : useDarkText;
+  const finalUseDarkText = (isTechnologyPage || isTrainingPage || isBuildIdeaPage || isPortfolioPage) && isAtTop ? false : useDarkText;
 
   const navBgClass = isAtTop
-    ? (isHomePage || isTechnologyPage || isTrainingPage || isBuildIdeaPage ? "bg-transparent backdrop-blur-md border-b border-white/10" : "bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200/50")
+    ? (isHomePage || isTechnologyPage || isTrainingPage || isBuildIdeaPage || isPortfolioPage ? "bg-transparent backdrop-blur-md border-b border-white/10" : "bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200/50")
     : isOverLight
     ? "bg-white/80 backdrop-blur-lg shadow-sm border-b border-slate-200/50" 
     : (isTechnologyPage ? "bg-[#0c121e]/60 backdrop-blur-lg shadow-sm border-b border-white/10" : "bg-slate-900/60 backdrop-blur-lg shadow-sm border-b border-white/10"); 
